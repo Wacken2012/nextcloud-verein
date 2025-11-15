@@ -1,6 +1,9 @@
 <template>
   <div class="statistics-container">
-    <h2>📊 Dashboard</h2>
+    <header class="section-header">
+      <h1>📊 Dashboard</h1>
+      <p class="section-subtitle">Übersicht und Statistiken der Vereinsverwaltung</p>
+    </header>
 
     <!-- Alert für Fehler -->
     <Alert
@@ -13,6 +16,7 @@
 
     <!-- Loading State -->
     <div v-if="loading" class="loading">
+      <div class="spinner"></div>
       <p>Daten werden geladen...</p>
     </div>
 
@@ -20,28 +24,40 @@
     <div v-else class="stats-grid">
       <!-- Widget: Mitglieder -->
       <div class="stat-widget">
-        <h3>👥 Mitglieder</h3>
+        <div class="stat-header">
+          <h3 class="stat-title">👥 Mitglieder</h3>
+          <span class="stat-icon primary">👥</span>
+        </div>
         <p class="stat-value">{{ statistics.memberCount }}</p>
         <p class="stat-label">Registrierte Mitglieder</p>
       </div>
 
       <!-- Widget: Offene Gebühren -->
       <div class="stat-widget warning">
-        <h3>📋 Offene Gebühren</h3>
+        <div class="stat-header">
+          <h3 class="stat-title">📋 Offene Gebühren</h3>
+          <span class="stat-icon warning-icon">📋</span>
+        </div>
         <p class="stat-value">{{ formatCurrency(statistics.totalOpen) }}</p>
         <p class="stat-label">{{ statistics.openCount }} Einträge</p>
       </div>
 
       <!-- Widget: Bezahlte Gebühren -->
       <div class="stat-widget success">
-        <h3>✓ Bezahlte Gebühren</h3>
+        <div class="stat-header">
+          <h3 class="stat-title">✓ Bezahlte Gebühren</h3>
+          <span class="stat-icon success-icon">✓</span>
+        </div>
         <p class="stat-value">{{ formatCurrency(statistics.totalPaid) }}</p>
         <p class="stat-label">{{ statistics.paidCount }} Einträge</p>
       </div>
 
       <!-- Widget: Überfällige Gebühren -->
       <div class="stat-widget error">
-        <h3>⚠️ Überfällige Gebühren</h3>
+        <div class="stat-header">
+          <h3 class="stat-title">⚠️ Überfällige Gebühren</h3>
+          <span class="stat-icon error-icon">⚠️</span>
+        </div>
         <p class="stat-value">{{ formatCurrency(statistics.totalOverdue) }}</p>
         <p class="stat-label">{{ statistics.overdueCount }} Einträge</p>
       </div>
@@ -51,20 +67,24 @@
     <div v-if="!loading" class="charts-grid">
       <!-- Balkendiagramm: Gebührenstatus -->
       <div class="chart-container">
-        <h3>💰 Gebührenstatus</h3>
-        <Bar
-          :data="feeStatusChartData"
-          :options="chartOptions.bar"
-        />
+        <h3 class="chart-title">💰 Gebührenstatus</h3>
+        <div class="chart-wrapper">
+          <Bar
+            :data="feeStatusChartData"
+            :options="chartOptions.bar"
+          />
+        </div>
       </div>
 
       <!-- Liniendiagramm: Mitgliederwachstum (Simuliert) -->
       <div class="chart-container">
-        <h3>📈 Mitgliederwachstum (Letzte 6 Monate)</h3>
-        <Line
-          :data="memberGrowthChartData"
-          :options="chartOptions.line"
-        />
+        <h3 class="chart-title">📈 Mitgliederwachstum (Letzte 6 Monate)</h3>
+        <div class="chart-wrapper">
+          <Line
+            :data="memberGrowthChartData"
+            :options="chartOptions.line"
+          />
+        </div>
       </div>
     </div>
   </div>
@@ -281,126 +301,280 @@ onMounted(() => {
 })
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+// Responsive Breakpoints
+$breakpoint-tablet: 768px;
+$breakpoint-mobile: 480px;
+
 .statistics-container {
-  padding: 20px;
-  max-width: 1400px;
-  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  width: 100%;
 }
 
-h2 {
-  margin: 0 0 20px 0;
-  font-size: 24px;
-  color: var(--color-main-text);
+.section-header {
+  margin: 0;
+
+  h1 {
+    margin: 0 0 0.5rem 0;
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--color-text);
+
+    @media (max-width: $breakpoint-tablet) {
+      font-size: 24px;
+    }
+
+    @media (max-width: $breakpoint-mobile) {
+      font-size: 20px;
+    }
+  }
+
+  .section-subtitle {
+    margin: 0;
+    font-size: 14px;
+    color: var(--color-text-secondary);
+
+    @media (max-width: $breakpoint-mobile) {
+      font-size: 13px;
+    }
+  }
 }
 
 .loading {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   height: 300px;
-  color: var(--color-text-light);
+  color: var(--color-text-secondary);
   font-size: 16px;
+  gap: 1rem;
+
+  .spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid var(--color-border);
+    border-top-color: var(--color-primary);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  p {
+    margin: 0;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* Statistik-Widgets */
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 16px;
-  margin-bottom: 32px;
+  width: 100%;
+
+  @media (max-width: $breakpoint-tablet) {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+  }
+
+  @media (max-width: $breakpoint-mobile) {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
 }
 
 .stat-widget {
-  background: var(--color-background-secondary, #f5f5f5);
+  background: var(--color-background, #ffffff);
+  border: 1px solid var(--color-border);
   border-radius: 8px;
   padding: 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+
+  @media (max-width: $breakpoint-tablet) {
+    padding: 16px;
+  }
+
+  @media (max-width: $breakpoint-mobile) {
+    padding: 14px;
+  }
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-color: var(--color-primary);
+  }
+
+  &.success {
+    border-left: 4px solid var(--color-success, #4caf50);
+  }
+
+  &.warning {
+    border-left: 4px solid var(--color-warning, #ffc107);
+  }
+
+  &.error {
+    border-left: 4px solid var(--color-error, #f44336);
+  }
 }
 
-.stat-widget:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+.stat-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 12px;
 }
 
-.stat-widget h3 {
-  margin: 0 0 12px 0;
-  font-size: 14px;
+.stat-title {
+  margin: 0;
+  font-size: 13px;
   font-weight: 600;
-  color: var(--color-text-lighter);
+  color: var(--color-text-secondary);
+  flex: 1;
+
+  @media (max-width: $breakpoint-mobile) {
+    font-size: 12px;
+  }
+}
+
+.stat-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+
+  @media (max-width: $breakpoint-mobile) {
+    font-size: 18px;
+  }
+
+  &.primary {
+    filter: hue-rotate(0deg);
+  }
+
+  &.warning-icon {
+    filter: hue-rotate(30deg);
+  }
+
+  &.success-icon {
+    filter: hue-rotate(90deg);
+  }
+
+  &.error-icon {
+    filter: hue-rotate(-10deg);
+  }
 }
 
 .stat-value {
   margin: 0 0 8px 0;
-  font-size: 28px;
-  font-weight: bold;
-  color: var(--color-main-text);
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--color-text);
+
+  @media (max-width: $breakpoint-tablet) {
+    font-size: 22px;
+  }
+
+  @media (max-width: $breakpoint-mobile) {
+    font-size: 20px;
+  }
 }
 
 .stat-label {
   margin: 0;
   font-size: 12px;
-  color: var(--color-text-lighter);
-}
+  color: var(--color-text-secondary);
 
-/* Typ-spezifische Styles */
-.stat-widget.success {
-  border-left: 4px solid #4caf50;
-}
-
-.stat-widget.warning {
-  border-left: 4px solid #ffc107;
-}
-
-.stat-widget.error {
-  border-left: 4px solid #f44336;
+  @media (max-width: $breakpoint-mobile) {
+    font-size: 11px;
+  }
 }
 
 /* Charts Grid */
 .charts-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
   gap: 20px;
+  width: 100%;
+
+  @media (max-width: $breakpoint-tablet) {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  @media (max-width: $breakpoint-mobile) {
+    gap: 12px;
+  }
 }
 
 .chart-container {
-  background: var(--color-background-secondary, #f5f5f5);
+  background: var(--color-background, #ffffff);
+  border: 1px solid var(--color-border);
   border-radius: 8px;
   padding: 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
 
-.chart-container h3 {
-  margin: 0 0 20px 0;
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--color-main-text);
-}
+  @media (max-width: $breakpoint-tablet) {
+    padding: 16px;
+  }
 
-/* Responsive */
-@media (max-width: 768px) {
-  .statistics-container {
+  @media (max-width: $breakpoint-mobile) {
     padding: 12px;
   }
 
-  .stats-grid {
-    grid-template-columns: 1fr;
-  }
+  .chart-title {
+    margin: 0 0 16px 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--color-text);
 
-  .charts-grid {
-    grid-template-columns: 1fr;
-  }
+    @media (max-width: $breakpoint-tablet) {
+      font-size: 14px;
+      margin-bottom: 12px;
+    }
 
-  .stat-value {
-    font-size: 24px;
+    @media (max-width: $breakpoint-mobile) {
+      font-size: 13px;
+      margin-bottom: 10px;
+    }
   }
 }
 
-/* Dark Mode */
+.chart-wrapper {
+  position: relative;
+  width: 100%;
+  min-height: 300px;
+  display: flex;
+  align-items: center;
+
+  @media (max-width: $breakpoint-mobile) {
+    min-height: 250px;
+  }
+}
+
+/* Dark Mode Support */
 @media (prefers-color-scheme: dark) {
   .stat-widget {
-    background: #2a2a2a;
+    background: var(--color-background, #1a1a1a);
+    border-color: var(--color-border, rgba(255, 255, 255, 0.1));
+
+    &:hover {
+      background: var(--color-background-hover, rgba(255, 255, 255, 0.05));
+    }
+  }
+
+  .chart-container {
+    background: var(--color-background, #1a1a1a);
+    border-color: var(--color-border, rgba(255, 255, 255, 0.1));
   }
 }
 </style>

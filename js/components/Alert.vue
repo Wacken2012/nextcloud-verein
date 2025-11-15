@@ -99,10 +99,13 @@ defineExpose({
 })
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+// Responsive Breakpoints
+$breakpoint-mobile: 480px;
+
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity 0.3s, transform 0.3s;
+  transition: opacity var(--transition-base), transform var(--transition-base);
 }
 
 .fade-enter-from,
@@ -113,37 +116,66 @@ defineExpose({
 
 .alert {
   margin-bottom: 16px;
-  border-radius: 4px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-md);
+  border-left: 4px solid transparent;
+  overflow: hidden;
+
+  @media (max-width: $breakpoint-mobile) {
+    margin-bottom: 12px;
+  }
 }
 
 .alert-content {
   display: flex;
   align-items: flex-start;
-  padding: 12px 16px;
+  padding: 14px 16px;
   gap: 12px;
+
+  @media (max-width: $breakpoint-mobile) {
+    padding: 12px 12px;
+    gap: 10px;
+  }
 }
 
 .alert-icon {
   flex-shrink: 0;
   font-size: 20px;
   line-height: 1.4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  @media (max-width: $breakpoint-mobile) {
+    font-size: 18px;
+  }
 }
 
 .alert-text {
   flex: 1;
+  min-width: 0; // Ermöglicht korrektes Wrapping
 }
 
 .alert-title {
   margin: 0 0 4px 0;
   font-weight: 600;
   font-size: 14px;
+  line-height: 1.4;
+
+  @media (max-width: $breakpoint-mobile) {
+    font-size: 13px;
+  }
 }
 
 .alert-message {
   margin: 0;
   font-size: 13px;
   line-height: 1.5;
+  word-break: break-word;
+
+  @media (max-width: $breakpoint-mobile) {
+    font-size: 12px;
+  }
 }
 
 .alert-errors {
@@ -151,10 +183,20 @@ defineExpose({
   padding-left: 20px;
   font-size: 12px;
   line-height: 1.4;
-}
 
-.alert-errors li {
-  margin-bottom: 4px;
+  @media (max-width: $breakpoint-mobile) {
+    padding-left: 16px;
+    font-size: 11px;
+  }
+
+  li {
+    margin-bottom: 4px;
+    word-break: break-word;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
 }
 
 .alert-close {
@@ -164,59 +206,123 @@ defineExpose({
   font-size: 18px;
   cursor: pointer;
   padding: 0;
+  color: currentColor;
   opacity: 0.6;
-  transition: opacity 0.2s;
+  transition: opacity var(--transition-fast);
+  line-height: 1;
+
+  @media (max-width: $breakpoint-mobile) {
+    font-size: 16px;
+  }
+
+  &:hover {
+    opacity: 1;
+  }
+
+  &:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+    opacity: 1;
+  }
 }
 
-.alert-close:hover {
-  opacity: 1;
-}
-
-/* Typ-spezifische Styles */
+/* Typ-spezifische Styles - Light Mode */
 .alert-error {
-  background-color: #fee;
-  border-left: 4px solid #d32f2f;
-  color: #c62828;
+  background-color: var(--color-error-light, rgba(244, 67, 54, 0.15));
+  border-left-color: var(--color-error, #f44336);
+  color: var(--color-error, #c62828);
+
+  .alert-title {
+    color: var(--color-error, #c62828);
+  }
 }
 
 .alert-success {
-  background-color: #efe;
-  border-left: 4px solid #388e3c;
-  color: #2e7d32;
+  background-color: var(--color-success-light, rgba(76, 175, 80, 0.15));
+  border-left-color: var(--color-success, #4caf50);
+  color: var(--color-success, #2e7d32);
+
+  .alert-title {
+    color: var(--color-success, #2e7d32);
+  }
 }
 
 .alert-info {
-  background-color: #eef;
-  border-left: 4px solid #1976d2;
-  color: #1565c0;
+  background-color: var(--color-info-light, rgba(33, 150, 243, 0.15));
+  border-left-color: var(--color-info, #2196f3);
+  color: var(--color-info, #1565c0);
+
+  .alert-title {
+    color: var(--color-info, #1565c0);
+  }
 }
 
 .alert-warning {
-  background-color: #ffd;
-  border-left: 4px solid #f57f17;
-  color: #e65100;
+  background-color: var(--color-warning-light, rgba(255, 193, 7, 0.15));
+  border-left-color: var(--color-warning, #ffc107);
+  color: var(--color-warning, #e65100);
+
+  .alert-title {
+    color: var(--color-warning, #e65100);
+  }
 }
 
 /* Dark Mode Support */
 @media (prefers-color-scheme: dark) {
+  .alert {
+    background: var(--color-background, #2a2a2a);
+  }
+
   .alert-error {
-    background-color: #3a1f1f;
+    background-color: var(--color-error-light, rgba(244, 67, 54, 0.25));
     color: #ff6b6b;
+
+    .alert-title {
+      color: #ff6b6b;
+    }
   }
 
   .alert-success {
-    background-color: #1f3a1f;
+    background-color: var(--color-success-light, rgba(76, 175, 80, 0.25));
     color: #51cf66;
+
+    .alert-title {
+      color: #51cf66;
+    }
   }
 
   .alert-info {
-    background-color: #1f2a3a;
+    background-color: var(--color-info-light, rgba(33, 150, 243, 0.25));
     color: #74c0fc;
+
+    .alert-title {
+      color: #74c0fc;
+    }
   }
 
   .alert-warning {
-    background-color: #3a3a1f;
+    background-color: var(--color-warning-light, rgba(255, 193, 7, 0.25));
     color: #ffd43b;
+
+    .alert-title {
+      color: #ffd43b;
+    }
+  }
+
+  .alert-close {
+    color: var(--color-text-secondary, #b0b0b0);
+  }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  .fade-enter-active,
+  .fade-leave-active {
+    transition: opacity 150ms ease-in-out;
+  }
+
+  .alert-close {
+    transition: none;
   }
 }
 </style>

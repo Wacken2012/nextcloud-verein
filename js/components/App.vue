@@ -1,28 +1,33 @@
 <template>
   <div id="verein-app" class="verein-app">
     <!-- Tabs Navigation -->
-    <div class="verein-tabs">
-      <button
-        v-for="tab in tabs"
-        :key="tab.id"
-        :class="['verein-tab', { active: activeTab === tab.id }]"
-        @click="activeTab = tab.id"
-      >
-        <i :class="`icon icon-${tab.icon}`"></i>
-        {{ tab.label }}
-      </button>
-    </div>
+    <nav class="verein-tabs" role="navigation" aria-label="Hauptnavigation">
+      <div class="verein-tabs-container">
+        <button
+          v-for="tab in tabs"
+          :key="tab.id"
+          :class="['verein-tab', { active: activeTab === tab.id }]"
+          :aria-current="activeTab === tab.id ? 'page' : false"
+          @click="activeTab = tab.id"
+        >
+          <span class="verein-tab-icon">{{ tab.icon }}</span>
+          <span class="verein-tab-label">{{ tab.label }}</span>
+        </button>
+      </div>
+    </nav>
 
     <!-- Tab Content -->
-    <div class="verein-content">
-      <component
-        :is="currentComponent"
-        :key="activeTab"
-      />
-    </div>
+    <main class="verein-content-wrapper">
+      <div class="verein-container">
+        <component
+          :is="currentComponent"
+          :key="activeTab"
+        />
+      </div>
+    </main>
 
     <!-- Notifications -->
-    <div v-if="notification" :class="['verein-notification', notification.type]">
+    <div v-if="notification" :class="['verein-notification', notification.type]" role="alert">
       {{ notification.message }}
     </div>
   </div>
@@ -90,55 +95,147 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.verein-app {
-  padding: 0;
-  background: var(--color-main-background);
+// Responsive Breakpoints
+$breakpoint-tablet: 768px;
+$breakpoint-desktop: 1024px;
+$max-container-width: 1200px;
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
 }
 
-.verein-tabs {
-  display: flex;
-  gap: 0;
-  border-bottom: 1px solid var(--color-border);
-  background: var(--color-main-background);
-  padding: 0;
-  margin: 0;
-  overflow-x: auto;
+::-webkit-scrollbar-track {
+  background: var(--color-background);
+}
 
-  .verein-tab {
-    flex: 1;
-    padding: 12px 16px;
-    background: transparent;
-    border: none;
-    border-bottom: 2px solid transparent;
-    color: var(--color-text-secondary);
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    white-space: nowrap;
-    transition: all 0.2s ease;
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 4px;
 
-    i {
-      font-size: 16px;
-    }
-
-    &:hover {
-      color: var(--color-text);
-      background: var(--color-background-hover);
-    }
-
-    &.active {
-      color: var(--color-primary);
-      border-bottom-color: var(--color-primary);
-    }
+  &:hover {
+    background: var(--color-text-secondary);
   }
 }
 
-.verein-content {
-  padding: 20px;
-  animation: fadeIn 0.2s ease;
+.verein-app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: var(--color-main-background);
+  color: var(--color-text);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+.verein-tabs {
+  background: var(--color-main-background);
+  border-bottom: 1px solid var(--color-border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.verein-tabs-container {
+  display: flex;
+  gap: 0;
+  max-width: $max-container-width;
+  margin: 0 auto;
+  width: 100%;
+  padding: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+
+  @media (max-width: $breakpoint-tablet) {
+    overflow-x: auto;
+    scroll-behavior: smooth;
+  }
+}
+
+.verein-tab {
+  flex: 0 0 auto;
+  padding: 14px 16px;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--color-text-secondary);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  -webkit-user-select: none;
+  user-select: none;
+
+  @media (max-width: $breakpoint-tablet) {
+    padding: 12px 12px;
+    font-size: 13px;
+    gap: 6px;
+  }
+
+  @media (max-width: 480px) {
+    padding: 10px 8px;
+    font-size: 12px;
+    gap: 4px;
+
+    .verein-tab-label {
+      display: none;
+    }
+  }
+
+  .verein-tab-icon {
+    font-size: 16px;
+    display: inline-flex;
+    align-items: center;
+
+    @media (max-width: $breakpoint-tablet) {
+      font-size: 15px;
+    }
+  }
+
+  &:hover {
+    color: var(--color-text);
+    background: var(--color-background-hover);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: -2px;
+  }
+
+  &.active {
+    color: var(--color-primary);
+    border-bottom-color: var(--color-primary);
+    background: var(--color-background-hover);
+  }
+}
+
+.verein-content-wrapper {
+  flex: 1;
+  display: flex;
+  width: 100%;
+  background: var(--color-main-background);
+}
+
+.verein-container {
+  width: 100%;
+  max-width: $max-container-width;
+  margin: 0 auto;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+
+  @media (max-width: $breakpoint-tablet) {
+    padding: 1rem 0.75rem;
+  }
+
+  @media (max-width: 480px) {
+    padding: 0.75rem 0.5rem;
+  }
 }
 
 .verein-notification {
@@ -150,29 +247,34 @@ export default {
   font-size: 14px;
   z-index: 1000;
   animation: slideIn 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  max-width: calc(100% - 40px);
+
+  @media (max-width: 480px) {
+    bottom: 16px;
+    right: 16px;
+    left: 16px;
+    max-width: none;
+  }
 
   &.success {
-    background: var(--color-success);
+    background: var(--color-success, #388e3c);
     color: white;
   }
 
   &.error {
-    background: var(--color-error);
+    background: var(--color-error, #d32f2f);
     color: white;
   }
 
   &.warning {
-    background: var(--color-warning);
+    background: var(--color-warning, #f57f17);
     color: white;
   }
-}
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
+  &.info {
+    background: var(--color-info, #1976d2);
+    color: white;
   }
 }
 
@@ -186,4 +288,27 @@ export default {
     opacity: 1;
   }
 }
+
+// Dark Mode Support - Nextcloud CSS Variables
+@media (prefers-color-scheme: dark) {
+  .verein-app {
+    background: var(--color-main-background, #222);
+    color: var(--color-text, #fff);
+  }
+
+  .verein-tabs {
+    background: var(--color-main-background, #222);
+  }
+
+  .verein-tab {
+    &:hover {
+      background: var(--color-background-hover, rgba(255, 255, 255, 0.05));
+    }
+
+    &.active {
+      background: var(--color-background-hover, rgba(255, 255, 255, 0.05));
+    }
+  }
+}
 </style>
+
