@@ -1,6 +1,6 @@
 # [Feedback] Responsive Layout & Theme Integration – Bitte testen! 🎉
 
-Wir haben die neue responsive Version der Vereins-App veröffentlicht! 🎉
+Ich habe die neue responsive Version der Vereins-App veröffentlicht! 🎉
 
 ## ✅ Features
 
