@@ -1,0 +1,27 @@
+{
+  "name": "nextcloud-verein",
+  "version": "0.1.0",
+  "description": "Nextcloud app for club/association management",
+  "main": "js/main.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "watch": "vite build --watch",
+    "serve": "vite preview"
+  },
+  "dependencies": {
+    "@nextcloud/axios": "^2.4.0",
+    "@nextcloud/router": "^3.0.0",
+    "@nextcloud/vue": "^8.0.0",
+    "vue": "^3.3.4",
+    "vue-router": "^4.2.5"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^4.4.0",
+    "sass": "^1.94.0",
+    "vite": "^4.5.0"
+  },
+  "browserslist": [
+    "extends @nextcloud/browserslist-config"
+  ]
+}

@@ -1,0 +1,167 @@
+/* Nextcloud Verein App - Global Styles */
+
+:root {
+  /* Main colors */
+  --color-main-background: var(--nc-color-main-background, #ffffff);
+  --color-main-text: var(--nc-color-main-text, #333333);
+  --color-background-hover: var(--nc-color-background-hover, #f5f5f5);
+  --color-background-secondary: var(--nc-color-background-secondary, #f9f9f9);
+  --color-border: var(--nc-color-border, #e8e8e8);
+  
+  /* Text colors */
+  --color-text: var(--nc-color-text, #333333);
+  --color-text-secondary: var(--nc-color-text-secondary, #666666);
+  
+  /* Primary colors */
+  --color-primary: var(--nc-color-primary, #0082c9);
+  --color-primary-element: var(--nc-color-primary-element, #0066bb);
+  --color-primary-light: var(--nc-color-primary-light, #e3f2fd);
+  
+  /* Status colors */
+  --color-success: var(--nc-color-success, #4caf50);
+  --color-success-light: var(--nc-color-success-light, #e8f5e9);
+  --color-error: var(--nc-color-error, #f44336);
+  --color-error-light: var(--nc-color-error-light, #ffebee);
+  --color-warning: var(--nc-color-warning, #ff9800);
+  --color-warning-light: var(--nc-color-warning-light, #fff3e0);
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-main-background: #1a1a1a;
+    --color-main-text: #ffffff;
+    --color-background-hover: #2a2a2a;
+    --color-background-secondary: #222222;
+    --color-border: #3a3a3a;
+    
+    --color-text: #ffffff;
+    --color-text-secondary: #cccccc;
+    
+    --color-primary-light: #1e3a8a;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--color-main-background);
+  color: var(--color-text);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+#app {
+  width: 100%;
+  height: 100%;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-background-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 4px;
+
+  &:hover {
+    background: var(--color-text-secondary);
+  }
+}
+
+/* Firefox scrollbar */
+* {
+  scrollbar-color: var(--color-border) var(--color-background-secondary);
+  scrollbar-width: thin;
+}
+
+/* Utility classes */
+.icon {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  vertical-align: middle;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.icon-users::before {
+  content: '👥';
+}
+
+.icon-finance::before {
+  content: '💰';
+}
+
+.icon-calendar::before {
+  content: '📅';
+}
+
+.icon-deck::before {
+  content: '📋';
+}
+
+.icon-documents::before {
+  content: '📄';
+}
+
+/* Responsive tables */
+@media (max-width: 768px) {
+  .table-wrapper {
+    overflow-x: auto;
+  }
+
+  table {
+    font-size: 12px;
+
+    thead {
+      display: none;
+    }
+
+    tbody tr {
+      display: block;
+      border-bottom: 2px solid var(--color-border);
+      margin-bottom: 10px;
+      border-radius: 4px;
+    }
+
+    td {
+      display: block;
+      text-align: right;
+      padding: 8px;
+
+      &::before {
+        content: attr(data-label);
+        float: left;
+        font-weight: 600;
+      }
+    }
+  }
+}
+
+/* Print styles */
+@media print {
+  .verein-tabs,
+  .form-section,
+  .actions {
+    display: none;
+  }
+
+  body {
+    background: white;
+    color: black;
+  }
+}

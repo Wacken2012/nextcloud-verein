@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tables>
+  <!-- Members table for club/association member management -->
+  <table name="verein_members">
+    <field name="id" type="integer" autoincrement="true" primary="true" />
+    <field name="name" type="string" length="255" notnull="true" />
+    <field name="address" type="string" length="500" />
+    <field name="email" type="string" length="255" notnull="true" />
+    <field name="iban" type="string" length="34" />
+    <field name="bic" type="string" length="11" />
+    <field name="role" type="string" length="50" notnull="true" default="member" />
+    <field name="user_id" type="string" length="64" />
+    <field name="created_at" type="datetime" notnull="true" />
+    <field name="updated_at" type="datetime" />
+  </table>
+
+  <!-- Fees table for membership fee tracking -->
+  <table name="verein_fees">
+    <field name="id" type="integer" autoincrement="true" primary="true" />
+    <field name="member_id" type="integer" notnull="true" />
+    <field name="amount" type="decimal" length="10" scale="2" notnull="true" />
+    <field name="status" type="string" length="20" notnull="true" default="open" />
+    <field name="due_date" type="datetime" notnull="true" />
+    <field name="paid_date" type="datetime" />
+    <field name="description" type="string" length="500" />
+    <field name="created_at" type="datetime" notnull="true" />
+    <field name="updated_at" type="datetime" />
+  </table>
+</tables>
