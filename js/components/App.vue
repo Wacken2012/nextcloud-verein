@@ -32,6 +32,7 @@
 import { ref } from 'vue'
 import Members from './Members.vue'
 import Finance from './Finance.vue'
+import Statistics from './Statistics.vue'
 import Calendar from './Calendar.vue'
 import Deck from './Deck.vue'
 import Documents from './Documents.vue'
@@ -41,23 +42,26 @@ export default {
   components: {
     Members,
     Finance,
+    Statistics,
     Calendar,
     Deck,
     Documents
   },
   setup() {
-    const activeTab = ref('members')
+    const activeTab = ref('dashboard')
     const notification = ref(null)
 
     const tabs = [
-      { id: 'members', label: 'Mitglieder', icon: 'users' },
-      { id: 'finance', label: 'Finanzen', icon: 'finance' },
-      { id: 'calendar', label: 'Termine', icon: 'calendar' },
-      { id: 'deck', label: 'Aufgaben', icon: 'deck' },
-      { id: 'documents', label: 'Dokumente', icon: 'documents' }
+      { id: 'dashboard', label: '📊 Dashboard', icon: 'dashboard' },
+      { id: 'members', label: '👥 Mitglieder', icon: 'users' },
+      { id: 'finance', label: '💰 Finanzen', icon: 'finance' },
+      { id: 'calendar', label: '📅 Termine', icon: 'calendar' },
+      { id: 'deck', label: '📋 Aufgaben', icon: 'deck' },
+      { id: 'documents', label: '📄 Dokumente', icon: 'documents' }
     ]
 
     const componentMap = {
+      dashboard: 'Statistics',
       members: 'Members',
       finance: 'Finance',
       calendar: 'Calendar',

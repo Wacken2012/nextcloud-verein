@@ -1,5 +1,13 @@
 <template>
   <div class="members-container">
+    <!-- Alert Komponente -->
+    <Alert
+      ref="alertRef"
+      type="error"
+      :message="alertError"
+      :errors="alertErrors"
+    />
+
     <!-- Form für neues Mitglied -->
     <div class="form-section">
       <h2>Neues Mitglied hinzufügen</h2>
@@ -138,13 +146,20 @@
 <script>
 import { ref, onMounted } from 'vue'
 import { api } from '../api'
+import Alert from './Alert.vue'
 
 export default {
   name: 'Members',
+  components: {
+    Alert
+  },
   setup() {
     const members = ref([])
     const loading = ref(false)
     const editingId = ref(null)
+    const alertError = ref('')
+    const alertErrors = ref([])
+    const alertRef = ref(null)
 
     const formData = ref({
       name: '',
@@ -152,7 +167,7 @@ export default {
       address: '',
       iban: '',
       bic: '',
-      role: 'member'
+      role: 'Mitglied'
     })
 
     const editData = ref({})
@@ -175,11 +190,22 @@ export default {
 
     const addMember = async () => {
       loading.value = true
+      alertError.value = ''
+      alertErrors.value = []
       try {
-        await api.post('members', formData.value)
-        formData.value = { name: '', email: '', address: '', iban: '', bic: '', role: 'member' }
-        await fetchMembers()
+        const response = await api.post('members', formData.value)
+        if (response.data.status === 'error') {
+          alertError.value = response.data.message
+          alertErrors.value = response.data.errors || []
+          if (alertRef.value) alertRef.value.open()
+        } else {
+          formData.value = { name: '', email: '', address: '', iban: '', bic: '', role: 'Mitglied' }
+          await fetchMembers()
+        }
       } catch (error) {
+        alertError.value = error.message || 'Fehler beim Hinzufügen des Mitglieds'
+        alertErrors.value = []
+        if (alertRef.value) alertRef.value.open()
         console.error('Error adding member:', error)
       } finally {
         loading.value = false
@@ -233,7 +259,10 @@ export default {
       startEdit,
       saveEdit,
       cancelEdit,
-      deleteMember
+      deleteMember,
+      alertRef,
+      alertError,
+      alertErrors
     }
   }
 }
