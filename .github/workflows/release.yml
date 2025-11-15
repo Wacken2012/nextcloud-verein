@@ -1,0 +1,211 @@
+name: Veröffentliche Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Repository auschecken
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Release-Artefakte vorbereiten
+        run: |
+          mkdir -p release-assets
+          
+          # Artefakt 1: Ohne node_modules
+          tar --exclude='.git' \
+              --exclude='node_modules' \
+              --exclude='npm-debug.log' \
+              --exclude='.env' \
+              --exclude='.env.local' \
+              --exclude='*.log' \
+              -czf release-assets/nextcloud-verein-${{ github.ref_name }}.tar.gz .
+          
+          # Artefakt 2: Mit vorkompiliertem Bundle
+          cp release-assets/nextcloud-verein-${{ github.ref_name }}.tar.gz \
+             release-assets/nextcloud-verein-${{ github.ref_name }}-release.tar.gz
+
+      - name: Release-Notizen generieren
+        id: release_notes
+        run: |
+          cat > RELEASE_BODY.md << 'EOF'
+          # 🎉 Nextcloud Vereins-App v${{ github.ref_name }}
+
+          ## 🌟 Was ist neu
+
+          Diese **Alpha-Version (v0.1.0)** bietet die Kernfunktionalität für die Verwaltung von Vereinen und Organisationen.
+
+          ### ✨ Hauptmerkmale
+
+          #### 👥 Mitgliederverwaltung
+          - ✅ Mitglieder anlegen, bearbeiten, löschen
+          - ✅ Mitgliederdaten: Name, E-Mail, Adresse, IBAN, BIC
+          - ✅ Rollen-Management: Mitglied, Kassierer, Admin
+          - ✅ Responsive Tabelle mit Inline-Editing
+          - ✅ Suchfunktion
+
+          #### 💰 Finanzverwaltung
+          - ✅ Gebühren und Beitragsverfolgung
+          - ✅ Status-Tracking: offen, bezahlt, überfällig
+          - ✅ Statistiken: Gesamtausstände, eingezahlte Beträge
+          - ✅ Gebührentabelle mit Bearbeitungs- und Löschfunktion
+          - ✅ Nach Mitgliedern filtern
+
+          #### 🎨 Benutzer-Erlebnis
+          - ✅ Dark Mode Support
+          - ✅ Responsive Design (Desktop, Tablet, Mobile)
+          - ✅ Nextcloud-native Authentifizierung
+          - ✅ Moderne Vue 3 + Vite Frontend
+          - ✅ Keine Fehler in der Browserkonsole
+
+          ---
+
+          ## 📋 Anforderungen
+
+          - **Nextcloud**: 28.0 oder höher
+          - **PHP**: 8.1 oder höher
+          - **Datenbank**: MySQL/MariaDB oder PostgreSQL
+          - **Browser**: Modern (Chrome, Firefox, Safari, Edge)
+
+          ---
+
+          ## 🔧 Installation
+
+          ### Methode 1: Aus dem Release (Einfach)
+
+          1. Herunterladbare Datei herunterladen: `nextcloud-verein-${{ github.ref_name }}-release.tar.gz`
+          2. In `/var/www/nextcloud/apps/` extrahieren:
+             ```bash
+             cd /var/www/nextcloud/apps/
+             tar -xzf nextcloud-verein-${{ github.ref_name }}-release.tar.gz
+             mv nextcloud-verein-${{ github.ref_name }} verein
+             ```
+          3. App aktivieren:
+             ```bash
+             sudo -u www-data php /var/www/nextcloud/occ app:enable verein
+             ```
+          4. Zugreifen unter: `https://your-nextcloud/apps/verein/`
+
+          ### Methode 2: Aus dem Quellcode (Entwicklung)
+
+          1. Repository klonen:
+             ```bash
+             cd /var/www/nextcloud/apps/
+             git clone https://github.com/Wacken2012/nextcloud-verein.git verein
+             cd verein
+             ```
+          2. Abhängigkeiten installieren:
+             ```bash
+             npm install
+             npm run build
+             ```
+          3. App aktivieren:
+             ```bash
+             sudo -u www-data php /var/www/nextcloud/occ app:enable verein
+             ```
+
+          ---
+
+          ## ✅ Getestete & funktionierende Funktionen
+
+          - ✅ Mitglieder-CRUD (Create, Read, Update, Delete)
+          - ✅ Gebühren-CRUD
+          - ✅ Statistiken-Dashboard
+          - ✅ Dark Mode
+          - ✅ Responsive Design
+          - ✅ API-Integration
+          - ✅ Nextcloud-Authentifizierung
+
+          ---
+
+          ## ⚠️ Bekannte Einschränkungen
+
+          - ⚠️ **Keine Berechtigungsverwaltung**: Alle angemeldeten Benutzer können alle Daten sehen/ändern
+          - ⚠️ **Keine Datenexporte**: CSV/PDF-Export nicht implementiert
+          - ⚠️ **Keine Tests**: Unit/Integration Tests ausstehend
+          - ⚠️ **Keine Dokumentation im Code**: Inline-Kommentare minimal
+          - ⚠️ **Alpha-Status**: Möglicherweise Bugs, API kann sich ändern
+
+          ---
+
+          ## 🗓️ Roadmap
+
+          ### v0.2.0 (Dezember 2025)
+          - Berechtigungsverwaltung (Ansicht, Bearbeitung, Admin)
+          - CSV-Export für Mitglieder und Gebühren
+          - Gebührenerinnerungen (E-Mail-Benachrichtigungen)
+
+          ### v0.3.0 (Januar 2026)
+          - Kalender-Integration (Nextcloud Calendar)
+          - Gebührenplan und automatische Rechnungen
+          - Mitgliedsantragsformular
+
+          ### v1.0.0 (März 2026)
+          - Vollständige Dokumentation
+          - Unit- und Integration-Tests
+          - Performance-Optimierungen
+          - Nextcloud AppStore-Veröffentlichung
+
+          ---
+
+          ## 📚 Dokumentation
+
+          - [README.md](https://github.com/Wacken2012/nextcloud-verein/blob/main/README.md) - Hauptdokumentation
+          - [INSTALLATION.md](https://github.com/Wacken2012/nextcloud-verein/blob/main/INSTALLATION.md) - Installationsanleitung
+          - [ROADMAP.md](https://github.com/Wacken2012/nextcloud-verein/blob/main/ROADMAP.md) - Entwicklungsplan
+          - [LIZENZ: AGPL-3.0](https://github.com/Wacken2012/nextcloud-verein/blob/main/LICENSE)
+
+          ---
+
+          ## 🧪 Zum Testen
+
+          1. App auf Nextcloud-Instanz installieren
+          2. Zum Tab **"Mitglieder"** navigieren und ein Mitglied hinzufügen
+          3. Zum Tab **"Finanzen"** gehen und eine Gebühr erstellen
+          4. Dark Mode testen: Nextcloud-Einstellungen > Erscheinungsbild
+          5. Auf mobilen Geräten testen
+          6. Browser-Konsole auf Fehler prüfen (F12)
+
+          ---
+
+          ## 💬 Feedback & Fehlermeldungen
+
+          Bitte erstellen Sie ein [Issue auf GitHub](https://github.com/Wacken2012/nextcloud-verein/issues) für:
+          - 🐛 Fehlerberichte
+          - 💡 Feature-Anfragen
+          - 🎨 Design-Verbesserungen
+          - 📝 Dokumentations-Verbesserungen
+
+          ---
+
+          ## 📄 Lizenz
+
+          Diese App ist lizenziert unter der **AGPL-3.0 Lizenz** - siehe [LICENSE](LICENSE) für Details.
+
+          ---
+
+          ## 👏 Credits
+
+          Entwickelt mit ❤️ für Nextcloud-Benutzer und Vereinsverwaltungen.
+
+          **Danke** an die Nextcloud-Community und alle Mitwirkenden!
+          EOF
+          cat RELEASE_BODY.md
+
+      - name: GitHub Release erstellen
+        uses: softprops/action-gh-release@v1
+        with:
+          body_path: RELEASE_BODY.md
+          prerelease: true
+          files: |
+            release-assets/nextcloud-verein-${{ github.ref_name }}.tar.gz
+            release-assets/nextcloud-verein-${{ github.ref_name }}-release.tar.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
