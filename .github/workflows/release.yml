@@ -15,32 +15,14 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Release-Artefakte vorbereiten
-        run: |
-          mkdir -p release-assets
-          
-          # Artefakt 1: Ohne node_modules
-          tar --exclude='.git' \
-              --exclude='node_modules' \
-              --exclude='npm-debug.log' \
-              --exclude='.env' \
-              --exclude='.env.local' \
-              --exclude='*.log' \
-              -czf release-assets/nextcloud-verein-${{ github.ref_name }}.tar.gz .
-          
-          # Artefakt 2: Mit vorkompiliertem Bundle
-          cp release-assets/nextcloud-verein-${{ github.ref_name }}.tar.gz \
-             release-assets/nextcloud-verein-${{ github.ref_name }}-release.tar.gz
-
       - name: Release-Notizen generieren
-        id: release_notes
         run: |
-          cat > RELEASE_BODY.md << 'EOF'
-          # 🎉 Nextcloud Vereins-App v${{ github.ref_name }}
+          cat > release_notes.txt << 'EOF'
+          # 🎉 Nextcloud Vereins-App
 
           ## 🌟 Was ist neu
 
-          Diese **Alpha-Version (v0.1.0)** bietet die Kernfunktionalität für die Verwaltung von Vereinen und Organisationen.
+          Diese **Alpha-Version** bietet die Kernfunktionalität für die Verwaltung von Vereinen und Organisationen.
 
           ### ✨ Hauptmerkmale
 
@@ -80,12 +62,12 @@ jobs:
 
           ### Methode 1: Aus dem Release (Einfach)
 
-          1. Herunterladbare Datei herunterladen: `nextcloud-verein-${{ github.ref_name }}-release.tar.gz`
+          1. Herunterladbare Datei herunterladen: `nextcloud-verein-release.tar.gz`
           2. In `/var/www/nextcloud/apps/` extrahieren:
              ```bash
              cd /var/www/nextcloud/apps/
-             tar -xzf nextcloud-verein-${{ github.ref_name }}-release.tar.gz
-             mv nextcloud-verein-${{ github.ref_name }} verein
+             tar -xzf nextcloud-verein-*-release.tar.gz
+             mv nextcloud-verein verein
              ```
           3. App aktivieren:
              ```bash
@@ -197,12 +179,31 @@ jobs:
 
           **Danke** an die Nextcloud-Community und alle Mitwirkenden!
           EOF
-          cat RELEASE_BODY.md
+
+      - name: Release-Artefakte vorbereiten
+        run: |
+          mkdir -p release-assets
+          
+          # Artefakt 1: Ohne node_modules
+          tar --exclude='.git' \
+              --exclude='node_modules' \
+              --exclude='npm-debug.log' \
+              --exclude='.env' \
+              --exclude='.env.local' \
+              --exclude='*.log' \
+              --exclude='.github' \
+              -czf release-assets/nextcloud-verein-${{ github.ref_name }}.tar.gz .
+          
+          # Artefakt 2: Mit vorkompiliertem Bundle
+          cp release-assets/nextcloud-verein-${{ github.ref_name }}.tar.gz \
+             release-assets/nextcloud-verein-${{ github.ref_name }}-release.tar.gz
+          
+          ls -lh release-assets/
 
       - name: GitHub Release erstellen
         uses: softprops/action-gh-release@v1
         with:
-          body_path: RELEASE_BODY.md
+          body_path: release_notes.txt
           prerelease: true
           files: |
             release-assets/nextcloud-verein-${{ github.ref_name }}.tar.gz
