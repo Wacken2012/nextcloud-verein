@@ -247,13 +247,26 @@ Diese App muss unter der gleichen Lizenz verteilt werden und ist für die Verwen
 
 ---
 
-## ❓ Support & Community
+## 🌍 Community & Roadmap
+
+**Möchtest du mitgestalten? Die Community ist herzlich eingeladen!**
+
+### 💬 GitHub Discussions (Roadmap & Feedback)
+🎯 **[Roadmap für Nextcloud Vereins-App (gepinnt)](https://github.com/Wacken2012/nextcloud-verein/discussions)**
+
+Diskutiere hier:
+- 💡 **Ideen & Feature-Wünsche** – Welche Funktionen brauchst du?
+- ❓ **Fragen & Support** – Probleme bei der Nutzung oder Entwicklung?
+- 📸 **Show & Tell** – Teile Screenshots oder deine Erfahrungen!
+- 🎯 **Allgemeines** – Sonstiges zur Vereins-App
+
+### 📞 Support & Links
 
 - **📖 Dokumentation**: [ROADMAP.md](./ROADMAP.md) | [INSTALLATION.md](./INSTALLATION.md) | [CONTRIBUTING.md](./CONTRIBUTING.md)
-- **💬 GitHub Discussions**: [Q&A & Ideas](https://github.com/Wacken2012/nextcloud-verein/discussions)
-- **🐛 GitHub Issues**: [Bug Reports & Feature Requests](https://github.com/Wacken2012/nextcloud-verein/issues)
-- **📰 Community Announcement**: [COMMUNITY_ANNOUNCEMENT.md](./COMMUNITY_ANNOUNCEMENT.md)
+- **� Bug Reports**: [GitHub Issues](https://github.com/Wacken2012/nextcloud-verein/issues)
+- **📰 Ankündigung**: [COMMUNITY_ANNOUNCEMENT.md](./COMMUNITY_ANNOUNCEMENT.md)
 - **❓ FAQ**: [wiki/FAQ.md](./wiki/FAQ.md)
+- **👤 About Developer**: [Stefan Schulz](https://github.com/Wacken2012)
 
 ---
 

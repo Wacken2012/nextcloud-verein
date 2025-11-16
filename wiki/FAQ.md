@@ -4,7 +4,44 @@ Häufig gestellte Fragen zur Nextcloud Vereins-App.
 
 ---
 
-## 🎯 Allgemein
+## � Community & Roadmap
+
+### 💬 Wie kann ich Feedback geben oder mitdiskutieren?
+
+**GitHub Discussions sind der beste Ort dafür!**
+
+👉 **[Roadmap-Discussion (gepinnt)](https://github.com/Wacken2012/nextcloud-verein/discussions)**
+
+Dort kannst du:
+- ❓ **Fragen stellen** – Hilfe bei Installation, Nutzung oder Entwicklung
+- 💡 **Feature-Wünsche äußern** – Welche Funktionen brauchst du für deinen Verein?
+- 📸 **Screenshots teilen** – Zeige, wie du die App nutzt
+- 🎯 **Diskutieren** – Tausche dich mit anderen Vereinen aus
+
+### Wann kommen die nächsten Features?
+
+Siehe [ROADMAP.md](../ROADMAP.md):
+
+- **v0.2.0** (25. Dezember 2025): SEPA-Export, PDF-Export, Multi-Role RBAC
+- **v0.3.0** (31. März 2026): Import-Tools (Softnote, OpenJverein), Score Management
+- **v0.4.0** (30. Juni 2026): Setup-Wizard, Document Templates
+
+**Detailliert**: [Komplette Roadmap mit Spezifikationen](../ROADMAP.md)
+
+### Kann ich die App mitentwickeln?
+
+**Ja!** Die App ist Open Source auf GitHub:
+
+1. **Fork** das Repository
+2. **Feature-Branch** erstellen
+3. **Pull Request** öffnen
+4. Community & ich geben Feedback
+
+Siehe [CONTRIBUTING.md](../CONTRIBUTING.md) für Guidelines.
+
+---
+
+## �🎯 Allgemein
 
 ### Was ist die Nextcloud Vereins-App?
 
