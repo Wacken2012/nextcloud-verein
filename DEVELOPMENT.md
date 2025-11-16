@@ -422,21 +422,345 @@ if (!$validation['valid']) {
 
 ---
 
+---
+
+## 8️⃣ Role-Based Access Control (RBAC) Tests
+
+### Überblick
+
+v0.2.0 implementiert rollenbasierte Zugriffskontrolle mit 3 Benutzerrollen:
+
+| Rolle | Beschreibung | Rechte |
+|-------|-------------|--------|
+| **Admin** | Vereinsadministrator | Vollzugriff (CRUD) |
+| **Treasurer** | Schatzmeister | Finanzmanagement (Lese-/Schreibzugriff auf Finance) |
+| **Member** | Normales Mitglied | Lesezugriff auf eigene Daten |
+
+### RBAC Test-Struktur
+
+#### MemberControllerTest.php
+
+```php
+class MemberControllerTest extends TestCase {
+    
+    // Admin-Tests: Vollzugriff
+    public function testAdminCanCreateMember(): void {
+        // Admin sollte Mitglied erstellen können
+        $response = $this->controller->create('John', 'john@example.com', 'DE89...');
+        $this->assertEquals(200, $response->getStatus());
+    }
+    
+    public function testAdminCanReadAllMembers(): void {
+        // Admin kann alle Mitglieder sehen
+        $response = $this->controller->index();
+        $this->assertCount(5, $response->getData());
+    }
+    
+    public function testAdminCanUpdateAnyMember(): void {
+        // Admin kann beliebiges Mitglied aktualisieren
+        $response = $this->controller->update(1, ['name' => 'Updated']);
+        $this->assertEquals(200, $response->getStatus());
+    }
+    
+    public function testAdminCanDeleteMember(): void {
+        // Admin kann Mitglied löschen
+        $response = $this->controller->destroy(1);
+        $this->assertEquals(200, $response->getStatus());
+    }
+    
+    // Treasurer-Tests: Nur Lesezugriff auf Member
+    public function testTreasurerCanReadAllMembers(): void {
+        // Treasurer kann Mitglieder-Liste sehen
+        $response = $this->controller->index();
+        $this->assertEquals(200, $response->getStatus());
+    }
+    
+    public function testTreasurerCannotCreateMember(): void {
+        // Treasurer darf kein Mitglied erstellen
+        $response = $this->controller->create('John', 'john@example.com', 'DE89...');
+        $this->assertEquals(403, $response->getStatus()); // Forbidden
+    }
+    
+    public function testTreasurerCannotUpdateMember(): void {
+        // Treasurer darf Mitglied nicht bearbeiten
+        $response = $this->controller->update(1, ['name' => 'Updated']);
+        $this->assertEquals(403, $response->getStatus());
+    }
+    
+    public function testTreasurerCannotDeleteMember(): void {
+        // Treasurer darf Mitglied nicht löschen
+        $response = $this->controller->destroy(1);
+        $this->assertEquals(403, $response->getStatus());
+    }
+    
+    // Member-Tests: Nur eigene Daten lesbar
+    public function testMemberCanReadOwnData(): void {
+        // Mitglied kann seine Daten sehen
+        $response = $this->controller->show(1);
+        $this->assertEquals(200, $response->getStatus());
+    }
+    
+    public function testMemberCannotReadOtherMemberData(): void {
+        // Mitglied kann fremde Daten nicht sehen
+        $response = $this->controller->show(2);
+        $this->assertEquals(403, $response->getStatus());
+    }
+    
+    public function testMemberCannotCreateMember(): void {
+        // Mitglied darf keine Mitglieder erstellen
+        $response = $this->controller->create('John', 'john@example.com', 'DE89...');
+        $this->assertEquals(403, $response->getStatus());
+    }
+}
+```
+
+#### FinanceControllerTest.php
+
+```php
+class FinanceControllerTest extends TestCase {
+    
+    // Admin-Tests: Vollzugriff
+    public function testAdminCanCreateFee(): void {
+        $response = $this->controller->create(1, 50.00, 'monthly', '2025-01-01');
+        $this->assertEquals(200, $response->getStatus());
+    }
+    
+    public function testAdminCanUpdateFeeStatus(): void {
+        $response = $this->controller->update(1, ['status' => 'paid']);
+        $this->assertEquals(200, $response->getStatus());
+    }
+    
+    public function testAdminCanDeleteFee(): void {
+        $response = $this->controller->destroy(1);
+        $this->assertEquals(200, $response->getStatus());
+    }
+    
+    // Treasurer-Tests: CRUD außer Delete
+    public function testTreasurerCanCreateFee(): void {
+        // Treasurer kann Gebühren erstellen
+        $response = $this->controller->create(1, 50.00, 'monthly', '2025-01-01');
+        $this->assertEquals(200, $response->getStatus());
+    }
+    
+    public function testTreasurerCanReadFees(): void {
+        // Treasurer kann Gebühren sehen
+        $response = $this->controller->index();
+        $this->assertEquals(200, $response->getStatus());
+    }
+    
+    public function testTreasurerCanUpdateFeeStatus(): void {
+        // Treasurer kann Status aktualisieren
+        $response = $this->controller->update(1, ['status' => 'paid']);
+        $this->assertEquals(200, $response->getStatus());
+    }
+    
+    public function testTreasurerCannotDeleteFee(): void {
+        // Treasurer darf Gebühren nicht löschen
+        $response = $this->controller->destroy(1);
+        $this->assertEquals(403, $response->getStatus());
+    }
+    
+    // Member-Tests: Nur eigene Gebühren sichtbar
+    public function testMemberCanReadOwnFees(): void {
+        // Mitglied kann seine Gebühren sehen
+        $response = $this->controller->indexForMember(1);
+        $this->assertEquals(200, $response->getStatus());
+    }
+    
+    public function testMemberCannotCreateFee(): void {
+        // Mitglied darf keine Gebühren erstellen
+        $response = $this->controller->create(1, 50.00, 'monthly', '2025-01-01');
+        $this->assertEquals(403, $response->getStatus());
+    }
+}
+```
+
+### Validierungs-Tests
+
+```php
+class ValidationServiceTest extends TestCase {
+    
+    public function testValidateIBANValidModChecksum(): void {
+        // Gültige IBAN mit korrektem Mod-97 Checksum
+        $result = $this->validator->validateIBAN('DE89370400440532013000');
+        $this->assertTrue($result['valid']);
+    }
+    
+    public function testValidateIBANInvalidChecksum(): void {
+        // IBAN mit falscher Checksum
+        $result = $this->validator->validateIBAN('DE89370400440532013001');
+        $this->assertFalse($result['valid']);
+    }
+    
+    public function testValidateEmailValidFormat(): void {
+        // Gültige Email
+        $result = $this->validator->validateEmail('john@example.com');
+        $this->assertTrue($result['valid']);
+    }
+    
+    public function testValidateEmailInvalidFormat(): void {
+        // Ungültige Email
+        $result = $this->validator->validateEmail('not-an-email');
+        $this->assertFalse($result['valid']);
+    }
+    
+    public function testValidateMemberRequiredFields(): void {
+        // Alle Pflichtfelder müssen vorhanden sein
+        $result = $this->validator->validateMember(
+            '',  // Leerer Name
+            'john@example.com',
+            'DE89370400440532013000'
+        );
+        $this->assertFalse($result['valid']);
+        $this->assertContains('Name ist erforderlich', $result['errors']);
+    }
+}
+```
+
+### Tests ausführen
+
+```bash
+# Alle RBAC-Tests
+./vendor/bin/phpunit tests/Controller/MemberControllerTest.php
+./vendor/bin/phpunit tests/Controller/FinanceControllerTest.php
+
+# Nur RBAC-Tests
+./vendor/bin/phpunit --filter testAdminCanCreateMember
+./vendor/bin/phpunit --filter testTreasurerCannotDeleteMember
+
+# Mit Coverage
+./vendor/bin/phpunit --coverage-html coverage/
+
+# Tests mit Filter nach Rolle
+./vendor/bin/phpunit --filter Admin
+./vendor/bin/phpunit --filter Treasurer
+./vendor/bin/phpunit --filter Member
+```
+
+### Mock-Setup für RBAC
+
+```php
+protected function setUp(): void {
+    parent::setUp();
+    
+    // Mock User mit Admin-Rolle
+    $this->adminUser = $this->createMockUser('admin', ['admin']);
+    
+    // Mock User mit Treasurer-Rolle
+    $this->treasurerUser = $this->createMockUser('treasurer', ['treasurer']);
+    
+    // Mock User mit Member-Rolle
+    $this->memberUser = $this->createMockUser('member', ['member']);
+}
+
+private function createMockUser(string $id, array $roles) {
+    $user = $this->createMock(IUser::class);
+    $user->method('getUID')->willReturn($id);
+    $user->method('getGroupIds')->willReturn($roles);
+    return $user;
+}
+```
+
+### Assertions für RBAC
+
+```php
+// Rolle Check
+$this->assertTrue($this->userHasRole($user, 'admin'));
+$this->assertFalse($this->userHasRole($user, 'treasurer'));
+
+// Status-Codes für Berechtigungen
+$this->assertEquals(200, $response->getStatus());  // OK
+$this->assertEquals(403, $response->getStatus());  // Forbidden
+$this->assertEquals(401, $response->getStatus());  // Unauthorized
+
+// Error-Message Checks
+$this->assertStringContainsString(
+    'Insufficient permissions',
+    $response->getData()['error']
+);
+```
+
+---
+
+## 9️⃣ Testing Best Practices
+
+### Test-Namenskonvention
+
+```
+testActionUnderConditionExpectsOutcome()
+
+Beispiel:
+- testAdminCanCreateMember()
+- testTreasurerCannotDeleteFee()
+- testValidateIBANInvalidChecksum()
+- testMemberCanReadOwnDataButNotOthers()
+```
+
+### Arrange-Act-Assert Pattern
+
+```php
+public function testCreateMemberSuccessfully(): void {
+    // ARRANGE: Setup
+    $memberService = $this->createMock(MemberService::class);
+    $memberService->expects($this->once())
+        ->method('create')
+        ->willReturn(['id' => 1, 'name' => 'John']);
+    
+    // ACT: Führe aus
+    $controller = new MemberController($memberService);
+    $response = $controller->create('John', 'john@example.com');
+    
+    // ASSERT: Verifiziere
+    $this->assertEquals(200, $response->getStatus());
+    $this->assertEquals('John', $response->getData()['name']);
+}
+```
+
+### Coverage-Mindeststandards
+
+| Code-Typ | Min. Coverage |
+|----------|--------------|
+| Controllers | 80% |
+| Services | 90% |
+| Models | 85% |
+| Utils | 100% |
+| Gesamt | 85% |
+
+### Continuous Testing
+
+```bash
+# Watch-Modus: Tests bei jeder Änderung
+npm run test:watch
+
+# Coverage Report
+npm run test:coverage
+
+# Generate HTML Report
+./vendor/bin/phpunit --coverage-html coverage/
+```
+
+---
+
 ## 🔄 Nächste Schritte (v0.2.0)
 
-- [ ] Berechtigungsverwaltung pro Mitglied
-- [ ] CSV/PDF Export für Reports
-- [ ] E-Mail Benachrichtigungen
-- [ ] Mehr Test-Abdeckung (Service-Layer)
+- [ ] RBAC Tests für alle Controller
+- [ ] Service-Layer Tests
 - [ ] Integration Tests
-- [ ] Performance Optimierungen
+- [ ] E2E Tests mit Selenium/Cypress
+- [ ] Performance Tests
+- [ ] Security Tests (SQL Injection, XSS)
+- [ ] CSV/PDF Export mit Tests
+- [ ] E-Mail Benachrichtigungen mit Tests
 
 ---
 
 ## 📚 Weitere Ressourcen
 
 - [PHPUnit Dokumentation](https://phpunit.de/)
+- [PHPUnit Best Practices](https://phpunit.de/manual/9.5/en/index.html)
+- [Mock-Objekttechniken](https://phpunit.de/manual/9.5/en/test-doubles.html)
 - [Chart.js Dokumentation](https://www.chartjs.org/)
 - [Vue 3 Testing](https://vuejs.org/guide/scaling-up/testing.html)
 - [Nextcloud AppFramework](https://docs.nextcloud.com/server/latest/developer_manual/)
+- [CONTRIBUTING.md](./CONTRIBUTING.md) - Contribution Guidelines
 
