@@ -59,7 +59,24 @@ sudo -u www-data php /var/www/nextcloud/occ app:enable verein
 # In Nextcloud: Apps → Verein → Erste Mitglieder hinzufügen
 ```
 
-**Detaillierte Anleitung**: Siehe [INSTALLATION.md](./INSTALLATION.md)
+**Detaillierte Anleitung**: Siehe [INSTALLATION.md](./wiki/Installation.md)
+
+---
+
+## 🎯 Projektphilosophie
+
+Die Vereins-App ist **kein Proof of Concept**, sondern ein professionelles **Open-Source-Produkt**, das von Beginn an mit klarer Strategie, Tests und Dokumentation entwickelt wurde.
+
+**Kernidee:** KI-gestützte Entwicklung ermöglicht es, in kurzer Zeit ein **produktionsreifes, wartbares Projekt** zu schaffen – wenn es mit klaren Anforderungen, Tests und Community-Mindset kombiniert wird.
+
+**Nach ~14 Stunden Arbeit:**
+- ✅ Vollständige CRUD-Operationen mit Vue.js Frontend & PHP Backend
+- ✅ 35+ Unit Tests, Validierungsservice, RBAC-Logik
+- ✅ 2.000+ Zeilen Dokumentation & Community-Struktur
+- ✅ Production-Ready Build (0 Fehler, 1.42s)
+- ✅ GitHub Integration mit Branches, PRs & Release-Strategie
+
+**Mehr erfahren**: [Projektphilosophie in Installation.md](./wiki/Installation.md#projektphilosophie)
 
 ---
 
