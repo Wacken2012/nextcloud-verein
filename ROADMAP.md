@@ -616,41 +616,716 @@ describe('Role Guard', () => {
 
 ---
 
-## 📋 v0.3.0 (Q2 2026)
+## 📋 v0.3.0 (Q1 2026)
 
-### 🎯 Fokus: Automatisierung & Integrationen
+### 🎯 Fokus: Notenverwaltung, Migration & Automatisierung
 
-**Geplante Features:**
+**Neue Priorität:** Musikvereine benötigen Notenverwaltung mit Instrumentengruppen und Softnote-Migration.
+
+---
+
+### 🎵 1. Notenverwaltung mit Instrumentengruppen
+
+#### Rollenmodell für Noten
+
+| Rolle | Upload | Freigabe | Zugriff | Beschreibung |
+|-------|--------|----------|--------|---|
+| **Notenwart** | ✅ Volle | ✅ Volle | ✅ Alle | Zentrale Verwaltung, Upload, Freigabevergabe |
+| **Dirigent** | ❌ Nein | ❌ Nein | ✅ Nach Freigabe | Zugriff nur auf freigegebene Noten |
+| **Mitglied** | ❌ Nein | ❌ Nein | ✅ Nur Instrument | Nur Stimme des eigenen Instruments (z.B. Trompete.pdf) |
+
+#### Datenmodell
+
+```sql
+-- Tabelle für Noten/Partituren
+CREATE TABLE scores (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(255),                   -- 'Beethovens 9 - Sinfonie'
+    file_path VARCHAR(500),              -- PDF-Datei
+    uploaded_by INT NOT NULL,            -- User ID (Notenwart)
+    uploaded_at TIMESTAMP,
+    is_published BOOLEAN DEFAULT FALSE,  -- Veröffentlicht für Mitglieder
+    INDEX(is_published)
+);
+
+-- Tabelle für Berechtigungen auf Instrumentgruppen-Basis
+CREATE TABLE score_permissions (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    score_id INT NOT NULL,               -- FK zu scores.id
+    instrument_group_id INT NOT NULL,    -- z.B. 'Trompete', 'Horn', 'Posaune'
+    permission_type ENUM('read', 'write'),
+    granted_at TIMESTAMP,
+    granted_by INT,                      -- Admin/Notenwart
+    UNIQUE(score_id, instrument_group_id),
+    FOREIGN KEY(score_id) REFERENCES scores(id),
+    INDEX(instrument_group_id)
+);
+
+-- Erweiterung: user_roles mit Instrumentengruppe
+ALTER TABLE user_roles 
+    ADD COLUMN instrument_group_id INT,  -- Optional: Benutzer-Instrument
+    ADD FOREIGN KEY(instrument_group_id) REFERENCES instrument_groups(id);
+```
+
+#### Backend Implementation
+
+```php
+// Enums/InstrumentGroup.php
+namespace OCA\Verein\Enums;
+
+enum InstrumentGroup: string {
+    case SOPRAN = 'sopran';
+    case ALT = 'alt';
+    case TENOR = 'tenor';
+    case BASS = 'bass';
+    
+    case VIOLINE_I = 'violine_i';
+    case VIOLINE_II = 'violine_ii';
+    case VIOLA = 'viola';
+    case VIOLONCELLO = 'violoncello';
+    
+    case TROMPETE = 'trompete';
+    case HORN = 'horn';
+    case POSAUNE = 'posaune';
+    case TUBA = 'tuba';
+}
+
+// Service/ScorePermissionService.php
+class ScorePermissionService {
+    
+    /**
+     * Prüfe: Darf User diese Partitur sehen?
+     * Regeln:
+     * 1. Notenwart: Sieht ALLES
+     * 2. Dirigent: Sieht nur VERÖFFENTLICHTE Noten
+     * 3. Mitglied: Sieht nur Noten für sein Instrument
+     */
+    public function canAccessScore(string $userId, int $scoreId): bool {
+        $userRoles = $this->roleService->getUserRoles($userId);
+        $userInstrument = $this->getUserInstrumentGroup($userId);
+        $scorePermissions = $this->getScorePermissions($scoreId);
+        
+        // 1. Notenwart → Zugriff auf ALLES
+        if ($this->hasRole($userRoles, Role::NOTENWART)) {
+            return true;
+        }
+        
+        $score = $this->getScore($scoreId);
+        
+        // 2. Score muss veröffentlicht sein
+        if (!$score->is_published) {
+            return false;
+        }
+        
+        // 3. Dirigent → Zugriff auf veröffentlichte Noten
+        if ($this->hasRole($userRoles, Role::DIRIGENT)) {
+            return true;
+        }
+        
+        // 4. Mitglied → Nur eigenes Instrument
+        if ($this->hasRole($userRoles, Role::MITGLIED)) {
+            return $scorePermissions->contains($userInstrument);
+        }
+        
+        return false;
+    }
+    
+    /**
+     * Notenwart vergibt Berechtigung
+     */
+    public function grantScorePermission(int $scoreId, string $instrumentGroup, string $grantedBy): void {
+        $this->db->insert('score_permissions', [
+            'score_id' => $scoreId,
+            'instrument_group_id' => $instrumentGroup,
+            'permission_type' => 'read',
+            'granted_at' => time(),
+            'granted_by' => $grantedBy,
+        ]);
+    }
+}
+
+// Controller/ScoreController.php
+class ScoreController {
+    
+    /**
+     * GET /api/v1/scores
+     * Nur Noten, die User sehen darf
+     */
+    #[Route(methods: ['GET'])]
+    public function listScores(): JSONResponse {
+        $userId = $this->userId();
+        $allScores = $this->scoreService->getAll();
+        $visibleScores = array_filter($allScores, 
+            fn($score) => $this->scorePermissionService->canAccessScore($userId, $score['id'])
+        );
+        return new JSONResponse($visibleScores);
+    }
+    
+    /**
+     * POST /api/v1/scores
+     * Nur Notenwart darf hochladen
+     */
+    #[Route(methods: ['POST'], requirements: ['roleMiddleware' => 'notenwart'])]
+    public function uploadScore(Request $request): JSONResponse {
+        $file = $request->getUploadedFiles()[0];
+        $scoreId = $this->scoreService->create($file);
+        return new JSONResponse(['id' => $scoreId], Http::STATUS_CREATED);
+    }
+    
+    /**
+     * POST /api/v1/scores/{scoreId}/permissions
+     * Notenwart vergibt Rechte
+     */
+    #[Route(methods: ['POST'], requirements: ['roleMiddleware' => 'notenwart'])]
+    public function grantPermission(int $scoreId, Request $request): JSONResponse {
+        $instrumentGroup = json_decode($request->getBody(), true)['instrument_group'];
+        $this->scorePermissionService->grantScorePermission($scoreId, $instrumentGroup, $this->userId());
+        return new JSONResponse(['success' => true]);
+    }
+}
+```
+
+#### Frontend Implementation
+
+```vue
+<!-- components/ScoreManager.vue -->
+<template>
+  <div class="score-manager">
+    <!-- Notenwart: Upload & Freigabe -->
+    <div v-if="hasRole('notenwart')" class="notenwart-section">
+      <h3>Notenverwaltung</h3>
+      
+      <!-- Upload Form -->
+      <form @submit.prevent="uploadScore">
+        <input type="file" accept=".pdf" v-model="scoreFile">
+        <input type="text" placeholder="Notenname" v-model="scoreName">
+        <button type="submit">Hochladen</button>
+      </form>
+      
+      <!-- Noten-Liste mit Freigaben -->
+      <div v-for="score in allScores" :key="score.id" class="score-card">
+        <h4>{{ score.name }}</h4>
+        
+        <!-- Instrumentgruppen-Freigabe -->
+        <div class="permissions">
+          <p>Freigegeben für:</p>
+          <div v-for="instrument in instrumentGroups" :key="instrument">
+            <label>
+              <input type="checkbox" 
+                     :checked="isGranted(score.id, instrument)"
+                     @change="togglePermission(score.id, instrument)">
+              {{ instrument }}
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Dirigent & Mitglied: Nur Lesezugriff -->
+    <div v-else class="user-section">
+      <h3>Verfügbare Noten</h3>
+      <div v-for="score in visibleScores" :key="score.id" class="score-card">
+        <h4>{{ score.name }}</h4>
+        <a :href="score.download_url" target="_blank" download>
+          📥 {{ score.file_name }}
+        </a>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { ref, computed } from 'vue';
+import { useStore } from 'pinia';
+
+const store = useStore();
+const allScores = ref([]);
+const visibleScores = ref([]);
+const scoreFile = ref(null);
+const scoreName = ref('');
+
+const hasRole = (role) => store.userRoles.includes(role);
+
+const loadScores = async () => {
+  const response = await fetch('/api/v1/scores');
+  const scores = await response.json();
+  
+  if (hasRole('notenwart')) {
+    allScores.value = scores;  // Notenwart sieht ALLE
+  } else {
+    visibleScores.value = scores;  // Mitglieder sehen nur ihre
+  }
+};
+
+const uploadScore = async () => {
+  const formData = new FormData();
+  formData.append('file', scoreFile.value);
+  formData.append('name', scoreName.value);
+  
+  await fetch('/api/v1/scores', {
+    method: 'POST',
+    body: formData
+  });
+  
+  await loadScores();
+};
+
+onMounted(loadScores);
+</script>
+```
+
+#### Tests: Notenverwaltung
+
+```php
+// tests/Service/ScorePermissionServiceTest.php
+class ScorePermissionServiceTest extends TestCase {
+    
+    /**
+     * Test 1: Notenwart sieht alle Noten
+     */
+    public function testNotenwartSeesAllScores(): void {
+        $userId = 'notenwart_user';
+        $this->setupUserRole($userId, Role::NOTENWART);
+        $scoreId = $this->createScore('Beethoven 9');
+        
+        $this->assertTrue(
+            $this->scorePermissionService->canAccessScore($userId, $scoreId)
+        );
+    }
+    
+    /**
+     * Test 2: Dirigent sieht nur veröffentlichte Noten
+     */
+    public function testDirigentSeesOnlyPublishedScores(): void {
+        $userId = 'dirigent_user';
+        $this->setupUserRole($userId, Role::DIRIGENT);
+        
+        $publishedScore = $this->createScore('Beethoven 9', true);
+        $unpublishedScore = $this->createScore('Private Draft', false);
+        
+        $this->assertTrue(
+            $this->scorePermissionService->canAccessScore($userId, $publishedScore)
+        );
+        $this->assertFalse(
+            $this->scorePermissionService->canAccessScore($userId, $unpublishedScore)
+        );
+    }
+    
+    /**
+     * Test 3: Trompeter sieht nur Trompete.pdf
+     */
+    public function testTrumpeterSeesOnlyTrumpetePart(): void {
+        $userId = 'trumpeter_user';
+        $this->setupUserRole($userId, Role::MITGLIED);
+        $this->setUserInstrument($userId, InstrumentGroup::TROMPETE);
+        
+        $scoreId = $this->createScore('Beethoven 9', true);
+        
+        // Freigaben vergeben: Trompete + Horn
+        $this->grantPermission($scoreId, InstrumentGroup::TROMPETE);
+        $this->grantPermission($scoreId, InstrumentGroup::HORN);
+        
+        // Trompeter darf zugreifen
+        $this->assertTrue(
+            $this->scorePermissionService->canAccessScore($userId, $scoreId)
+        );
+        
+        // Aber nicht als Hornist
+        $this->setUserInstrument($userId, InstrumentGroup::HORN);
+        $this->assertTrue(  // Horn war freigegeben
+            $this->scorePermissionService->canAccessScore($userId, $scoreId)
+        );
+        
+        // Nicht für Bläser
+        $this->setUserInstrument($userId, InstrumentGroup::POSAUNE);
+        $this->assertFalse(
+            $this->scorePermissionService->canAccessScore($userId, $scoreId)
+        );
+    }
+    
+    /**
+     * Test 4: Notenwart vergibt Berechtigung
+     */
+    public function testNotenwartGrantsPermission(): void {
+        $scoreId = $this->createScore('Test Score', true);
+        
+        $this->scorePermissionService->grantScorePermission(
+            $scoreId,
+            InstrumentGroup::VIOLINE_I,
+            'notenwart_admin'
+        );
+        
+        // Violinist kann jetzt zugreifen
+        $userId = 'violinist_user';
+        $this->setupUserRole($userId, Role::MITGLIED);
+        $this->setUserInstrument($userId, InstrumentGroup::VIOLINE_I);
+        
+        $this->assertTrue(
+            $this->scorePermissionService->canAccessScore($userId, $scoreId)
+        );
+    }
+}
+```
+
+---
+
+### � 2. Softnote-Import-Werkzeug
+
+#### Ziel
+Migration von bestehenden Vereinsdaten aus Softnote (weit verbreitete deutsche Vereinsverwaltungs-Software) in die Vereins-App.
+
+#### Unterstützte Daten
+- Mitgliederlisten
+- Instrumentengruppen & -zuweisungen
+- Gebührenstrukturen
+- Noten-PDFs
+
+#### CLI-Tool: `softnote-import`
+
+```bash
+# Verwendungsbeispiel
+php occ verein:softnote-import \
+    --file=/path/to/softnote_export.csv \
+    --format=csv \
+    --validate \
+    --dry-run
+
+# Oder mit XML
+php occ verein:softnote-import \
+    --file=/path/to/softnote_export.xml \
+    --format=xml \
+    --verbose
+```
+
+#### Implementation
+
+```php
+// Command/SoftnoteImportCommand.php
+namespace OCA\Verein\Command;
+
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Input\InputOption;
+
+class SoftnoteImportCommand extends Command {
+    
+    protected function configure(): void {
+        $this->setName('verein:softnote-import')
+            ->setDescription('Import members & data from Softnote CSV/XML')
+            ->addOption('file', null, InputOption::VALUE_REQUIRED, 'Path to Softnote export file')
+            ->addOption('format', null, InputOption::VALUE_REQUIRED, 'Format: csv, xml', 'csv')
+            ->addOption('dry-run', null, InputOption::VALUE_NONE, 'Validate without importing')
+            ->addOption('verbose', null, InputOption::VALUE_NONE, 'Detailed output');
+    }
+    
+    protected function execute(InputInterface $input, OutputInterface $output): int {
+        $file = $input->getOption('file');
+        $format = $input->getOption('format');
+        $dryRun = $input->getOption('dry-run');
+        $verbose = $input->getOption('verbose');
+        
+        if (!file_exists($file)) {
+            $output->writeln("<error>File not found: $file</error>");
+            return 1;
+        }
+        
+        try {
+            // 1. Parse Datei
+            $data = $this->parseFile($file, $format);
+            $output->writeln("<info>✓ Parsed " . count($data['members']) . " members</info>");
+            
+            // 2. Validierung
+            $errors = $this->validateData($data);
+            if (!empty($errors)) {
+                $output->writeln("<error>Validation errors:</error>");
+                foreach ($errors as $error) {
+                    $output->writeln("  - $error");
+                }
+                return 1;
+            }
+            
+            if ($dryRun) {
+                $output->writeln("<info>✓ Validation passed (dry-run, no data imported)</info>");
+                return 0;
+            }
+            
+            // 3. Import
+            $results = $this->importData($data);
+            
+            $output->writeln("<info>✓ Import completed:</info>");
+            $output->writeln("  - Members: " . $results['members_imported']);
+            $output->writeln("  - Instruments: " . $results['instruments_assigned']);
+            $output->writeln("  - Scores: " . $results['scores_imported']);
+            
+            return 0;
+            
+        } catch (\Exception $e) {
+            $output->writeln("<error>Error: " . $e->getMessage() . "</error>");
+            if ($verbose) {
+                $output->writeln($e->getTraceAsString());
+            }
+            return 1;
+        }
+    }
+    
+    private function parseFile(string $file, string $format): array {
+        return match($format) {
+            'csv' => $this->parseCSV($file),
+            'xml' => $this->parseXML($file),
+            default => throw new \InvalidArgumentException("Unsupported format: $format")
+        };
+    }
+    
+    private function parseCSV(string $file): array {
+        $members = [];
+        $instruments = [];
+        $scores = [];
+        
+        if (($handle = fopen($file, 'r')) !== false) {
+            $headers = fgetcsv($handle);
+            
+            while (($row = fgetcsv($handle)) !== false) {
+                $data = array_combine($headers, $row);
+                
+                // Map Softnote fields to Vereins-App fields
+                $members[] = [
+                    'firstname' => $data['Vorname'],
+                    'lastname' => $data['Nachname'],
+                    'email' => $data['Email'],
+                    'phone' => $data['Telefon'],
+                    'instrument_group' => $data['Instrument'],
+                    'joined_at' => $data['Beitrittsdatum'],
+                ];
+                
+                // Instrument-Zuweisungen
+                if (!in_array($data['Instrument'], $instruments)) {
+                    $instruments[] = $data['Instrument'];
+                }
+            }
+            
+            fclose($handle);
+        }
+        
+        return [
+            'members' => $members,
+            'instruments' => $instruments,
+            'scores' => $scores,
+        ];
+    }
+    
+    private function parseXML(string $file): array {
+        // Similar to CSV but uses SimpleXML
+        $xml = simplexml_load_file($file);
+        // ... implementation
+    }
+    
+    private function validateData(array $data): array {
+        $errors = [];
+        
+        foreach ($data['members'] as $i => $member) {
+            // Validate required fields
+            if (empty($member['firstname'])) {
+                $errors[] = "Row $i: Missing firstname";
+            }
+            if (empty($member['lastname'])) {
+                $errors[] = "Row $i: Missing lastname";
+            }
+            
+            // Validate email format
+            if (!empty($member['email']) && !filter_var($member['email'], FILTER_VALIDATE_EMAIL)) {
+                $errors[] = "Row $i: Invalid email: {$member['email']}";
+            }
+            
+            // Validate instrument group
+            if (!empty($member['instrument_group'])) {
+                if (!$this->isValidInstrument($member['instrument_group'])) {
+                    $errors[] = "Row $i: Unknown instrument: {$member['instrument_group']}";
+                }
+            }
+        }
+        
+        return $errors;
+    }
+    
+    private function importData(array $data): array {
+        $results = [
+            'members_imported' => 0,
+            'instruments_assigned' => 0,
+            'scores_imported' => 0,
+        ];
+        
+        // 1. Import members
+        foreach ($data['members'] as $member) {
+            $this->memberService->create($member);
+            $results['members_imported']++;
+        }
+        
+        // 2. Import instrument assignments
+        foreach ($data['instruments'] as $instrument) {
+            // Ensure instrument exists in system
+            $this->instrumentService->ensureExists($instrument);
+        }
+        
+        return $results;
+    }
+}
+```
+
+#### Tests: Softnote Import
+
+```php
+// tests/Command/SoftnoteImportCommandTest.php
+class SoftnoteImportCommandTest extends TestCase {
+    
+    /**
+     * Test 1: CSV Import mit gültigen Daten
+     */
+    public function testImportValidCSV(): void {
+        $csv = <<<CSV
+Vorname,Nachname,Email,Telefon,Instrument,Beitrittsdatum
+Max,Müller,max@example.com,01234567890,Trompete,2020-01-15
+Anna,Schmidt,anna@example.com,09876543210,Violine,2019-06-20
+CSV;
+        
+        $file = tempnam(sys_get_temp_dir(), 'softnote_');
+        file_put_contents($file, $csv);
+        
+        $tester = $this->executeCommand('verein:softnote-import', [
+            '--file' => $file,
+            '--format' => 'csv',
+            '--dry-run' => true,
+        ]);
+        
+        $this->assertStringContainsString('Validation passed', $tester->getDisplay());
+        
+        unlink($file);
+    }
+    
+    /**
+     * Test 2: CSV Import mit ungültigem Email
+     */
+    public function testImportInvalidEmail(): void {
+        $csv = <<<CSV
+Vorname,Nachname,Email,Telefon,Instrument,Beitrittsdatum
+Max,Müller,not-an-email,01234567890,Trompete,2020-01-15
+CSV;
+        
+        $file = tempnam(sys_get_temp_dir(), 'softnote_');
+        file_put_contents($file, $csv);
+        
+        $tester = $this->executeCommand('verein:softnote-import', [
+            '--file' => $file,
+            '--format' => 'csv',
+            '--dry-run' => true,
+        ]);
+        
+        $this->assertStringContainsString('Invalid email', $tester->getDisplay());
+        
+        unlink($file);
+    }
+    
+    /**
+     * Test 3: XML Import
+     */
+    public function testImportXML(): void {
+        $xml = <<<XML
+<?xml version="1.0"?>
+<softnote>
+    <member>
+        <vorname>Max</vorname>
+        <nachname>Müller</nachname>
+        <email>max@example.com</email>
+        <instrument>Trompete</instrument>
+    </member>
+</softnote>
+XML;
+        
+        $file = tempnam(sys_get_temp_dir(), 'softnote_', '.xml');
+        file_put_contents($file, $xml);
+        
+        $tester = $this->executeCommand('verein:softnote-import', [
+            '--file' => $file,
+            '--format' => 'xml',
+        ]);
+        
+        $this->assertStringContainsString('Import completed', $tester->getDisplay());
+        $this->assertDatabaseHas('members', ['firstname' => 'Max']);
+        
+        unlink($file);
+    }
+}
+```
+
+---
+
+### 📅 3. Release Timeline (Updated)
+
+#### v0.2.0 (December 25, 2025)
+- [x] Multi-Role RBAC Complete
+- [x] Input Validierung (IBAN, Email, Phone)
+- [x] SEPA XML Export
+- [x] PDF Export
+- [x] Error Handling
+- [x] 85%+ Test Coverage
+- [x] Security Audit (Permissions)
+
+**Deliverables:**
+- Production-ready app with permissions
+- All v0.2.0-rc features stable
+- 0 build errors
+- 85%+ test coverage
+
+#### v0.3.0 (Q1 2026 - March 31, 2026)
+- [ ] Notenverwaltung mit Instrumentengruppen (NEW PRIORITY!)
+  - Score upload & management
+  - Instrument-based permissions
+  - 20+ new tests
+- [ ] Softnote-Import Tool (NEW PRIORITY!)
+  - CSV/XML import
+  - Data validation
+  - Migration helper
 - [ ] Automatische Mahnungen
   - Cronjob für Beiträge
   - E-Mail Benachrichtigungen
-  - Mahnstufen (1., 2., Mahnung)
 - [ ] Kalender Integration
-  - Mitgliederverwaltung im Kalender
-  - Gebühren-Fristen als Events
-- [ ] Deck Integration
-  - Aufgaben-Management
-  - Beitragsabrechnung
-- [ ] Direktnachrichten (Talk)
-  - Benachrichtigungen via Chat
-  - Admin-Alerts
+- [ ] Weitere Integrationen (Deck, Talk)
 
-### 🔐 Erweiterte Rollen & Sicherheit
-- [ ] Custom Permissions (Admin definierbar)
-- [ ] Audit Logs (Wer ändert was, wann)
-- [ ] Datenschutz (GDPR)
-  - Data Export für Mitglieder
-  - Datenretention Policies
-  - Right to be Forgotten
+**Deliverables:**
+- Score management complete
+- Softnote migration tool ready
+- Automation framework
+- 80%+ test coverage (new tests)
 
-### 💾 Data Export & Reporting
-- [ ] PDF Export (mit erweiterten Layouts)
-  - Gebührenlisten pro Mitglied
-  - Jahresabschlüsse
-  - Statistik-Reports
-- [ ] SEPA XML (Bankentransfers)
-  - Direct Debit Setup
-  - Payment Tracking
+---
+
+### 🎯 Success Criteria for v0.3.0
+
+✅ **Notenverwaltung (Score Management)**
+- [ ] Notenwart can upload PDFs
+- [ ] Notenwart can grant instrument-based permissions
+- [ ] Mitglieder see only their instrument parts
+- [ ] Dirigent sees all published scores
+- [ ] Score list filtered correctly per user
+
+✅ **Softnote Import**
+- [ ] CSV import validated & working
+- [ ] XML import validated & working
+- [ ] Error handling & reporting
+- [ ] Data integrity checks
+- [ ] Migration successful (test migration)
+
+✅ **Tested**
+- [ ] 25+ tests for score permissions
+- [ ] 15+ tests for import validation
+- [ ] Edge cases (missing data, invalid instruments)
+- [ ] Integration tests (import → permission check)
+
+✅ **Documented**
+- [ ] Score Management Guide (Notenwart)
+- [ ] Import Tool Documentation
+- [ ] Migration Best Practices
+- [ ] Troubleshooting Guide
 
 ---
 
@@ -698,13 +1373,13 @@ describe('Role Guard', () => {
 | Kein Export (SEPA/PDF) | 🟡 Medium | Manueller DB-Export | v0.2.0-rc (15. Dez) |
 | Keine Benachrichtigungen | 🟢 Low | E-Mail selbst versenden | v0.3.0 (Q2 2026) |
 
-### v0.2.0 (PLANNED)
+### v0.3.0 (PLANNED - Q1 2026)
 | Issue | Severity | Status | ETA |
 |-------|----------|--------|-----|
-| Multi-Role RBAC nicht implementiert | 🔴 Kritisch | In Development | ✅ v0.2.0-beta (1. Dez) |
-| SEPA/PDF Export fehlt | 🟡 Medium | Geplant | ✅ v0.2.0-rc (15. Dez) |
-| Datenvalidierung unvollständig | 🟡 Medium | Teilweise | ✅ v0.2.0-beta (1. Dez) |
-| Audit Logs fehlen | 🟢 Low | Backlog | v1.0.0 |
+| Score Management nicht implementiert | 🔴 Kritisch | Geplant | ✅ v0.3.0 (Mar 2026) |
+| Softnote Import fehlt | � Kritisch | Geplant | ✅ v0.3.0 (Mar 2026) |
+| Automatische Mahnungen fehlen | 🟡 Medium | Backlog | v0.3.0 (Mar 2026) |
+| GDPR Compliance unvollständig | � Medium | Backlog | v0.3.1 |
 
 ### Performance
 - Bundle-Größe: 387 KB (Ziel v0.2.0: < 200 KB mit Code Splitting)
@@ -723,16 +1398,18 @@ describe('Role Guard', () => {
 ## 📈 Metrics & Goals
 
 ### Adoption Goals
-- **v0.2.0**: 50+ Installationen
-- **v0.3.0**: 200+ Installationen
-- **v1.0.0**: 500+ Installationen (Ziel)
+- **v0.2.0**: 50+ Installationen (RBAC, Validation, Export)
+- **v0.3.0**: 150+ Installationen (Score Management, Softnote Import)
+- **v1.0.0**: 500+ Installationen (Production-Ready, Full Features)
 
 ### Quality Goals
 | Metrik | v0.1 | v0.2 | v0.3 | v1.0 |
 |--------|------|------|------|------|
-| Test Coverage | 0% | 50% | 80% | 100% |
-| Bug Response | - | <7 days | <3 days | <1 day |
-| Performance | - | < 2s | < 1s | < 500ms |
+| Test Coverage | 0% | 85% | 85%+ | 100% |
+| Score Management | ❌ | ❌ | ✅ | ✅ |
+| Migration Tools | ❌ | ❌ | ✅ | ✅ |
+| Bug Response | - | <7 days | <5 days | <1 day |
+| Performance | - | < 2s | < 1.5s | < 500ms |
 
 ---
 
@@ -774,7 +1451,7 @@ Du möchtest an dieser Roadmap mitarbeiten?
 └── Dez 1-25: v0.2.0 Development (INCOMING)
     ├─ v0.2.0-beta (1. Dez)
     │  ├─ Multi-Role RBAC Complete
-    │  ├─ Input Validierung (IBAN, Email, Phone)
+    │  ├─ Input Validierung
     │  ├─ 50+ New Tests
     │  └─ 0 Build Errors
     │
@@ -791,10 +1468,33 @@ Du möchtest an dieser Roadmap mitarbeiten?
        └─ Ready for Production
 
 2026
-├── Q1: Feature Development & Community
-├── Q2: v0.3.0 (Automation, Integrations)
-├── Q3: Bug Fixes & Optimization
+├── Q1 (Jan-Mar): v0.3.0 Development
+│   ├─ Score Management (NEW!)
+│   │  ├─ Upload & Permissions
+│   │  ├─ Instrument-based Access
+│   │  └─ 20+ New Tests
+│   │
+│   ├─ Softnote Import (NEW!)
+│   │  ├─ CSV/XML Parser
+│   │  ├─ Data Validation
+│   │  └─ 15+ New Tests
+│   │
+│   ├─ Automatische Mahnungen
+│   ├─ Kalender Integration
+│   └─ v0.3.0 Release (31. Mar)
+│
+├── Q2: Community Phase & Bug Fixes
+│   └─ Community Contributions
+│
+├── Q3: v0.3.1+ Features
+│   ├─ Custom Permissions
+│   ├─ Audit Logs
+│   └─ GDPR Compliance
+│
 └── Q4: v1.0.0 Production Release
+    ├─ 100% Test Coverage
+    ├─ Third-Party Security Audit
+    └─ App Store Release
 ```
 
 ---
