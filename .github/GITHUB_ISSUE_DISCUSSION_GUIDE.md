@@ -24,7 +24,7 @@ https://github.com/Wacken2012/nextcloud-verein
 
 **Body:**
 ```markdown
-Wir haben die neue responsive Version der Vereins-App veröffentlicht! 🎉
+Ich habe die neue responsive Version der Vereins-App veröffentlicht! 🎉
 
 ## ✅ Features
 
@@ -100,7 +100,7 @@ Commit: `a246001`
 
 **Vielen Dank für euer Feedback! 🙏**
 
-Wir freuen uns auf eure Erfahrungen und Ideen für die nächste Version! 🚀
+Ich freue mich auf eure Erfahrungen und Ideen für die nächste Version! 🚀
 ```
 
 ### Schritt 4: Labels hinzufügen (optional)
@@ -142,7 +142,7 @@ Responsive Layout & Dark-Mode – Was haltet ihr davon?
 ```markdown
 Hallo zusammen 👋
 
-Wir haben die Vereins-App um ein vollständiges Responsive Layout erweitert – inklusive Dark-Mode und Nextcloud Theme-Integration.
+Ich habe die Vereins-App um ein vollständiges Responsive Layout erweitert – inklusive Dark-Mode und Nextcloud Theme-Integration.
 
 ## 📊 Neue Features:
 
@@ -267,17 +267,19 @@ feat: Add responsive layout & Nextcloud theme integration
 
 ---
 
-## 💬 Lasst uns wissen:
+## 💬 Lasst mich wissen:
 
 - Was funktioniert gut? ✅
 - Was könnte besser sein? 💡
 - Welche Features würden euch helfen? 🚀
 
-Wir freuen uns auf euer Feedback und freuen uns schon auf die nächste Version! 🎉
+Ich freue mich auf euer Feedback und freue mich schon auf die nächste Version! 🎉
 
 ---
 
 **Vielen Dank, dass ihr die Vereins-App unterstützt!** 🙏
+
+*Entwickelt mit ❤️ von Stefan Schulz*
 ```
 
 ### Schritt 5: Absenden

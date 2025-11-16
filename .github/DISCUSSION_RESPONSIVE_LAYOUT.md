@@ -2,7 +2,7 @@
 
 Hallo zusammen 👋
 
-Wir haben die Vereins-App um ein vollständiges Responsive Layout erweitert – inklusive Dark-Mode und Nextcloud Theme-Integration.
+Ich habe die Vereins-App um ein vollständiges Responsive Layout erweitert – inklusive Dark-Mode und Nextcloud Theme-Integration.
 
 ## 📊 Neue Features:
 
@@ -127,14 +127,16 @@ feat: Add responsive layout & Nextcloud theme integration
 
 ---
 
-## 💬 Lasst uns wissen:
+## 💬 Lasst mich wissen:
 
 - Was funktioniert gut? ✅
 - Was könnte besser sein? 💡
 - Welche Features würden euch helfen? 🚀
 
-Wir freuen uns auf euer Feedback und freuen uns schon auf die nächste Version! 🎉
+Ich freue mich auf euer Feedback und freue mich schon auf die nächste Version! 🎉
 
 ---
 
 **Vielen Dank, dass ihr die Vereins-App unterstützt!** 🙏
+
+*Entwickelt mit ❤️ von Stefan Schulz*

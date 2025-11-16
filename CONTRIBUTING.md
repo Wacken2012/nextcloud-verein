@@ -19,7 +19,7 @@ Vielen Dank dass du zur Nextcloud Vereins-App beitragen möchtest! Diese Richtli
 
 ## 📜 Code of Conduct
 
-Wir verpflichten uns auf einen respektvollen und inklusiven Entwicklungsprozess.
+Ich verpflichte mich auf einen respektvollen und inklusiven Entwicklungsprozess.
 
 **Bitte beachte:**
 - Sei respektvoll gegenüber anderen Beitragenden
@@ -392,7 +392,7 @@ try {
 
 ## 📌 Commit Message Format
 
-Wir verwenden **Conventional Commits**:
+Ich verwende **Conventional Commits**:
 
 ```
 <type>(<scope>): <subject>
@@ -540,4 +540,6 @@ PR wird gemergt wenn:
 
 ---
 
-**Danke, dass du ein Teil unserer Community bist! 🙏**
+**Danke, dass du ein Teil meiner Community bist! 🙏**
+
+*Entwickelt mit ❤️ von Stefan Schulz*

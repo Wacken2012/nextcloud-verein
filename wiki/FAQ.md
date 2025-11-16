@@ -22,7 +22,7 @@ Die **Nextcloud Vereins-App** ist eine spezialisierte Anwendung zur Verwaltung v
 
 ### Wer entwickelt die App?
 
-Die App wird von **Stefan** entwickelt und unterstützt durch die Nextcloud Community und GitHub Copilot.
+Die App wird von **Stefan Schulz** entwickelt und unterstützt durch die Nextcloud Community und GitHub Copilot.
 
 ### Welche Lizenz hat die App?
 
@@ -401,8 +401,10 @@ v1.0.x+: Mindestens 2 Jahre Unterstützung
 
 ---
 
-**Haben wir deine Frage nicht beantwortet?**
+**Hast du deine Frage nicht beantwortet bekommen?**
 
 → Erstelle eine Diskussion: https://github.com/Wacken2012/nextcloud-verein/discussions
 
-Wir helfen gerne! 🙏
+Ich helfe gerne! 🙏
+
+*Entwickelt mit ❤️ von Stefan Schulz*

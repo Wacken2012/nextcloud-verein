@@ -4316,4 +4316,6 @@ Meinung zu dieser Roadmap?
 
 **Danke für dein Interesse an der Nextcloud Vereins-App!** 🎉
 
-Zusammen machen wir die beste Vereinsverwaltungs-App! 🚀
+Ich freue mich, mit dir zusammen die beste Vereinsverwaltungs-App zu bauen! 🚀
+
+*Entwickelt mit ❤️ von Stefan Schulz*

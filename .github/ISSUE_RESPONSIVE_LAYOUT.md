@@ -76,4 +76,6 @@ Commit: `a246001`
 
 **Vielen Dank für euer Feedback! 🙏**
 
-Wir freuen uns auf eure Erfahrungen und Ideen für die nächste Version! 🚀
+Ich freue mich auf eure Erfahrungen und Ideen für die nächste Version! 🚀
+
+*Entwickelt mit ❤️ von Stefan Schulz*
