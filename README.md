@@ -88,6 +88,27 @@ sudo -u www-data php /var/www/nextcloud/occ app:enable verein
 
 ---
 
+## 🌳 Branch-Struktur
+
+### `main` Branch (Stabil - v0.1.0)
+- **Status**: ✅ Production-Ready
+- **Aktuelle Version**: v0.1.0 (Stable)
+- **Inhalt**: Stabile, getestete Releases
+- **Feedback**: Bugfixes und Patches
+
+### `develop` Branch (Beta - v0.2.0)
+- **Status**: 🔧 In Entwicklung
+- **Aktuelle Version**: v0.2.0-beta
+- **Inhalt**: Neueste Features (RBAC, Validierung, Exports)
+- **PRs**: Bitte gegen `develop` öffnen!
+
+**Workflow**:
+1. Features werden in `develop` entwickelt
+2. Nach erfolgreichem Test wird `develop` in `main` gemergt
+3. Release-Tags (`v0.2.0-beta`, `v0.2.0`) werden erstellt
+
+---
+
 ## 🛠️ Entwicklung
 
 ### Lokal entwickeln

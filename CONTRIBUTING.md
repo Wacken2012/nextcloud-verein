@@ -31,6 +31,26 @@ Wir verpflichten uns auf einen respektvollen und inklusiven Entwicklungsprozess.
 
 ## 🎯 Wie kann ich beitragen?
 
+### Branch-Workflow
+
+**Wichtig:** Bitte öffne Pull Requests gegen den **`develop`** Branch!
+
+```
+main (v0.1.0 - Stabil)
+  ↑
+  └─ develop (v0.2.0-beta - Features)
+       ├─ feature/rbac
+       ├─ feature/pdf-export
+       ├─ feature/sepa-export
+       └─ feature/error-handling
+```
+
+**Branch-Konvention**:
+- `main` → Stabile Production-Version
+- `develop` → Aktuelle Feature-Entwicklung
+- `feature/*` → Neue Features (basierend auf `develop`)
+- `bugfix/*` → Bugfixes (basierend auf `develop`)
+
 ### Bug Reports
 ```
 1. Prüfe ob Bug bereits existiert (GitHub Issues)
@@ -424,7 +444,7 @@ git commit -m "docs: Update CONTRIBUTING.md with testing guidelines"
 ```bash
 # Ensure local branch is up to date
 git fetch origin
-git rebase origin/main
+git rebase origin/develop    # ⚠️ rebase on develop, not main!
 
 # Run all tests
 npm run test
@@ -437,7 +457,9 @@ npm run lint
 npm run build
 ```
 
-### 2. PR erstellen
+### 2. PR erstellen (Target: develop)
+
+**⚠️ WICHTIG**: Stelle sicher, dass `develop` als Target ausgewählt ist!
 
 **Title:**
 ```
@@ -451,6 +473,10 @@ Implement IBAN validation with Mod-97-Checksum
 
 ## Why
 Improves data quality and prevents invalid payment information
+
+## Branch Info
+- Base: `develop` (v0.2.0-beta)
+- Feature for: v0.2.0 release (Dez 2025)
 
 ## How
 - Created ValidationService with IBAN validation method
@@ -467,6 +493,7 @@ Improves data quality and prevents invalid payment information
 - [x] Code reviewed locally
 - [x] Documentation updated
 - [x] No breaking changes
+- [x] Target branch is 'develop'
 ```
 
 ### 3. Code Review
