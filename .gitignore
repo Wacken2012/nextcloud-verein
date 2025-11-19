@@ -52,3 +52,4 @@ release/
 *.tar.gz
 
 certificates/*.key
+certificates/*.crt
