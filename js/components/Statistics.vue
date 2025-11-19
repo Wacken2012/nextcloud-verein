@@ -103,6 +103,7 @@ import {
   Title,
   Tooltip,
   Legend,
+  Filler,
   Colors,
 } from 'chart.js'
 import api from '../api'
@@ -118,6 +119,7 @@ ChartJS.register(
   Title,
   Tooltip,
   Legend,
+  Filler,
   Colors
 )
 

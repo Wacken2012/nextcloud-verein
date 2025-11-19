@@ -24,10 +24,6 @@ if (typeof window !== 'undefined' && typeof window.matchMedia === 'function') {
 // Nextcloud Theme Integration
 import './theme.scss'
 
-// Register Chart.js 'Filler' plugin to avoid runtime warnings when using 'fill'
-import { Chart, Filler } from 'chart.js'
-Chart.register(Filler)
-
 createApp(App)
   .mount('#app')
 
