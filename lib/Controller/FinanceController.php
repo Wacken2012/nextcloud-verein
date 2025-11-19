@@ -2,6 +2,7 @@
 namespace OCA\Verein\Controller;
 
 use Exception;
+use OCA\Verein\Attributes\RequirePermission;
 use OCA\Verein\Service\FeeService;
 use OCA\Verein\Service\ValidationService;
 use OCP\AppFramework\Controller;
@@ -27,6 +28,7 @@ class FinanceController extends Controller {
      * @NoAdminRequired
      * @NoCSRFRequired
      */
+    #[RequirePermission('verein.finance.read')]
     public function index() {
         try {
             $fees = $this->feeService->findAll();
@@ -46,15 +48,17 @@ class FinanceController extends Controller {
      * @NoAdminRequired
      * @NoCSRFRequired
      */
+    #[RequirePermission('verein.finance.write')]
     public function create() {
         try {
             $memberId = (int)$this->request->getParam('memberId');
             $amount = (float)$this->request->getParam('amount');
-            $description = $this->request->getParam('description', '');
             $status = $this->request->getParam('status', 'open');
+            $dueDate = (string)$this->request->getParam('dueDate', '');
+            $description = $this->request->getParam('description');
 
             // Validierung
-            $validation = $this->validationService->validateFee($memberId, $amount, $description);
+            $validation = $this->validationService->validateFee($memberId, $amount, $dueDate, $description);
             if (!$validation['valid']) {
                 return new JSONResponse([
                     'status' => 'error',
@@ -72,7 +76,7 @@ class FinanceController extends Controller {
                 ], 400);
             }
 
-            $fee = $this->feeService->create($memberId, $amount, $description, $status);
+            $fee = $this->feeService->create($memberId, $amount, $status, $dueDate, $description);
             return new JSONResponse([
                 'status' => 'ok',
                 'data' => $fee
@@ -89,15 +93,17 @@ class FinanceController extends Controller {
      * @NoAdminRequired
      * @NoCSRFRequired
      */
+    #[RequirePermission('verein.finance.write')]
     public function update($id) {
         try {
+            $memberId = (int)$this->request->getParam('memberId', 0);
             $amount = (float)$this->request->getParam('amount');
+            $dueDate = (string)$this->request->getParam('dueDate', '');
             $description = $this->request->getParam('description');
-            $status = $this->request->getParam('status');
+            $status = $this->request->getParam('status', 'open');
 
             // Validierung Amount und Description
-            $memberId = 1; // Platzhalter für Validierung
-            $validation = $this->validationService->validateFee($memberId, $amount, $description);
+            $validation = $this->validationService->validateFee($memberId, $amount, $dueDate, $description);
             if (!$validation['valid']) {
                 return new JSONResponse([
                     'status' => 'error',
@@ -115,7 +121,7 @@ class FinanceController extends Controller {
                 ], 400);
             }
 
-            $fee = $this->feeService->update($id, $amount, $description, $status);
+            $fee = $this->feeService->update($id, $memberId, $amount, $status, $dueDate, $description);
             return new JSONResponse([
                 'status' => 'ok',
                 'data' => $fee
@@ -132,6 +138,7 @@ class FinanceController extends Controller {
      * @NoAdminRequired
      * @NoCSRFRequired
      */
+    #[RequirePermission('verein.finance.delete')]
     public function destroy($id) {
         try {
             $this->feeService->delete($id);

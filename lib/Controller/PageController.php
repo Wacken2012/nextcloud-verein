@@ -19,17 +19,17 @@ class PageController extends Controller {
      * @NoCSRFRequired
      */
     public function index(): TemplateResponse {
-        $response = new TemplateResponse('verein', 'main');
+        $response = new TemplateResponse('verein', 'main', [
+            'id-app-content' => '#app-content',
+            'id-app-navigation' => '#verein-navigation',
+            'pageTitle' => 'Verein',
+        ]);
         
-        // Add Content Security Policy
-        $csp = new ContentSecurityPolicy();
-        $csp->addAllowedScriptDomain("'self'");
-        $csp->addAllowedStyleDomain("'self'");
-        $csp->addAllowedStyleDomain("'unsafe-inline'");
-        $csp->addAllowedImageDomain('*');
-        $csp->addAllowedFontDomain("'self'");
-        $csp->addAllowedConnectDomain('*');
-        $response->setContentSecurityPolicy($csp);
+        // Do not override the default Nextcloud Content Security Policy here.
+        // Leaving CSP management to the Nextcloud core ensures the required
+        // inline scripts (nonces / hashes) and global runtime objects (like
+        // OC) are available to apps. Setting a CSP here caused inline scripts
+        // to be blocked (OC undefined) in some browsers.
         
         return $response;
     }

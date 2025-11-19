@@ -87,6 +87,12 @@ $breakpoint-mobile: 480px;
  * Globale Styles für die Nextcloud Vereins-App
  */
 
+/* 
+   ACHTUNG: Wir dürfen html und body nicht global stylen, 
+   da dies das Nextcloud-Layout zerstört und Skip-Links sichtbar macht.
+   Stattdessen nutzen wir .verein-app als Scope.
+*/
+/*
 html,
 body {
   margin: 0;
@@ -97,10 +103,13 @@ body {
   background: var(--color-main-background);
   line-height: 1.5;
 }
+*/
 
+/*
 * {
   box-sizing: border-box;
 }
+*/
 
 a {
   color: var(--color-primary);

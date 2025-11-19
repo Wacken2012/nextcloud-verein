@@ -1,16 +1,22 @@
 <template>
   <div id="verein-app" class="verein-app">
     <!-- Tabs Navigation -->
-    <nav class="verein-tabs" role="navigation" aria-label="Hauptnavigation">
-      <div class="verein-tabs-container">
+    <nav id="verein-navigation" class="verein-tabs" role="navigation" aria-label="Hauptnavigation" tabindex="-1">
+      <div class="verein-tabs-container" role="tablist" aria-label="Hauptnavigation">
         <button
           v-for="tab in tabs"
           :key="tab.id"
           :class="['verein-tab', { active: activeTab === tab.id }]"
+          :id="'verein-tab-' + tab.id"
           :aria-current="activeTab === tab.id ? 'page' : false"
           @click="activeTab = tab.id"
+          role="tab"
+          aria-controls="app-content"
+          :aria-selected="activeTab === tab.id"
+          :tabindex="activeTab === tab.id ? 0 : -1"
+          @keydown="onKeyDown($event, tab)"
         >
-          <span class="verein-tab-icon">{{ tab.icon }}</span>
+          <span :class="['verein-tab-icon', 'icon-' + tab.icon]"></span>
           <span class="verein-tab-label">{{ tab.label }}</span>
         </button>
       </div>
@@ -18,11 +24,13 @@
 
     <!-- Tab Content -->
     <main class="verein-content-wrapper">
+      <div id="verein-tab-panel" role="region" :aria-labelledby="'verein-tab-' + activeTab">
       <div class="verein-container">
         <component
           :is="currentComponent"
           :key="activeTab"
         />
+      </div>
       </div>
     </main>
 
@@ -34,7 +42,7 @@
 </template>
 
 <script>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import Members from './Members.vue'
 import Finance from './Finance.vue'
 import Statistics from './Statistics.vue'
@@ -57,12 +65,12 @@ export default {
     const notification = ref(null)
 
     const tabs = [
-      { id: 'dashboard', label: '📊 Dashboard', icon: 'dashboard' },
-      { id: 'members', label: '👥 Mitglieder', icon: 'users' },
-      { id: 'finance', label: '💰 Finanzen', icon: 'finance' },
-      { id: 'calendar', label: '📅 Termine', icon: 'calendar' },
-      { id: 'deck', label: '📋 Aufgaben', icon: 'deck' },
-      { id: 'documents', label: '📄 Dokumente', icon: 'documents' }
+      { id: 'dashboard', label: 'Dashboard', icon: 'dashboard' },
+      { id: 'members', label: 'Mitglieder', icon: 'users' },
+      { id: 'finance', label: 'Finanzen', icon: 'finance' },
+      { id: 'calendar', label: 'Termine', icon: 'calendar' },
+      { id: 'deck', label: 'Aufgaben', icon: 'deck' },
+      { id: 'documents', label: 'Dokumente', icon: 'documents' }
     ]
 
     const componentMap = {
@@ -81,14 +89,41 @@ export default {
       }, 3000)
     }
 
+    const currentComponent = computed(() => {
+      return componentMap[activeTab.value]
+    })
+
+    const onKeyDown = (event, tab) => {
+      const index = tabs.findIndex(t => t.id === tab.id)
+      if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
+        const next = (index + 1) % tabs.length
+        activeTab.value = tabs[next].id
+        setTimeout(() => {
+          const nodes = document.querySelectorAll('.verein-tab')
+          if (nodes[next]) nodes[next].focus()
+        }, 0)
+        event.preventDefault()
+      } else if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
+        const prev = (index - 1 + tabs.length) % tabs.length
+        activeTab.value = tabs[prev].id
+        setTimeout(() => {
+          const nodes = document.querySelectorAll('.verein-tab')
+          if (nodes[prev]) nodes[prev].focus()
+        }, 0)
+        event.preventDefault()
+      } else if (event.key === 'Enter' || event.key === ' ') {
+        activeTab.value = tab.id
+        event.preventDefault()
+      }
+    }
+
     return {
       activeTab,
       tabs,
       notification,
       showNotification,
-      get currentComponent() {
-        return componentMap[activeTab.value]
-      }
+      currentComponent
+      ,onKeyDown
     }
   }
 }
@@ -131,8 +166,9 @@ $max-container-width: 1200px;
   background: var(--color-main-background);
   border-bottom: 1px solid var(--color-border);
   position: sticky;
-  top: 0;
+  top: var(--header-height, 50px);
   z-index: 100;
+  z-index: 2100; /* place tabs above header area so they remain clickable */
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 

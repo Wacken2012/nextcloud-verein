@@ -12,7 +12,8 @@ export default defineConfig({
     lib: {
       entry: path.resolve(__dirname, 'js/main.js'),
       name: 'VereinApp',
-      formats: ['es']
+      formats: ['es'],
+      fileName: (format) => `nextcloud-verein.js`
     },
     rollupOptions: {
       external: [],

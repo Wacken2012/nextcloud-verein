@@ -48,38 +48,42 @@ class ValidationService {
 
     /**
      * Validiert eine Gebühr auf Pflichtfelder
-     *
-     * @param int $memberId
-     * @param float $amount
-     * @param string $description
-     * @return array Mit 'valid' (bool) und 'errors' (array)
      */
     public function validateFee(
         int $memberId,
         float $amount,
-        string $description
+        string $dueDate,
+        ?string $description = null
     ): array {
         $errors = [];
 
-        // Member ID validieren
         if ($memberId <= 0) {
             $errors[] = 'Gültige Mitglieds-ID erforderlich';
         }
 
-        // Amount validieren
         if ($amount <= 0) {
             $errors[] = 'Betrag muss größer als 0 sein';
         } elseif ($amount > 100000) {
             $errors[] = 'Betrag ist zu hoch (max. 100.000)';
         }
 
-        // Description validieren
-        if (empty(trim($description))) {
-            $errors[] = 'Beschreibung ist erforderlich';
-        } elseif (strlen($description) < 2) {
-            $errors[] = 'Beschreibung muss mindestens 2 Zeichen lang sein';
-        } elseif (strlen($description) > 500) {
-            $errors[] = 'Beschreibung darf maximal 500 Zeichen lang sein';
+        if (empty(trim($dueDate))) {
+            $errors[] = 'Fälligkeitsdatum ist erforderlich';
+        } else {
+            try {
+                new \DateTime($dueDate);
+            } catch (\Exception $e) {
+                $errors[] = 'Fälligkeitsdatum ist ungültig';
+            }
+        }
+
+        if ($description !== null && trim($description) !== '') {
+            $length = strlen(trim($description));
+            if ($length < 2) {
+                $errors[] = 'Beschreibung muss mindestens 2 Zeichen lang sein';
+            } elseif ($length > 500) {
+                $errors[] = 'Beschreibung darf maximal 500 Zeichen lang sein';
+            }
         }
 
         return [
@@ -150,7 +154,7 @@ class ValidationService {
      * @return bool
      */
     public function validateRole(string $role): bool {
-        $validRoles = ['Mitglied', 'Kassierer', 'Admin'];
+    $validRoles = ['member', 'treasurer', 'admin'];
         return in_array($role, $validRoles, true);
     }
 }

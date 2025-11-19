@@ -166,8 +166,8 @@ export default {
       email: '',
       address: '',
       iban: '',
-      bic: '',
-      role: 'Mitglied'
+  bic: '',
+  role: 'member'
     })
 
     const editData = ref({})
@@ -199,7 +199,7 @@ export default {
           alertErrors.value = response.data.errors || []
           if (alertRef.value) alertRef.value.open()
         } else {
-          formData.value = { name: '', email: '', address: '', iban: '', bic: '', role: 'Mitglied' }
+          formData.value = { name: '', email: '', address: '', iban: '', bic: '', role: 'member' }
           await fetchMembers()
         }
       } catch (error) {
@@ -212,9 +212,22 @@ export default {
       }
     }
 
-    const startEdit = (member) => {
+    const startEdit = async (member) => {
       editingId.value = member.id
       editData.value = { ...member }
+
+      try {
+        const response = await api.getMember(member.id)
+        const latest = response.data?.data || response.data?.member
+        if (latest) {
+          editData.value = { ...latest }
+        }
+      } catch (error) {
+        console.error('Error loading member details:', error)
+        alertError.value = 'Fehler beim Laden des Mitglieds'
+        alertErrors.value = []
+        if (alertRef.value) alertRef.value.open()
+      }
     }
 
     const saveEdit = async (id) => {

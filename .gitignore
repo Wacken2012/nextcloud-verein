@@ -51,3 +51,4 @@ data/
 release/
 *.tar.gz
 
+certificates/*.key

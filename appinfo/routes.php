@@ -7,6 +7,7 @@ return [
         // Dashboard data endpoints
         ['name' => 'member#index', 'url' => '/members', 'verb' => 'GET'],
         ['name' => 'member#create', 'url' => '/members', 'verb' => 'POST'],
+        ['name' => 'member#show', 'url' => '/members/{id}', 'verb' => 'GET'],
         ['name' => 'member#update', 'url' => '/members/{id}', 'verb' => 'PUT'],
         ['name' => 'member#destroy', 'url' => '/members/{id}', 'verb' => 'DELETE'],
         
@@ -16,5 +17,18 @@ return [
         ['name' => 'finance#destroy', 'url' => '/finance/{id}', 'verb' => 'DELETE'],
         
         ['name' => 'sepa#export', 'url' => '/sepa/export', 'verb' => 'GET'],
+
+        // RBAC & permissions
+        ['name' => 'role#index', 'url' => '/roles', 'verb' => 'GET'],
+        ['name' => 'role#store', 'url' => '/roles', 'verb' => 'POST'],
+        ['name' => 'role#show', 'url' => '/roles/{id}', 'verb' => 'GET'],
+        ['name' => 'role#update', 'url' => '/roles/{id}', 'verb' => 'PUT'],
+        ['name' => 'role#destroy', 'url' => '/roles/{id}', 'verb' => 'DELETE'],
+        ['name' => 'role#indexByClubType', 'url' => '/roles/club/{clubType}', 'verb' => 'GET'],
+        ['name' => 'role#getUserRoles', 'url' => '/roles/users/{userId}', 'verb' => 'GET'],
+        ['name' => 'role#assignRole', 'url' => '/roles/users', 'verb' => 'POST'],
+        ['name' => 'role#removeRoles', 'url' => '/roles/users', 'verb' => 'DELETE'],
+
+        ['name' => 'permission#index', 'url' => '/permissions', 'verb' => 'GET'],
     ]
 ];

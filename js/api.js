@@ -3,7 +3,22 @@ import { generateUrl } from '@nextcloud/router'
 
 const instance = axios.create({
   baseURL: generateUrl('/apps/verein/'),
-  withCredentials: true
+  withCredentials: true,
+  headers: {
+    'Content-Type': 'application/x-www-form-urlencoded'
+  }
+})
+
+// Transform plain objects to URL-encoded payloads for Nextcloud controllers
+instance.interceptors.request.use(config => {
+  if (config.data && typeof config.data === 'object' && !FormData.prototype.isPrototypeOf(config.data)) {
+    const params = new URLSearchParams()
+    for (const [key, value] of Object.entries(config.data)) {
+      params.append(key, value ?? '')
+    }
+    config.data = params
+  }
+  return config
 })
 
 // Add error handler
