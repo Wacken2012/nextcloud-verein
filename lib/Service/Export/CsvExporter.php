@@ -82,14 +82,23 @@ class CsvExporter {
 
         $data = [];
         foreach ($members as $member) {
+            // Handle both array and object formats
+            $id = is_array($member) ? ($member['id'] ?? '') : $member->getId();
+            $name = is_array($member) ? ($member['name'] ?? '') : ($member->getFirstname() . ' ' . $member->getLastname());
+            $email = is_array($member) ? ($member['email'] ?? '') : $member->getEmail();
+            $role = is_array($member) ? ($member['role'] ?? '') : $member->getRole();
+            $iban = is_array($member) ? ($member['iban'] ?? '') : $member->getIban();
+            $bic = is_array($member) ? ($member['bic'] ?? '') : $member->getBic();
+            $createdAt = is_array($member) ? ($member['created_at'] ?? '') : $member->getCreatedAt();
+
             $data[] = [
-                $member['id'] ?? $member->getId() ?? '',
-                $member['name'] ?? $member->getFirstname() . ' ' . $member->getLastname() ?? '',
-                $member['email'] ?? $member->getEmail() ?? '',
-                $member['role'] ?? $member->getRole() ?? '',
-                $member['iban'] ?? $member->getIban() ?? '',
-                $member['bic'] ?? $member->getBic() ?? '',
-                $member['created_at'] ?? $member->getCreatedAt() ?? '',
+                $id ?? '',
+                $name ?? '',
+                $email ?? '',
+                $role ?? '',
+                $iban ?? '',
+                $bic ?? '',
+                $createdAt ?? '',
             ];
         }
 
@@ -118,14 +127,23 @@ class CsvExporter {
 
         $data = [];
         foreach ($fees as $fee) {
+            // Handle both array and object formats
+            $id = is_array($fee) ? ($fee['id'] ?? '') : $fee->getId();
+            $memberId = is_array($fee) ? ($fee['member_id'] ?? '') : $fee->getMemberId();
+            $memberName = is_array($fee) ? ($fee['member_name'] ?? '') : $fee->getMemberName();
+            $amount = is_array($fee) ? ($fee['amount'] ?? '') : $fee->getAmount();
+            $period = is_array($fee) ? ($fee['period'] ?? '') : $fee->getPeriod();
+            $status = is_array($fee) ? ($fee['status'] ?? '') : $fee->getStatus();
+            $createdAt = is_array($fee) ? ($fee['created_at'] ?? '') : $fee->getCreatedAt();
+
             $data[] = [
-                $fee['id'] ?? $fee->getId() ?? '',
-                $fee['member_id'] ?? $fee->getMemberId() ?? '',
-                $fee['member_name'] ?? ($fee['member'] ? $fee['member']['name'] : '') ?? '',
-                $fee['amount'] ?? $fee->getAmount() ?? '',
-                $fee['period'] ?? $fee->getPeriod() ?? '',
-                $fee['status'] ?? $fee->getStatus() ?? '',
-                $fee['created_at'] ?? $fee->getCreatedAt() ?? '',
+                $id ?? '',
+                $memberId ?? '',
+                $memberName ?? '',
+                $amount ?? '',
+                $period ?? '',
+                $status ?? '',
+                $createdAt ?? '',
             ];
         }
 

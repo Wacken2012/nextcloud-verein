@@ -69,32 +69,39 @@ class PdfExporter {
 
         $fill = false;
         foreach ($members as $member) {
-            $id = $member['id'] ?? $member->getId() ?? '';
-            $name = $member['name'] ?? ($member->getFirstname() . ' ' . $member->getLastname() ?? '');
-            $email = $member['email'] ?? $member->getEmail() ?? '';
-            $role = $member['role'] ?? $member->getRole() ?? '';
-            $iban = $member['iban'] ?? $member->getIban() ?? '';
-            $bic = $member['bic'] ?? $member->getBic() ?? '';
-            $createdAt = $member['created_at'] ?? $member->getCreatedAt() ?? '';
+            // Handle both array and object formats
+            $id = is_array($member) ? ($member['id'] ?? '') : $member->getId();
+            $name = is_array($member) ? ($member['name'] ?? '') : ($member->getFirstname() . ' ' . $member->getLastname());
+            $email = is_array($member) ? ($member['email'] ?? '') : $member->getEmail();
+            $role = is_array($member) ? ($member['role'] ?? '') : $member->getRole();
+            $iban = is_array($member) ? ($member['iban'] ?? '') : $member->getIban();
+            $bic = is_array($member) ? ($member['bic'] ?? '') : $member->getBic();
+            $createdAt = is_array($member) ? ($member['created_at'] ?? '') : $member->getCreatedAt();
 
             // Format IBAN/BIC (truncate if too long)
-            $iban = strlen($iban) > 20 ? substr($iban, 0, 20) . '...' : $iban;
-            $bic = strlen($bic) > 12 ? substr($bic, 0, 12) . '...' : $bic;
+            $iban = strlen((string)$iban) > 20 ? substr((string)$iban, 0, 20) . '...' : (string)$iban;
+            $bic = strlen((string)$bic) > 12 ? substr((string)$bic, 0, 12) . '...' : (string)$bic;
 
             // Format created date
             if ($createdAt instanceof \DateTime) {
                 $createdAt = $createdAt->format('d.m.Y');
             } elseif (is_string($createdAt)) {
-                $createdAt = (new \DateTime($createdAt))->format('d.m.Y');
+                try {
+                    $createdAt = (new \DateTime($createdAt))->format('d.m.Y');
+                } catch (\Exception $e) {
+                    $createdAt = (string)$createdAt;
+                }
+            } else {
+                $createdAt = (string)$createdAt;
             }
 
             $pdf->Cell($w[0], 6, (string)$id, 1, 0, 'C', $fill);
-            $pdf->Cell($w[1], 6, substr($name, 0, 25), 1, 0, 'L', $fill);
-            $pdf->Cell($w[2], 6, substr($email, 0, 25), 1, 0, 'L', $fill);
-            $pdf->Cell($w[3], 6, substr($role, 0, 12), 1, 0, 'C', $fill);
-            $pdf->Cell($w[4], 6, $iban, 1, 0, 'L', $fill);
-            $pdf->Cell($w[5], 6, $bic, 1, 0, 'L', $fill);
-            $pdf->Cell($w[6], 6, $createdAt, 1, 0, 'C', $fill);
+            $pdf->Cell($w[1], 6, substr((string)$name, 0, 25), 1, 0, 'L', $fill);
+            $pdf->Cell($w[2], 6, substr((string)$email, 0, 25), 1, 0, 'L', $fill);
+            $pdf->Cell($w[3], 6, substr((string)$role, 0, 12), 1, 0, 'C', $fill);
+            $pdf->Cell($w[4], 6, (string)$iban, 1, 0, 'L', $fill);
+            $pdf->Cell($w[5], 6, (string)$bic, 1, 0, 'L', $fill);
+            $pdf->Cell($w[6], 6, (string)$createdAt, 1, 0, 'C', $fill);
             $pdf->Ln();
 
             $fill = !$fill;
@@ -151,33 +158,42 @@ class PdfExporter {
 
         $fill = false;
         foreach ($fees as $fee) {
-            $id = $fee['id'] ?? $fee->getId() ?? '';
-            $memberId = $fee['member_id'] ?? $fee->getMemberId() ?? '';
-            $memberName = $fee['member_name'] ?? ($fee['member']['name'] ?? '');
-            $amount = $fee['amount'] ?? $fee->getAmount() ?? '';
-            $period = $fee['period'] ?? $fee->getPeriod() ?? '';
-            $status = $fee['status'] ?? $fee->getStatus() ?? '';
-            $createdAt = $fee['created_at'] ?? $fee->getCreatedAt() ?? '';
+            // Handle both array and object formats
+            $id = is_array($fee) ? ($fee['id'] ?? '') : $fee->getId();
+            $memberId = is_array($fee) ? ($fee['member_id'] ?? '') : $fee->getMemberId();
+            $memberName = is_array($fee) ? ($fee['member_name'] ?? '') : $fee->getMemberName();
+            $amount = is_array($fee) ? ($fee['amount'] ?? '') : $fee->getAmount();
+            $period = is_array($fee) ? ($fee['period'] ?? '') : $fee->getPeriod();
+            $status = is_array($fee) ? ($fee['status'] ?? '') : $fee->getStatus();
+            $createdAt = is_array($fee) ? ($fee['created_at'] ?? '') : $fee->getCreatedAt();
 
             // Format amount
             if (is_numeric($amount)) {
                 $amount = number_format((float)$amount, 2, ',', '.');
+            } else {
+                $amount = (string)$amount;
             }
 
             // Format created date
             if ($createdAt instanceof \DateTime) {
                 $createdAt = $createdAt->format('d.m.Y');
             } elseif (is_string($createdAt)) {
-                $createdAt = (new \DateTime($createdAt))->format('d.m.Y');
+                try {
+                    $createdAt = (new \DateTime($createdAt))->format('d.m.Y');
+                } catch (\Exception $e) {
+                    $createdAt = (string)$createdAt;
+                }
+            } else {
+                $createdAt = (string)$createdAt;
             }
 
             $pdf->Cell($w[0], 6, (string)$id, 1, 0, 'C', $fill);
             $pdf->Cell($w[1], 6, (string)$memberId, 1, 0, 'C', $fill);
-            $pdf->Cell($w[2], 6, substr($memberName, 0, 23), 1, 0, 'L', $fill);
-            $pdf->Cell($w[3], 6, $amount . ' €', 1, 0, 'R', $fill);
-            $pdf->Cell($w[4], 6, substr($period, 0, 12), 1, 0, 'C', $fill);
-            $pdf->Cell($w[5], 6, substr($status, 0, 12), 1, 0, 'C', $fill);
-            $pdf->Cell($w[6], 6, $createdAt, 1, 0, 'C', $fill);
+            $pdf->Cell($w[2], 6, substr((string)$memberName, 0, 23), 1, 0, 'L', $fill);
+            $pdf->Cell($w[3], 6, (string)$amount . ' €', 1, 0, 'R', $fill);
+            $pdf->Cell($w[4], 6, substr((string)$period, 0, 12), 1, 0, 'C', $fill);
+            $pdf->Cell($w[5], 6, substr((string)$status, 0, 12), 1, 0, 'C', $fill);
+            $pdf->Cell($w[6], 6, (string)$createdAt, 1, 0, 'C', $fill);
             $pdf->Ln();
 
             $fill = !$fill;
@@ -193,7 +209,7 @@ class PdfExporter {
 
         return [
             'content' => $content,
-            'filename' => 'fees_' . date('Y-m-d_His') . '.pdf',
+            'filename' => 'members_' . date('Y-m-d_His') . '.pdf',
             'mimeType' => 'application/pdf',
         ];
     }

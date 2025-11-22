@@ -4,8 +4,14 @@ namespace OCA\Verein\AppInfo;
 
 use OCA\Verein\Db\RoleMapper;
 use OCA\Verein\Db\UserRoleMapper;
+use OCA\Verein\Db\MemberMapper;
+use OCA\Verein\Db\FeeMapper;
 use OCA\Verein\Middleware\AuthorizationMiddleware;
 use OCA\Verein\Service\RBAC\RoleService;
+use OCA\Verein\Service\Export\CsvExporter;
+use OCA\Verein\Service\Export\PdfExporter;
+use OCA\Verein\Service\MemberService;
+use OCA\Verein\Service\FeeService;
 use OCA\Verein\Settings\AdminSection;
 use OCA\Verein\Settings\AdminSettings;
 use OCP\AppFramework\App;
@@ -42,6 +48,28 @@ class Application extends App implements IBootstrap {
                 $container->query(RoleService::class),
                 $container->query(IUserSession::class),
                 $container->query(ILogger::class)
+            );
+        });
+
+        // Register export services
+        $context->registerService(CsvExporter::class, function (IAppContainer $container): CsvExporter {
+            return new CsvExporter();
+        });
+
+        $context->registerService(PdfExporter::class, function (IAppContainer $container): PdfExporter {
+            return new PdfExporter();
+        });
+
+        // Register member and fee services
+        $context->registerService(MemberService::class, function (IAppContainer $container): MemberService {
+            return new MemberService(
+                $container->query(MemberMapper::class)
+            );
+        });
+
+        $context->registerService(FeeService::class, function (IAppContainer $container): FeeService {
+            return new FeeService(
+                $container->query(FeeMapper::class)
             );
         });
 
