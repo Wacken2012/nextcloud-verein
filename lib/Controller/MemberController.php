@@ -31,7 +31,12 @@ class MemberController extends Controller {
     #[RequirePermission('verein.member.view')]
     public function index() {
         try {
-            $members = $this->memberService->findAll();
+            $q = (string)$this->request->getParam('query', '');
+            if ($q !== '') {
+                $members = $this->memberService->search($q);
+            } else {
+                $members = $this->memberService->findAll();
+            }
             return new JSONResponse([
                 'status' => 'ok',
                 'members' => $members

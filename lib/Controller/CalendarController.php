@@ -1,6 +1,7 @@
 <?php
 namespace OCA\Verein\Controller;
 
+use OCA\Verein\Attributes\RequirePermission;
 use OCP\AppFramework\Controller;
 use OCP\IRequest;
 
@@ -13,6 +14,7 @@ class CalendarController extends Controller {
      * @NoAdminRequired
      * @NoCSRFRequired
      */
+    #[RequirePermission('verein.member.view')]
     public function index() {
         // TODO: integrate with Calendar app (CalDAV)
         return ['status' => 'ok', 'source' => 'calendar', 'events' => []];

@@ -6,6 +6,8 @@ use OCA\Verein\Db\RoleMapper;
 use OCA\Verein\Db\UserRoleMapper;
 use OCA\Verein\Middleware\AuthorizationMiddleware;
 use OCA\Verein\Service\RBAC\RoleService;
+use OCA\Verein\Settings\AdminSection;
+use OCA\Verein\Settings\AdminSettings;
 use OCP\AppFramework\App;
 use OCP\AppFramework\Bootstrap\IBootContext;
 use OCP\AppFramework\Bootstrap\IBootstrap;
@@ -14,6 +16,8 @@ use OCP\AppFramework\IAppContainer;
 use OCP\IGroupManager;
 use OCP\ILogger;
 use OCP\IUserSession;
+use OCP\IURLGenerator;
+use OCP\IL10N;
 
 class Application extends App implements IBootstrap {
     public const APP_ID = 'verein';
@@ -42,9 +46,19 @@ class Application extends App implements IBootstrap {
         });
 
         $context->registerMiddleware(AuthorizationMiddleware::class);
+
+        // Register admin settings classes
+        $context->registerService(AdminSection::class, function (IAppContainer $c): AdminSection {
+            return new AdminSection($c);
+        });
+
+        $context->registerService(AdminSettings::class, function (IAppContainer $c): AdminSettings {
+            return new AdminSettings($c);
+        });
     }
 
     public function boot(IBootContext $context): void {
-        // No-op for now; reserved for future boot-time hooks.
+        // Nextcloud will auto-discover IIconSection and ISettings implementations
+        // This is already handled by the bootstrap mechanism
     }
 }

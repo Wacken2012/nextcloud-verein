@@ -3,16 +3,13 @@ namespace OCA\Verein\Settings;
 
 use OCP\AppFramework\Http\TemplateResponse;
 use OCP\Settings\ISettings;
-use OCA\Verein\Service\RBAC\RoleService;
-use OCA\Verein\Db\RoleMapper;
+use OCP\AppFramework\IAppContainer;
 
 class AdminSettings implements ISettings {
-    private RoleService $roleService;
-    private RoleMapper $roleMapper;
+    private IAppContainer $container;
 
-    public function __construct(RoleService $roleService, RoleMapper $roleMapper) {
-        $this->roleService = $roleService;
-        $this->roleMapper = $roleMapper;
+    public function __construct(IAppContainer $container) {
+        $this->container = $container;
     }
 
     /**
@@ -20,7 +17,8 @@ class AdminSettings implements ISettings {
      */
     public function getForm(): TemplateResponse {
         try {
-            $roles = $this->roleMapper->findAll();
+            $roleMapper = $this->container->query('OCA\\Verein\\Db\\RoleMapper');
+            $roles = $roleMapper->findAll();
             $rolesData = array_map(fn($r) => $r->jsonSerialize(), $roles);
         } catch (\Exception $e) {
             $rolesData = [];
@@ -38,7 +36,7 @@ class AdminSettings implements ISettings {
      * @return string the section ID
      */
     public function getSection(): string {
-        return 'verein';
+        return 'verein';  // Must match AdminSection::getID()
     }
 
     /**

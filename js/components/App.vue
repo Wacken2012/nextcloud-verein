@@ -29,6 +29,7 @@
         <component
           :is="currentComponent"
           :key="activeTab"
+          @navigate="(tab) => { activeTab = tab }"
         />
       </div>
       </div>
@@ -133,7 +134,7 @@ export default {
 // Responsive Breakpoints
 $breakpoint-tablet: 768px;
 $breakpoint-desktop: 1024px;
-$max-container-width: 1200px;
+$max-container-width: 1200px; // retained for fallback but not enforced for full-width layout
 
 ::-webkit-scrollbar {
   width: 8px;
@@ -175,15 +176,19 @@ $max-container-width: 1200px;
 .verein-tabs-container {
   display: flex;
   gap: 0;
-  max-width: $max-container-width;
-  margin: 0 auto;
-  width: 100%;
+  /* allow the tab bar to use the full available width inside Nextcloud's content area
+     but keep a small horizontal padding so it doesn't touch browser edges */
+  max-width: none;
+  margin: 0 20px;
+  width: calc(100% - 40px);
   padding: 0;
   overflow-x: auto;
   overflow-y: hidden;
   -webkit-overflow-scrolling: touch;
 
   @media (max-width: $breakpoint-tablet) {
+    margin: 0;
+    width: 100%;
     overflow-x: auto;
     scroll-behavior: smooth;
   }
@@ -258,14 +263,18 @@ $max-container-width: 1200px;
 }
 
 .verein-container {
-  width: 100%;
-  max-width: $max-container-width;
-  margin: 0 auto;
+  /* expand to use the available content width inside Nextcloud while
+     keeping a comfortable gutter */
+  width: calc(100% - 48px);
+  max-width: none;
+  margin: 0 24px;
   padding: 1rem;
   display: flex;
   flex-direction: column;
 
   @media (max-width: $breakpoint-tablet) {
+    width: 100%;
+    margin: 0;
     padding: 1rem 0.75rem;
   }
 

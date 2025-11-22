@@ -99,35 +99,7 @@ $roles = $_['roles'] ?? [];
 }
 </style>
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const addBtn = document.getElementById('btn-add-role');
-    
-    if (addBtn) {
-        addBtn.addEventListener('click', function() {
-            // TODO: Öffne Modal zum Erstellen einer neuen Rolle
-            alert('Neue Rolle erstellen - wird noch implementiert');
-        });
-    }
-
-    // Edit buttons
-    document.querySelectorAll('.btn-edit-role').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const roleId = this.closest('.role-row').dataset.roleId;
-            // TODO: Öffne Modal zum Bearbeiten
-            alert('Rolle ' + roleId + ' bearbeiten - wird noch implementiert');
-        });
-    });
-
-    // Delete buttons
-    document.querySelectorAll('.btn-delete-role').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const roleId = this.closest('.role-row').dataset.roleId;
-            if (confirm('Rolle wirklich löschen?')) {
-                // TODO: API-Call zum Löschen
-                alert('Rolle ' + roleId + ' löschen - wird noch implementiert');
-            }
-        });
-    });
-});
-</script>
+<?php
+// Move admin page JS into an external file to comply with CSP (avoid inline scripts)
+script('verein', 'admin-roles');
+?>

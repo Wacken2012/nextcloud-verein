@@ -23,7 +23,7 @@
     <!-- Statistik-Widgets -->
     <div v-else class="stats-grid">
       <!-- Widget: Mitglieder -->
-      <div class="stat-widget">
+      <div class="stat-widget" role="button" tabindex="0" @click="emit('navigate','members')" @keydown.enter="emit('navigate','members')">
         <div class="stat-header">
           <h3 class="stat-title">👥 Mitglieder</h3>
           <span class="stat-icon primary">👥</span>
@@ -33,7 +33,7 @@
       </div>
 
       <!-- Widget: Offene Gebühren -->
-      <div class="stat-widget warning">
+      <div class="stat-widget warning" role="button" tabindex="0" @click="emit('navigate','finance')" @keydown.enter="emit('navigate','finance')">
         <div class="stat-header">
           <h3 class="stat-title">📋 Offene Gebühren</h3>
           <span class="stat-icon warning-icon">📋</span>
@@ -43,7 +43,7 @@
       </div>
 
       <!-- Widget: Bezahlte Gebühren -->
-      <div class="stat-widget success">
+      <div class="stat-widget success" role="button" tabindex="0" @click="emit('navigate','finance')" @keydown.enter="emit('navigate','finance')">
         <div class="stat-header">
           <h3 class="stat-title">✓ Bezahlte Gebühren</h3>
           <span class="stat-icon success-icon">✓</span>
@@ -53,7 +53,7 @@
       </div>
 
       <!-- Widget: Überfällige Gebühren -->
-      <div class="stat-widget error">
+      <div class="stat-widget error" role="button" tabindex="0" @click="emit('navigate','finance')" @keydown.enter="emit('navigate','finance')">
         <div class="stat-header">
           <h3 class="stat-title">⚠️ Überfällige Gebühren</h3>
           <span class="stat-icon error-icon">⚠️</span>
@@ -100,6 +100,7 @@ import {
   PointElement,
   LineElement,
   BarElement,
+  Filler,
   Title,
   Tooltip,
   Legend,
@@ -108,6 +109,9 @@ import {
 import api from '../api'
 import Alert from './Alert.vue'
 
+// allow widgets to ask the parent to navigate to a different tab
+const emit = defineEmits(['navigate'])
+
 // Registriere ChartJS Komponenten
 ChartJS.register(
   CategoryScale,
@@ -115,6 +119,7 @@ ChartJS.register(
   PointElement,
   LineElement,
   BarElement,
+  Filler,
   Title,
   Tooltip,
   Legend,
@@ -307,10 +312,20 @@ $breakpoint-tablet: 768px;
 $breakpoint-mobile: 480px;
 
 .statistics-container {
-  display: flex;
-  flex-direction: column;
+  display: block;
   gap: 2rem;
-  width: 100%;
+  /* use the available width but limit for readability on very large screens */
+  width: calc(100% - 48px);
+  max-width: 1600px;
+  margin: 0 24px;
+
+  @media (min-width: 1100px) {
+    /* two-column layout: left column for stat cards, right column for charts */
+    display: grid;
+    grid-template-columns: 360px 1fr;
+    gap: 24px 32px;
+    align-items: start;
+  }
 }
 
 .section-header {
@@ -375,18 +390,18 @@ $breakpoint-mobile: 480px;
 /* Statistik-Widgets */
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 16px;
+  grid-template-columns: 1fr;
+  gap: 18px;
   width: 100%;
 
-  @media (max-width: $breakpoint-tablet) {
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 12px;
+  @media (min-width: 1100px) {
+    /* stack stat cards vertically in the left column on wide screens */
+    grid-auto-flow: row;
   }
 
-  @media (max-width: $breakpoint-mobile) {
+  @media (max-width: $breakpoint-tablet) {
     grid-template-columns: 1fr;
-    gap: 10px;
+    gap: 12px;
   }
 }
 
@@ -500,9 +515,15 @@ $breakpoint-mobile: 480px;
 /* Charts Grid */
 .charts-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  grid-template-columns: 1fr;
   gap: 20px;
   width: 100%;
+  align-items: start;
+
+  @media (min-width: 1100px) {
+    /* allow two charts side-by-side in the right column */
+    grid-template-columns: repeat(2, minmax(320px, 1fr));
+  }
 
   @media (max-width: $breakpoint-tablet) {
     grid-template-columns: 1fr;

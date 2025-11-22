@@ -283,8 +283,17 @@ export default {
 
 <style scoped lang="scss">
 .members-container {
-  max-width: 1200px;
-  margin: 0 auto;
+  /* on wide screens use a two-column layout: form on the left, list on the right */
+  width: calc(100% - 48px);
+  max-width: none;
+  margin: 0 24px;
+
+  @media (min-width: 1100px) {
+    display: grid;
+    grid-template-columns: 360px 1fr;
+    gap: 24px;
+    align-items: start;
+  }
 }
 
 .form-section,
@@ -301,6 +310,10 @@ export default {
     font-size: 18px;
     color: var(--color-text);
   }
+}
+
+@media (min-width: 1100px) {
+  .form-section { margin-bottom: 0; }
 }
 
 .member-form {

@@ -28,4 +28,9 @@ A comprehensive club/association management solution for Nextcloud with member m
             <order>10</order>
         </navigation>
     </navigations>
+
+    <settings>
+        <admin>OCA\Verein\Settings\AdminSettings</admin>
+        <admin-section>OCA\Verein\Settings\AdminSection</admin-section>
+    </settings>
 </info>

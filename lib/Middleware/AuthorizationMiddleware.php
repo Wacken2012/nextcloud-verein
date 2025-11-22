@@ -38,6 +38,7 @@ class AuthorizationMiddleware extends Middleware {
 
         $user = $this->userSession->getUser();
         if ($user === null) {
+            $this->logPermissionViolation('unauthenticated', 'N/A', $controller, $methodName);
             return $this->forbiddenResponse('Authentication required');
         }
 
@@ -45,10 +46,7 @@ class AuthorizationMiddleware extends Middleware {
         foreach ($requirements as $requirement) {
             $permission = $requirement->getPermission();
             if (!$this->roleService->userHasPermission($userId, $permission)) {
-                $this->logger->warning('RBAC: permission denied', [
-                    'user' => $userId,
-                    'permission' => $permission,
-                ]);
+                $this->logPermissionViolation($userId, $permission, $controller, $methodName);
                 return $this->forbiddenResponse(sprintf('Missing permission: %s', $permission));
             }
         }
@@ -95,5 +93,27 @@ class AuthorizationMiddleware extends Middleware {
             'status' => 'error',
             'message' => $message,
         ], 403);
+    }
+
+    private function logPermissionViolation(
+        string $userId,
+        string $permission,
+        object $controller,
+        string $methodName
+    ): void {
+        $controllerName = get_class($controller);
+        $timestamp = date('Y-m-d H:i:s');
+        
+        $logEntry = [
+            'timestamp' => $timestamp,
+            'user' => $userId,
+            'permission' => $permission,
+            'controller' => $controllerName,
+            'method' => $methodName,
+            'ip' => $_SERVER['REMOTE_ADDR'] ?? 'unknown',
+            'event_type' => 'permission_denied',
+        ];
+
+        $this->logger->warning('RBAC: Permission denied', $logEntry);
     }
 }

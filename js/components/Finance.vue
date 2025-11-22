@@ -296,8 +296,17 @@ export default {
 
 <style scoped lang="scss">
 .finance-container {
-  max-width: 1200px;
-  margin: 0 auto;
+  /* two-column layout for wide screens: form on the left, stats/table on the right */
+  width: calc(100% - 48px);
+  max-width: none;
+  margin: 0 24px;
+
+  @media (min-width: 1100px) {
+    display: grid;
+    grid-template-columns: 360px 1fr;
+    gap: 24px;
+    align-items: start;
+  }
 }
 
 .form-section,
