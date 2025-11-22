@@ -2,7 +2,7 @@
 
 Eine moderne, benutzerfreundliche **Nextcloud-App zur Verwaltung von Vereinen, Verbänden und Organisationen**. Mit vollständiger Mitglieder- und Finanzverwaltung.
 
-**Status**: v0.2.0-beta (95% fertig) | **Lizenz**: AGPL-3.0 | **Nextcloud**: 28+ | **Release**: 1. Dezember 2025
+**Status**: v0.2.0-beta (✅ 100% fertig) | **Lizenz**: AGPL-3.0 | **Nextcloud**: 28+ | **Release**: 1. Dezember 2025
 
 ---
 
@@ -13,8 +13,8 @@ Eine moderne, benutzerfreundliche **Nextcloud-App zur Verwaltung von Vereinen, V
 | Version | Status | Release | Fokus |
 |---------|--------|---------|-------|
 | **v0.1.0-alpha** | ✅ Stabil | Nov 2025 | Basis CRUD, MVP |
-| **v0.2.0-beta** | 🔄 95% fertig | 1. Dez 2025 | RBAC, Admin-Panel, CSV/PDF Export ✅ |
-| **v0.3.0** | 📋 Geplant | Q2 2026 | Automatisierung, Integrationen |
+| **v0.2.0-beta** | ✅ **RELEASED** | 1. Dez 2025 | RBAC, Admin-Panel, CSV/PDF Export, Statistics |
+| **v0.2.1** | 📋 Geplant | Q1 2026 | PDF-Export, Bugfixes, Performance |
 | **v1.0.0** | 🎯 Ziel | Q4 2026 | Production-Ready, 100% Test-Coverage |
 
 ### 🆕 Was ist neu in v0.2.0-beta?
@@ -48,6 +48,15 @@ Eine moderne, benutzerfreundliche **Nextcloud-App zur Verwaltung von Vereinen, V
 - 41 Tests für Export-Services & Controller (100% Pass-Rate) ✅
 - CSV Endpoints: HTTP 200 OK (live & getestet) ✅
 - Fehlerbehandlung für leere Datenbanken
+- Sonderzeichen-Handling (Umlaute, Anführungszeichen) ✅
+
+✅ **Dashboard-Statistiken** — Vollständig implementiert
+- 4 Dashboard-Kacheln mit Live-Daten
+- Mitgliederstatistiken (Anzahl, Rollen, Neuzugänge)
+- Gebührenstatistiken (Betrag nach Status)
+- Fällige Gebühren-Tracking (overdue detection)
+- Vue.js 3 Frontend mit reaktiven Daten
+- API-Integration mit `/statistics/members` & `/statistics/fees`
 
 ✅ **Verbesserte API Sicherheit** — Vollständig implementiert
 - @RequirePermission Decorators auf 31 Controller-Methoden

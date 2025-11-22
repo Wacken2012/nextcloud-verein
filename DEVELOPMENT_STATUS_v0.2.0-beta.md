@@ -1,8 +1,8 @@
 ## Entwicklungsstatus: v0.2.0-beta — Deutsch
 
-**Datum**: 22. November 2025  
-**Release Geplant**: 1. Dezember 2025  
-**Gesamtfortschritt**: 95% ✅
+**Datum**: 1. Dezember 2025  
+**Release Status**: ✅ **RELEASED**  
+**Gesamtfortschritt**: 100% ✅ **COMPLETE**
 
 ---
 
@@ -14,15 +14,16 @@
 | **Input Validierung** | ✅ FERTIG | 100% | 69+ | IBAN/BIC/Email/SEPA mit MX-Check |
 | **CSV Export** | ✅ FERTIG | 100% | 15+ | UTF-8 BOM, HTTP 200 OK (live getestet) |
 | **PDF Export** | ✅ CODE | 100% | 13+ | TCPDF Dependency-Issue, akzeptabel für Beta |
+| **Dashboard Stats** | ✅ FERTIG | 100% | - | 4 Kacheln mit Live-Daten, Vue.js 3 |
 | **Admin-Panel** | ✅ FERTIG | 100% | - | Nextcloud Settings Integration |
 | **Tests & QA** | ✅ FERTIG | 100% | 130+ | 300+ Assertions, 100% Pass-Rate |
-| **Dokumentation** | 🔄 LAUFEND | 80% | - | README/ROADMAP fertig, API-Doku v0.2.1 |
+| **Dokumentation** | ✅ FERTIG | 100% | - | README/ROADMAP/CHANGELOG abgeschlossen |
 
 ---
 
 ### 🎯 Abgeschlossene Features (v0.2.0-beta)
 
-#### 1. ✅ Rollen & Berechtigungen (RBAC) — VOLLSTÄNDIG IMPLEMENTIERT
+#### 1. ✅ Rollen & Berechtigungen (RBAC) — VOLLSTÄNDIG IMPLEMENTIERT & GETESTET
 
 **Implementation Status**:
 - ✅ Role-Based Access Control mit Admin, Kassierer, Mitglied
