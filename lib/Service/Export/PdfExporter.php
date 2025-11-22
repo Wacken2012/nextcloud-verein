@@ -2,7 +2,11 @@
 
 namespace OCA\Verein\Service\Export;
 
-use TCPDF;
+// Require TCPDF if available
+$tcpdf_file = __DIR__ . '/../../../../vendor/tecnickcom/tcpdf/tcpdf.php';
+if (file_exists($tcpdf_file)) {
+    require_once $tcpdf_file;
+}
 
 /**
  * PDF Exporter using TCPDF
@@ -13,8 +17,8 @@ class PdfExporter {
      *
      * @return TCPDF
      */
-    private function createPdf(): TCPDF {
-        $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+    private function createPdf() {
+        $pdf = new \TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 
         // Set document properties
         $pdf->SetCreator('Vereins-App');
