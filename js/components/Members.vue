@@ -57,7 +57,17 @@
 
     <!-- Members Table -->
     <div class="table-section">
-      <h2>Mitgliederliste</h2>
+      <div class="section-header">
+        <h2>Mitgliederliste</h2>
+        <div class="export-buttons">
+          <button @click="exportMembersAsCsv" class="btn btn-secondary" title="Mitglieder als CSV herunterladen">
+            📊 CSV Export
+          </button>
+          <button @click="exportMembersAsPdf" class="btn btn-secondary" title="Mitglieder als PDF herunterladen">
+            📄 PDF Export
+          </button>
+        </div>
+      </div>
       <div class="table-wrapper">
         <table class="members-table">
           <thead>
@@ -145,6 +155,8 @@
 
 <script>
 import { ref, onMounted } from 'vue'
+import axios from 'axios'
+import { generateUrl } from '@nextcloud/router'
 import { api } from '../api'
 import Alert from './Alert.vue'
 
@@ -262,6 +274,43 @@ export default {
       }
     }
 
+    const exportMembersAsCsv = async () => {
+      try {
+        const response = await axios.get(generateUrl('/apps/verein/export/members/csv'), {
+          responseType: 'blob'
+        })
+        downloadFile(response.data, 'members.csv', 'text/csv')
+        alert('Mitglieder als CSV exportiert')
+      } catch (error) {
+        console.error('Error exporting CSV:', error)
+        alert('Fehler beim CSV-Export')
+      }
+    }
+
+    const exportMembersAsPdf = async () => {
+      try {
+        const response = await axios.get(generateUrl('/apps/verein/export/members/pdf'), {
+          responseType: 'blob'
+        })
+        downloadFile(response.data, 'members.pdf', 'application/pdf')
+        alert('Mitglieder als PDF exportiert')
+      } catch (error) {
+        console.error('Error exporting PDF:', error)
+        alert('Fehler beim PDF-Export')
+      }
+    }
+
+    const downloadFile = (blob, filename, mimeType) => {
+      const url = window.URL.createObjectURL(new Blob([blob], { type: mimeType }))
+      const link = document.createElement('a')
+      link.href = url
+      link.setAttribute('download', filename)
+      document.body.appendChild(link)
+      link.click()
+      link.parentNode.removeChild(link)
+      window.URL.revokeObjectURL(url)
+    }
+
     return {
       members,
       loading,
@@ -273,6 +322,8 @@ export default {
       saveEdit,
       cancelEdit,
       deleteMember,
+      exportMembersAsCsv,
+      exportMembersAsPdf,
       alertRef,
       alertError,
       alertErrors
@@ -310,6 +361,24 @@ export default {
     font-size: 18px;
     color: var(--color-text);
   }
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+
+  h2 {
+    margin: 0;
+    font-size: 18px;
+    color: var(--color-text);
+  }
+}
+
+.export-buttons {
+  display: flex;
+  gap: 8px;
 }
 
 @media (min-width: 1100px) {
