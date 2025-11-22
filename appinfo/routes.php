@@ -18,6 +18,12 @@ return [
         
         ['name' => 'sepa#export', 'url' => '/sepa/export', 'verb' => 'GET'],
 
+        // Export endpoints
+        ['name' => 'export#exportMembersAsCsv', 'url' => '/export/members/csv', 'verb' => 'GET'],
+        ['name' => 'export#exportMembersAsPdf', 'url' => '/export/members/pdf', 'verb' => 'GET'],
+        ['name' => 'export#exportFeesAsCsv', 'url' => '/export/fees/csv', 'verb' => 'GET'],
+        ['name' => 'export#exportFeesAsPdf', 'url' => '/export/fees/pdf', 'verb' => 'GET'],
+
         // RBAC & permissions
         ['name' => 'role#index', 'url' => '/roles', 'verb' => 'GET'],
         ['name' => 'role#store', 'url' => '/roles', 'verb' => 'POST'],
