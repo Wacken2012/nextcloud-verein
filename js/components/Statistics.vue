@@ -52,6 +52,16 @@
         <p class="stat-label">{{ statistics.paidCount }} Einträge</p>
       </div>
 
+      <!-- Widget: Fällige Gebühren -->
+      <div class="stat-widget warning" role="button" tabindex="0" @click="emit('navigate','finance')" @keydown.enter="emit('navigate','finance')">
+        <div class="stat-header">
+          <h3 class="stat-title">📋 Fällige Gebühren</h3>
+          <span class="stat-icon warning-icon">📋</span>
+        </div>
+        <p class="stat-value">{{ formatCurrency(statistics.totalDue) }}</p>
+        <p class="stat-label">{{ statistics.dueCount }} Einträge</p>
+      </div>
+
       <!-- Widget: Überfällige Gebühren -->
       <div class="stat-widget error" role="button" tabindex="0" @click="emit('navigate','finance')" @keydown.enter="emit('navigate','finance')">
         <div class="stat-header">
@@ -131,9 +141,11 @@ interface Statistics {
   totalOpen: number
   totalPaid: number
   totalOverdue: number
+  totalDue: number
   openCount: number
   paidCount: number
   overdueCount: number
+  dueCount: number
 }
 
 const loading = ref(true)
@@ -146,9 +158,11 @@ const statistics = reactive<Statistics>({
   totalOpen: 0,
   totalPaid: 0,
   totalOverdue: 0,
+  totalDue: 0,
   openCount: 0,
   paidCount: 0,
   overdueCount: 0,
+  dueCount: 0,
 })
 
 // Chart Daten und Optionen
@@ -246,41 +260,26 @@ const loadStatistics = async () => {
     errorMessage.value = ''
     errorList.value = []
 
-    // Lade Mitglieder
-    const membersResponse = await api.getMembers()
-    if (membersResponse.status === 'ok') {
-      statistics.memberCount = membersResponse.members?.length || 0
+    // Lade Mitglieder-Statistiken
+    const memberStatsResponse = await api.getMemberStatistics()
+    if (memberStatsResponse.data.status === 'ok') {
+      statistics.memberCount = memberStatsResponse.data.data.total || 0
     }
 
-    // Lade Gebühren
-    const feesResponse = await api.getFees()
-    if (feesResponse.status === 'ok') {
-      const fees = feesResponse.fees || []
+    // Lade Gebühren-Statistiken
+    const feeStatsResponse = await api.getFeeStatistics()
+    if (feeStatsResponse.data.status === 'ok') {
+      const feeData = feeStatsResponse.data.data
 
-      // Berechne Statistiken
-      statistics.totalOpen = 0
-      statistics.totalPaid = 0
-      statistics.totalOverdue = 0
-      statistics.openCount = 0
-      statistics.paidCount = 0
-      statistics.overdueCount = 0
-
-      fees.forEach((fee) => {
-        switch (fee.status) {
-          case 'open':
-            statistics.totalOpen += fee.amount
-            statistics.openCount++
-            break
-          case 'paid':
-            statistics.totalPaid += fee.amount
-            statistics.paidCount++
-            break
-          case 'overdue':
-            statistics.totalOverdue += fee.amount
-            statistics.overdueCount++
-            break
-        }
-      })
+      // Aktualisiere Statistiken
+      statistics.totalOpen = feeData.pendingAmount || 0
+      statistics.totalPaid = feeData.paidAmount || 0
+      statistics.totalOverdue = feeData.overdueAmount || 0
+      statistics.totalDue = feeData.dueAmount || 0
+      statistics.openCount = feeData.counts?.pending || 0
+      statistics.paidCount = feeData.counts?.paid || 0
+      statistics.overdueCount = feeData.counts?.overdue || 0
+      statistics.dueCount = feeData.counts?.due || 0
 
       // Aktualisiere Chart-Daten
       feeStatusChartData.value.datasets[0].data = [

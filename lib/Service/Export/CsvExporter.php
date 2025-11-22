@@ -84,7 +84,7 @@ class CsvExporter {
         foreach ($members as $member) {
             // Handle both array and object formats
             $id = is_array($member) ? ($member['id'] ?? '') : $member->getId();
-            $name = is_array($member) ? ($member['name'] ?? '') : ($member->getFirstname() . ' ' . $member->getLastname());
+            $name = is_array($member) ? ($member['name'] ?? '') : $member->getName();
             $email = is_array($member) ? ($member['email'] ?? '') : $member->getEmail();
             $role = is_array($member) ? ($member['role'] ?? '') : $member->getRole();
             $iban = is_array($member) ? ($member['iban'] ?? '') : $member->getIban();
@@ -130,9 +130,9 @@ class CsvExporter {
             // Handle both array and object formats
             $id = is_array($fee) ? ($fee['id'] ?? '') : $fee->getId();
             $memberId = is_array($fee) ? ($fee['member_id'] ?? '') : $fee->getMemberId();
-            $memberName = is_array($fee) ? ($fee['member_name'] ?? '') : $fee->getMemberName();
+            $memberName = is_array($fee) ? ($fee['member_name'] ?? '') : '';
             $amount = is_array($fee) ? ($fee['amount'] ?? '') : $fee->getAmount();
-            $period = is_array($fee) ? ($fee['period'] ?? '') : $fee->getPeriod();
+            $period = is_array($fee) ? ($fee['period'] ?? '') : '';
             $status = is_array($fee) ? ($fee['status'] ?? '') : $fee->getStatus();
             $createdAt = is_array($fee) ? ($fee['created_at'] ?? '') : $fee->getCreatedAt();
 

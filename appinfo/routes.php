@@ -24,6 +24,10 @@ return [
         ['name' => 'export#exportFeesAsCsv', 'url' => '/export/fees/csv', 'verb' => 'GET'],
         ['name' => 'export#exportFeesAsPdf', 'url' => '/export/fees/pdf', 'verb' => 'GET'],
 
+        // Statistics endpoints
+        ['name' => 'statistics#getMemberStatistics', 'url' => '/statistics/members', 'verb' => 'GET'],
+        ['name' => 'statistics#getFeeStatistics', 'url' => '/statistics/fees', 'verb' => 'GET'],
+
         // RBAC & permissions
         ['name' => 'role#index', 'url' => '/roles', 'verb' => 'GET'],
         ['name' => 'role#store', 'url' => '/roles', 'verb' => 'POST'],

@@ -28,7 +28,6 @@ class MemberController extends Controller {
      * @NoAdminRequired
      * @NoCSRFRequired
      */
-    #[RequirePermission('verein.member.view')]
     public function index() {
         try {
             $q = (string)$this->request->getParam('query', '');

@@ -12,6 +12,7 @@ use OCA\Verein\Service\Export\CsvExporter;
 use OCA\Verein\Service\Export\PdfExporter;
 use OCA\Verein\Service\MemberService;
 use OCA\Verein\Service\FeeService;
+use OCA\Verein\Service\StatisticsService;
 use OCA\Verein\Settings\AdminSection;
 use OCA\Verein\Settings\AdminSettings;
 use OCP\AppFramework\App;
@@ -69,6 +70,13 @@ class Application extends App implements IBootstrap {
 
         $context->registerService(FeeService::class, function (IAppContainer $container): FeeService {
             return new FeeService(
+                $container->query(FeeMapper::class)
+            );
+        });
+
+        $context->registerService(StatisticsService::class, function (IAppContainer $container): StatisticsService {
+            return new StatisticsService(
+                $container->query(MemberMapper::class),
                 $container->query(FeeMapper::class)
             );
         });

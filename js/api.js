@@ -48,7 +48,15 @@ export const api = {
     return instance.delete(`members/${id}`)
   },
 
-  // Finance
+  // Statistics
+  getMemberStatistics() {
+    return instance.get('statistics/members')
+  },
+  getFeeStatistics() {
+    return instance.get('statistics/fees')
+  },
+
+  // Fees
   getFees() {
     return instance.get('finance')
   },

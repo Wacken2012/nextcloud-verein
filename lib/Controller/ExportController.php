@@ -11,7 +11,7 @@ use OCA\Verein\Service\MemberService;
 use OCA\Verein\Service\FeeService;
 use OCA\Verein\Service\Export\CsvExporter;
 use OCA\Verein\Service\Export\PdfExporter;
-use OCA\Verein\Attributes\RequirePermission;
+use Psr\Log\LoggerInterface;
 
 /**
  * Export Controller
@@ -22,6 +22,7 @@ class ExportController extends Controller {
     private FeeService $feeService;
     private CsvExporter $csvExporter;
     private PdfExporter $pdfExporter;
+    private LoggerInterface $logger;
 
     public function __construct(
         string $appName,
@@ -29,20 +30,22 @@ class ExportController extends Controller {
         MemberService $memberService,
         FeeService $feeService,
         CsvExporter $csvExporter,
-        PdfExporter $pdfExporter
+        PdfExporter $pdfExporter,
+        LoggerInterface $logger
     ) {
         parent::__construct($appName, $request);
         $this->memberService = $memberService;
         $this->feeService = $feeService;
         $this->csvExporter = $csvExporter;
         $this->pdfExporter = $pdfExporter;
+        $this->logger = $logger;
     }
 
     /**
      * Export members as CSV
      *
      * @NoCSRFRequired
-     * @RequirePermission verein.member.export
+     * @NoAdminRequired
      * @return DataDownloadResponse
      */
     public function exportMembersAsCsv(): DataDownloadResponse {
@@ -50,15 +53,9 @@ class ExportController extends Controller {
             // Get all members
             $members = $this->memberService->findAll();
 
-            if (empty($members)) {
-                // Return empty CSV with headers only
-                $formatted = $this->csvExporter->formatMembers([]);
-                $result = $this->csvExporter->export($formatted['data'], $formatted['headers'], 'members');
-            } else {
-                // Format and export
-                $formatted = $this->csvExporter->formatMembers($members);
-                $result = $this->csvExporter->export($formatted['data'], $formatted['headers'], 'members');
-            }
+            // Format and export (works with empty array too)
+            $formatted = $this->csvExporter->formatMembers($members);
+            $result = $this->csvExporter->export($formatted['data'], $formatted['headers'], 'members');
 
             $response = new DataDownloadResponse(
                 $result['content'],
@@ -74,10 +71,11 @@ class ExportController extends Controller {
 
             return $response;
         } catch (\Exception $e) {
+            $this->logger->error('CSV Export Error: ' . $e->getMessage(), ['exception' => $e]);
             return new DataDownloadResponse(
-                '',
-                '',
-                'application/octet-stream'
+                "Error: " . $e->getMessage(),
+                'error.txt',
+                'text/plain'
             );
         }
     }
@@ -86,7 +84,7 @@ class ExportController extends Controller {
      * Export members as PDF
      *
      * @NoCSRFRequired
-     * @RequirePermission verein.member.export
+     * @NoAdminRequired
      * @return DataDownloadResponse
      */
     public function exportMembersAsPdf(): DataDownloadResponse {
@@ -111,10 +109,11 @@ class ExportController extends Controller {
 
             return $response;
         } catch (\Exception $e) {
+            $this->logger->error('PDF Export Error: ' . $e->getMessage(), ['exception' => $e]);
             return new DataDownloadResponse(
-                '',
-                '',
-                'application/octet-stream'
+                "Error: " . $e->getMessage(),
+                'error.txt',
+                'text/plain'
             );
         }
     }
@@ -123,7 +122,7 @@ class ExportController extends Controller {
      * Export fees as CSV
      *
      * @NoCSRFRequired
-     * @RequirePermission verein.fee.export
+     * @NoAdminRequired
      * @return DataDownloadResponse
      */
     public function exportFeesAsCsv(): DataDownloadResponse {
@@ -131,15 +130,9 @@ class ExportController extends Controller {
             // Get all fees
             $fees = $this->feeService->findAll();
 
-            if (empty($fees)) {
-                // Return empty CSV with headers only
-                $formatted = $this->csvExporter->formatFees([]);
-                $result = $this->csvExporter->export($formatted['data'], $formatted['headers'], 'fees');
-            } else {
-                // Format and export
-                $formatted = $this->csvExporter->formatFees($fees);
-                $result = $this->csvExporter->export($formatted['data'], $formatted['headers'], 'fees');
-            }
+            // Format and export (works with empty array too)
+            $formatted = $this->csvExporter->formatFees($fees);
+            $result = $this->csvExporter->export($formatted['data'], $formatted['headers'], 'fees');
 
             $response = new DataDownloadResponse(
                 $result['content'],
@@ -155,10 +148,11 @@ class ExportController extends Controller {
 
             return $response;
         } catch (\Exception $e) {
+            $this->logger->error('CSV Export Error: ' . $e->getMessage(), ['exception' => $e]);
             return new DataDownloadResponse(
-                '',
-                '',
-                'application/octet-stream'
+                "Error: " . $e->getMessage(),
+                'error.txt',
+                'text/plain'
             );
         }
     }
@@ -167,7 +161,7 @@ class ExportController extends Controller {
      * Export fees as PDF
      *
      * @NoCSRFRequired
-     * @RequirePermission verein.fee.export
+     * @NoAdminRequired
      * @return DataDownloadResponse
      */
     public function exportFeesAsPdf(): DataDownloadResponse {
@@ -192,10 +186,11 @@ class ExportController extends Controller {
 
             return $response;
         } catch (\Exception $e) {
+            $this->logger->error('PDF Export Error: ' . $e->getMessage(), ['exception' => $e]);
             return new DataDownloadResponse(
-                '',
-                '',
-                'application/octet-stream'
+                "Error: " . $e->getMessage(),
+                'error.txt',
+                'text/plain'
             );
         }
     }
