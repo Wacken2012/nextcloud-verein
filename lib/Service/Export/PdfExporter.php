@@ -209,7 +209,7 @@ class PdfExporter {
 
         return [
             'content' => $content,
-            'filename' => 'members_' . date('Y-m-d_His') . '.pdf',
+            'filename' => 'fees_' . date('Y-m-d_His') . '.pdf',
             'mimeType' => 'application/pdf',
         ];
     }
