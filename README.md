@@ -1,34 +1,61 @@
 # 🤝 Nextcloud Vereins-App
 
-Eine moderne, benutzerfreundliche **Nextcloud-App zur Verwaltung von Vereinen, Verbänden und Organisationen**. Mit vollständiger Mitglieder- und Finanzverwaltung, professionellen Export-Tools und intelligenten Import-Wizards für Migration aus Softnote & OpenJverein.
+Eine moderne, benutzerfreundliche **Nextcloud-App zur Verwaltung von Vereinen, Verbänden und Organisationen**. Mit vollständiger Mitglieder- und Finanzverwaltung.
 
-**Status**: Stable (v0.1.0) | **Lizenz**: AGPL-3.0 | **Nextcloud**: 28+ | **PHP**: 8.0+ | **Roadmap**: v0.2.0-v1.0.0 bis Q4 2026
+**Status**: v0.2.0-beta (In Entwicklung) | **Lizenz**: AGPL-3.0 | **Nextcloud**: 28+
+
+### 📊 Release Status
+
+| Version | Status | Release | Features |
+|---------|--------|---------|----------|
+| **v0.1.0** | ✅ Released | Nov 2025 | Basis CRUD, MVP |
+| **v0.2.0-beta** | 🔄 In Arbeit (80%) | Q1 2026 | ✅ RBAC, Admin Panel, Permission System |
+| **v0.3.0** | 📋 Geplant | Q2 2026 | Automatisierung, Integrationen |
+
+### 🆕 Was ist neu in v0.2.0-beta?
+
+✅ **Role-Based Access Control (RBAC)**
+- Admin, Treasurer, Member Rollen
+- Granulare Berechtigungen für alle Endpoints
+- Audit-Logging für Permission Violations
+- 20+ Unit Tests für RBAC
+
+✅ **Admin Settings Integration**
+- Native Nextcloud Settings Seite (Settings → Administration → Verein)
+- Role-Management im Admin-Panel
+- Permission-Verwaltung
+
+✅ **Verbesserte API Sicherheit**
+- @RequirePermission Decorators auf 31 Endpoints
+- AuthorizationMiddleware mit automatischen Checks
+- 403 Forbidden bei fehlenden Permissions
 
 ---
 
-## ✨ Features (v0.1.0 - Aktuell)
+## ✨ Features
 
 ### 👥 Mitgliederverwaltung
 - Mitglieder anlegen, bearbeiten, löschen
 - Datenfelder: Name, E-Mail, Adresse, IBAN, BIC, Rolle
-- RBAC mit 10+ Rollen (Musik- & Sportvereine)
+- Rollen: Mitglied, Kassierer, Admin
 - Responsive Tabelle mit Inline-Editing
-- Dark Mode Support
-- Responsive Design (Desktop, Tablet, Mobile)
 
-### 💰 Finanzverwaltung (v0.1.0)
+### 💰 Finanzverwaltung
 - Gebühren und Beitragsverfolgung
 - Status-Tracking: offen, bezahlt, überfällig
 - Statistiken: Gesamtausstände, bezahlte Beträge
-- IBAN/BIC-Validierung
 - Schnelle Übersicht aller Transaktionen
 
-### 🔐 Security & Quality
-- 35+ Unit Tests
-- Validierungsservice (Email, IBAN, BIC, Telefon)
-- RBAC-Logik und Permission Middleware
+### 🎨 User Experience
+- Dark Mode Support
+- Responsive Design (Desktop, Tablet, Mobile)
 - Nextcloud-native Authentifizierung
-- Production-Ready Build (0 Fehler)
+- Schnelle Vue 3 + Vite Frontend
+
+### 🔄 Weitere Tabs (geplant)
+- 📅 **Kalender** (Nextcloud Calendar Integration)
+- 📋 **Aufgaben** (Nextcloud Deck Integration)
+- 📄 **Dokumente** (Nextcloud Files Integration)
 
 ---
 
@@ -58,103 +85,32 @@ sudo -u www-data php /var/www/nextcloud/occ app:enable verein
 # In Nextcloud: Apps → Verein → Erste Mitglieder hinzufügen
 ```
 
-**Detaillierte Anleitung**: Siehe [INSTALLATION.md](./wiki/Installation.md)
+**Detaillierte Anleitung**: Siehe [INSTALLATION.md](./INSTALLATION.md)
 
 ---
 
-## 🎯 Projektphilosophie
+## 🎯 Roadmap
 
-Die Vereins-App ist **kein Proof of Concept**, sondern ein professionelles **Open-Source-Produkt**, das von Beginn an mit klarer Strategie, Tests und Dokumentation entwickelt wurde.
+### v0.1.0 ✅ (Alpha - Aktuell)
+- Basis Mitgliederverwaltung (CRUD)
+- Gebührenverwaltung (CRUD)
+- Responsive UI
+- Dark Mode
 
-**Kernidee:** KI-gestützte Entwicklung ermöglicht es, in kurzer Zeit ein **produktionsreifes, wartbares Projekt** zu schaffen – wenn es mit klaren Anforderungen, Tests und Community-Mindset kombiniert wird.
+### v0.2.0 🔧 (Beta - Nächste Phase)
+- Rollen & Berechtigungen
+- CSV/PDF Export
+- Erweiterte Statistiken & Charts
 
-**Nach ~14 Stunden Arbeit:**
-- ✅ Vollständige CRUD-Operationen mit Vue.js Frontend & PHP Backend
-- ✅ 35+ Unit Tests, Validierungsservice, RBAC-Logik
-- ✅ 2.000+ Zeilen Dokumentation & Community-Struktur
-- ✅ Production-Ready Build (0 Fehler, 1.42s)
-- ✅ GitHub Integration mit Branches, PRs & Release-Strategie
+### v0.3.0 📋 (Geplant)
+- Automatische Mahnungen
+- Benachrichtigungssystem
+- Kalender-Integration
 
-**Mehr erfahren**: [Projektphilosophie in Installation.md](./wiki/Installation.md#projektphilosophie)
-
----
-
-## 🎯 Roadmap (Komplette Spezifikation verfügbar!)
-
-**Detaillierte Spezifikation mit Code-Beispielen, Datenbankschemas und 190+ Test-Szenarien: [ROADMAP.md](./ROADMAP.md)**
-
-### v0.1.0 ✅ (Stable - Aktuell)
-- ✅ Basis Mitgliederverwaltung (CRUD)
-- ✅ Gebührenverwaltung (CRUD)
-- ✅ Responsive UI + Dark Mode
-- ✅ 35+ Unit Tests
-- ✅ IBAN/BIC Validierung
-- ✅ Permission Middleware
-
-### v0.2.0 🔧 (Beta - Dezember 2025)
-- **SEPA pain.001 XML Export** (ISO 20022 Standard)
-- **PDF Export** (Rechnungen, Mitgliederlisten)
-- **Multi-Role RBAC** (6 Musikverein + 4 Sportverein Rollen)
-- **Erweiterte Validierung** (Email, Phone, IBAN, BIC, Datum)
-- **90+ Unit Tests** | **85%+ Coverage**
-- **Release**: 25. Dezember 2025
-
-### v0.3.0 📋 (März 2026)
-- **Score Management** (Notenverwaltung mit Permissions)
-- **GUI-Import-Tools Wizard** (4-Schritt für Migration)
-  - Softnote CSV/XML Import
-  - OpenJverein CSV/XML/DBF Import
-  - Field Mapping UI
-  - Validation mit Fehlerprotokoll
-  - Undo/Rollback-Support
-- **75+ Unit Tests**
-- **Release**: 31. März 2026
-
-### v0.4.0 � (Juni 2026)
-- **Setup-Wizard** (Clubs in 5 Minuten)
-  - Vereinstyp-Auswahl
-  - Automatische Rollen-Initialisierung
-  - Finanzmodul-Setup
-- **Document Templates**
-  - Logo & Briefkopf
-  - Rechnungen, Anschreiben, Protokolle
-  - TCPDF-Integration
-  - {{placeholder}}-System
-- **25+ Unit Tests**
-- **Release**: 30. Juni 2026
-
-### v0.5.0+ 🔮 (Q4 2026)
-- Custom Permissions
-- Audit Logs
-- GDPR Compliance
-- Community Features
-
-### v1.0.0 🎯 (Q4 2026)
+### v1.0.0 🎯 (Production)
 - Vollständige Stabilität
 - 100% Test-Coverage
-- Nextcloud App Store Release
-
----
-
-## 🌳 Branch-Struktur & Workflow
-
-### `main` Branch (Stable Releases)
-- **Status**: ✅ Production-Ready
-- **Aktuelle Version**: v0.1.0 (Stable)
-- **Inhalt**: Stabile, getestete Releases
-- **Tags**: v0.1.0, v0.2.0, v1.0.0, etc.
-
-### `develop` Branch (Development)
-- **Status**: 🔧 In Entwicklung
-- **Aktuelle Version**: v0.2.0 (feature development)
-- **Inhalt**: Neueste Features (SEPA, RBAC, Import-Tools)
-- **PRs**: Bitte gegen `develop` öffnen!
-
-**Release-Workflow**:
-1. Features werden in `develop` entwickelt
-2. Beta-Testing mit Community
-3. Nach erfolgreichem Test: `develop` → `main`
-4. Release-Tags erstellen (v0.2.0-beta, v0.2.0)
+- Umfangreiche Dokumentation
 
 ---
 
@@ -218,24 +174,12 @@ Siehe [CONTRIBUTING.md](./CONTRIBUTING.md) für detaillierte Guidelines.
 
 ---
 
-## 🐛 Known Issues & Roadmap Items
+## 🐛 Known Issues & Limitationen
 
-**v0.1.0 (Aktuell):**
-- ✅ IBAN/BIC Validierung implementiert
-- ✅ RBAC-Logik implementiert
-
-**Geplant für v0.2.0:**
-- 🔧 SEPA XML Export
-- 🔧 PDF Export
-- 🔧 Multi-Role RBAC Permissions
-- 🔧 Erweiterte Validierung
-
-**Geplant für v0.3.0:**
-- 🔧 GUI-Import-Tools (Softnote & OpenJverein)
-- 🔧 Score Management
-- 🔧 Advanced Error Handling
-
-Siehe [ROADMAP.md](./ROADMAP.md) für komplette Liste!
+- Rollen & Berechtigungen noch nicht implementiert (alle Nutzer haben Admin-Zugriff)
+- Keine Validierung von IBAN/BIC
+- Export (CSV/PDF) noch nicht verfügbar
+- Automatische Mahnungen noch nicht implementiert
 
 ---
 
@@ -247,40 +191,10 @@ Diese App muss unter der gleichen Lizenz verteilt werden und ist für die Verwen
 
 ---
 
-## 🌍 Community & Roadmap
+## ❓ Support
 
-**Möchtest du mitgestalten? Die Community ist herzlich eingeladen!**
-
-### 💬 GitHub Discussions (Roadmap & Feedback)
-🎯 **[Roadmap für Nextcloud Vereins-App (gepinnt)](https://github.com/Wacken2012/nextcloud-verein/discussions)**
-
-Diskutiere hier:
-- 💡 **Ideen & Feature-Wünsche** – Welche Funktionen brauchst du?
-- ❓ **Fragen & Support** – Probleme bei der Nutzung oder Entwicklung?
-- 📸 **Show & Tell** – Teile Screenshots oder deine Erfahrungen!
-- 🎯 **Allgemeines** – Sonstiges zur Vereins-App
-
-### 📞 Support & Links
-
-- **📖 Dokumentation**: [ROADMAP.md](./ROADMAP.md) | [INSTALLATION.md](./INSTALLATION.md) | [CONTRIBUTING.md](./CONTRIBUTING.md)
-- **� Bug Reports**: [GitHub Issues](https://github.com/Wacken2012/nextcloud-verein/issues)
-- **📰 Ankündigung**: [COMMUNITY_ANNOUNCEMENT.md](./COMMUNITY_ANNOUNCEMENT.md)
-- **❓ FAQ**: [wiki/FAQ.md](./wiki/FAQ.md)
-- **👤 About Developer**: [Stefan Schulz](https://github.com/Wacken2012)
-
----
-
-## 📊 Project Statistics
-
-| Metrik | Wert |
-|--------|------|
-| **Dokumentation** | 4.319 Zeilen (130 KB) |
-| **Code Examples** | 2.700+ Zeilen (PHP + Vue.js) |
-| **Test Scenarios** | 190+ definiert |
-| **Database Schemas** | 10+ dokumentiert |
-| **API Endpoints** | 30+ spezifiziert |
-| **Build Time** | 1.38 Sekunden |
-| **Test Coverage Target** | 85%+ |
+- **GitHub Issues**: [Bugs & Feature Requests](https://github.com/yourusername/nextcloud-verein/issues)
+- **Discussions**: [Q&A & Ideas](https://github.com/yourusername/nextcloud-verein/discussions)
 
 ---
 
@@ -293,37 +207,14 @@ Diskutiere hier:
 
 ---
 
-## 🙏 About & Support
+## 🙏 Danksagungen
 
-**Entwickelt mit ❤️ von Stefan Schulz** für Musik-, Sport- und Kulturvereine weltweit.
+Entwickelt für Vereine, die ihre Verwaltung modernisieren wollen.
 
-Diese App ist ein Proof-of-Concept, dass **KI-gestützte Entwicklung professionelle, produktionsreife Software hervorbringen kann** – wenn es mit klarer Strategie, Tests und Community-Mindset kombiniert wird.
+Inspiriert von Nextcloud und der Community! 
 
-**Inspiriert von**: Nextcloud Community • Open Source Movement • Real Clubs Management Needs
-
-### Warum diese App?
-
-Viele Vereine nutzen noch heute Excel-Tabellen oder veraltete Software. Die Nextcloud Vereins-App bringt:
-
-✅ **Moderne Technologie** – Vue.js 3, PHP 8.0+, Responsive Design  
-✅ **Professionelle Features** – SEPA-Export, Multi-Role RBAC, PDF-Templates  
-✅ **Einfache Migration** – GUI-Import aus Softnote & OpenJverein  
-✅ **Kostenlos & Open Source** – AGPL-3.0 Lizenz  
-✅ **Nextcloud-Integration** – Seamless sync mit deinem Datenspeicher  
+**Powered by**: [Nextcloud](https://nextcloud.com) • [Vue.js](https://vuejs.org) • [Vite](https://vitejs.dev)
 
 ---
 
-## 🚀 Quick Start
-
-1. **Installieren**: Siehe [INSTALLATION.md](./INSTALLATION.md)
-2. **Erste Mitglieder**: App öffnen → "Mitglied hinzufügen"
-3. **Gebühren erfassen**: Finanz-Tab → Gebühren anlegen
-4. **Roadmap lesen**: [ROADMAP.md](./ROADMAP.md) für v0.2.0+ Features
-
----
-
-## 📝 Lizenz
-
-**AGPL-3.0** - Diese App muss unter der gleichen Lizenz verteilt werden.
-
-Siehe [LICENSE](./LICENSE) für vollständige Rechtsbedingungen.
+**Bereit zum Starten?** → [Installation Guide](./INSTALLATION.md)
