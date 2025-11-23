@@ -158,13 +158,14 @@ $max-container-width: 1200px; // retained for fallback but not enforced for full
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  background: var(--color-main-background);
+  background: transparent;
   color: var(--color-text);
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
 .verein-tabs {
-  background: var(--color-main-background);
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
   border-bottom: 1px solid var(--color-border);
   position: sticky;
   top: var(--header-height, 50px);
@@ -259,27 +260,29 @@ $max-container-width: 1200px; // retained for fallback but not enforced for full
   flex: 1;
   display: flex;
   width: 100%;
-  background: var(--color-main-background);
+  background: transparent;
+  padding: 2rem 0;
 }
 
 .verein-container {
-  /* expand to use the available content width inside Nextcloud while
-     keeping a comfortable gutter */
-  width: calc(100% - 48px);
-  max-width: none;
-  margin: 0 24px;
-  padding: 1rem;
+  /* expand to use the available content width inside Nextcloud */
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 0 1.5rem;
   display: flex;
   flex-direction: column;
 
+  @media (min-width: 1400px) {
+    padding: 0 3rem;
+  }
+
   @media (max-width: $breakpoint-tablet) {
-    width: 100%;
-    margin: 0;
-    padding: 1rem 0.75rem;
+    padding: 0 1rem;
   }
 
   @media (max-width: 480px) {
-    padding: 0.75rem 0.5rem;
+    padding: 0 0.75rem;
   }
 }
 

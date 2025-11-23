@@ -311,19 +311,23 @@ $breakpoint-tablet: 768px;
 $breakpoint-mobile: 480px;
 
 .statistics-container {
-  display: block;
+  display: flex;
+  flex-direction: column;
   gap: 2rem;
-  /* use the available width but limit for readability on very large screens */
-  width: calc(100% - 48px);
-  max-width: 1600px;
-  margin: 0 24px;
+  width: 100%;
 
-  @media (min-width: 1100px) {
-    /* two-column layout: left column for stat cards, right column for charts */
+  @media (min-width: 1200px) {
+    /* three-column layout on large screens */
     display: grid;
-    grid-template-columns: 360px 1fr;
-    gap: 24px 32px;
+    grid-template-columns: repeat(3, 1fr);
     align-items: start;
+  }
+
+  @media (min-width: 768px) and (max-width: 1199px) {
+    /* two-column layout on tablets */
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
   }
 }
 
@@ -405,14 +409,16 @@ $breakpoint-mobile: 480px;
 }
 
 .stat-widget {
-  background: var(--color-background, #ffffff);
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
-  padding: 20px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
   transition: all 0.2s ease;
   display: flex;
   flex-direction: column;
+  cursor: pointer;
 
   @media (max-width: $breakpoint-tablet) {
     padding: 16px;
@@ -535,11 +541,12 @@ $breakpoint-mobile: 480px;
 }
 
 .chart-container {
-  background: var(--color-background, #ffffff);
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
-  padding: 20px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
   display: flex;
   flex-direction: column;
 

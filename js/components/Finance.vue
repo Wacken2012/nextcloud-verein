@@ -345,26 +345,30 @@ export default {
 
 <style scoped lang="scss">
 .finance-container {
-  /* two-column layout for wide screens: form on the left, stats/table on the right */
-  width: calc(100% - 48px);
-  max-width: none;
-  margin: 0 24px;
+  /* Use full width with responsive layout */
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
 
-  @media (min-width: 1100px) {
+  @media (min-width: 1200px) {
+    /* two-column layout for wide screens: form on the left, stats/table on the right */
     display: grid;
-    grid-template-columns: 360px 1fr;
-    gap: 24px;
+    grid-template-columns: 320px 1fr;
+    gap: 2rem;
     align-items: start;
   }
 }
 
 .form-section,
 .table-section {
-  background: var(--color-main-background);
-  border-radius: 4px;
-  padding: 20px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  padding: 24px;
   margin-bottom: 20px;
-  border: 1px solid var(--color-border);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 
   h2 {
     margin-top: 0;
