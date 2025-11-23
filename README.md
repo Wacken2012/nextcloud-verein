@@ -15,6 +15,7 @@ Eine moderne, benutzerfreundliche **Nextcloud-App zur Verwaltung von Vereinen, V
 | **v0.1.0-alpha** | ✅ Stabil | Nov 2025 | Basis CRUD, MVP |
 | **v0.2.0-beta** | ✅ **RELEASED** | 1. Dez 2025 | RBAC, Admin-Panel, CSV/PDF Export, Statistics |
 | **v0.2.1** | 📋 Geplant | Q1 2026 | PDF-Export, Bugfixes, Performance |
+| **v0.3.0** | 📋 Geplant | Q2 2026 | Automatisierung, Integrationen |
 | **v1.0.0** | 🎯 Ziel | Q4 2026 | Production-Ready, 100% Test-Coverage |
 
 ### 🆕 Was ist neu in v0.2.0-beta?
@@ -118,7 +119,8 @@ Eine moderne, benutzerfreundliche **Nextcloud-App zur Verwaltung von Vereinen, V
 | Version | Status | Release | Focus |
 |---------|--------|---------|-------|
 | **v0.1.0-alpha** | ✅ Stable | Nov 2025 | Basic CRUD, MVP |
-| **v0.2.0-beta** | ✅ 100% Complete | Dec 1, 2025 | RBAC, Admin Panel, CSV/PDF Export ✅ |
+| **v0.2.0-beta** | ✅ 100% Complete | Dec 1, 2025 | RBAC, Admin Panel, CSV/PDF Export, Statistics |
+| **v0.2.1** | 📋 Planned | Q1 2026 | PDF Export, Bugfixes, Performance |
 | **v0.3.0** | 📋 Planned | Q2 2026 | Automation, Integrations |
 | **v1.0.0** | 🎯 Goal | Q4 2026 | Production-Ready, 100% Test Coverage |
 
@@ -207,10 +209,6 @@ Eine moderne, benutzerfreundliche **Nextcloud-App zur Verwaltung von Vereinen, V
 
 ---
 
-## ✨ Features
-
----
-
 ## 🚀 Installation — Deutsch
 
 ### Anforderungen
@@ -293,7 +291,11 @@ sudo -u www-data php /var/www/nextcloud/occ app:enable verein
 - ✅ Datenvalidierung (IBAN, BIC, Email)
 - ✅ CSV/PDF Export
 - ✅ 130+ Unit Tests (100% Pass-Rate)
-- 🔄 Final QA & Documentation Polish
+
+### v0.2.1 📋 (Q1 2026)
+- PDF Export Funktionalität (TCPDF Fix)
+- Bugfixes & Performance-Optimierung
+- Verbesserte Fehlerbehandlung
 
 ### v0.3.0 📋 (Q2 2026)
 - Automatische Mahnungen (Cronjob)
@@ -323,7 +325,11 @@ sudo -u www-data php /var/www/nextcloud/occ app:enable verein
 - ✅ Data validation (IBAN, BIC, Email)
 - ✅ CSV/PDF Export
 - ✅ 130+ Unit Tests (100% pass rate)
-- 🔄 Final QA & Documentation Polish
+
+### v0.2.1 📋 (Q1 2026)
+- PDF export functionality (TCPDF fix)
+- Bug fixes & performance optimization
+- Enhanced error handling
 
 ### v0.3.0 📋 (Q2 2026)
 - Automated reminders (cronjob)
