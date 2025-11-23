@@ -118,7 +118,7 @@ Eine moderne, benutzerfreundliche **Nextcloud-App zur Verwaltung von Vereinen, V
 | Version | Status | Release | Focus |
 |---------|--------|---------|-------|
 | **v0.1.0-alpha** | ✅ Stable | Nov 2025 | Basic CRUD, MVP |
-| **v0.2.0-beta** | 🔄 95% Complete | Dec 1, 2025 | RBAC, Admin Panel, CSV/PDF Export ✅ |
+| **v0.2.0-beta** | ✅ 100% Complete | Dec 1, 2025 | RBAC, Admin Panel, CSV/PDF Export ✅ |
 | **v0.3.0** | 📋 Planned | Q2 2026 | Automation, Integrations |
 | **v1.0.0** | 🎯 Goal | Q4 2026 | Production-Ready, 100% Test Coverage |
 
@@ -287,7 +287,7 @@ sudo -u www-data php /var/www/nextcloud/occ app:enable verein
 - ✅ Responsive UI mit Dark Mode
 - ✅ Nextcloud Integration
 
-### v0.2.0-beta 🔄 (95% fertig, Release 1. Dez 2025)
+### v0.2.0-beta ✅ (100% fertig, Released 1. Dez 2025)
 - ✅ Rollen & Berechtigungen (RBAC)
 - ✅ Admin-Panel & Settings
 - ✅ Datenvalidierung (IBAN, BIC, Email)
@@ -317,7 +317,7 @@ sudo -u www-data php /var/www/nextcloud/occ app:enable verein
 - ✅ Responsive UI with dark mode
 - ✅ Nextcloud integration
 
-### v0.2.0-beta 🔄 (95% complete, Release Dec 1, 2025)
+### v0.2.0-beta ✅ (100% complete, Released Dec 1, 2025)
 - ✅ Roles & Permissions (RBAC)
 - ✅ Admin Panel & Settings
 - ✅ Data validation (IBAN, BIC, Email)
