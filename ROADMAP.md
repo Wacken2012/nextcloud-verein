@@ -165,6 +165,100 @@
   - Zugriffsprotokollierung (wer hat wann was gesehen)
 - [ ] Audit Logs exportierbar
 
+### 🛡️ DSGVO-Umsetzung (Software-Anforderungen)
+
+**Art. 6 - Rechtmäßigkeit der Verarbeitung:**
+- [ ] Einwilligungs-Management
+  - Opt-in bei Registrierung mit Checkbox
+  - Speicherung des Einwilligungszeitpunkts
+  - Einwilligungstext versioniert speichern
+  - Widerruf der Einwilligung möglich
+
+**Art. 7 - Bedingungen für die Einwilligung:**
+- [ ] Einwilligungs-Nachweis
+  - Protokollierung: Wer, Wann, Welche Version
+  - Export der Einwilligungshistorie
+  - Trennung von optionalen Einwilligungen (z.B. Fotos, Newsletter)
+
+**Art. 13/14 - Informationspflicht:**
+- [ ] Datenschutzhinweise
+  - Anzeige bei erster Nutzung
+  - Link zur Datenschutzerklärung im Footer
+  - Auflistung aller gespeicherten Daten
+
+**Art. 15 - Auskunftsrecht:**
+- [ ] Datenexport für Mitglieder
+  - "Meine Daten exportieren" Button im Profil
+  - Export als JSON/PDF (maschinenlesbar + lesbar)
+  - Alle gespeicherten Daten inkl. Logs
+  - Automatische Bereitstellung innerhalb 30 Tagen
+
+**Art. 16 - Recht auf Berichtigung:**
+- [ ] Datenkorrektur
+  - Mitglied kann eigene Stammdaten bearbeiten
+  - Änderungshistorie für Admin sichtbar
+  - Benachrichtigung bei Änderungen
+
+**Art. 17 - Recht auf Löschung ("Vergessenwerden"):**
+- [ ] Löschfunktion
+  - "Mein Konto löschen" Anfrage-Button
+  - Admin-Workflow für Löschanfragen
+  - Vollständige Datenlöschung (nicht nur Deaktivierung)
+  - Löschprotokoll (anonymisiert) aufbewahren
+  - Ausnahme: Gesetzliche Aufbewahrungsfristen (Finanzen)
+
+**Art. 18 - Recht auf Einschränkung der Verarbeitung:**
+- [ ] Datensperre
+  - Mitglied kann Sperrung beantragen
+  - Gesperrte Daten nur noch für Pflichten nutzbar
+  - Entsperrung auf Antrag
+
+**Art. 20 - Recht auf Datenübertragbarkeit:**
+- [ ] Portabilität
+  - Export in strukturiertem Format (JSON, CSV)
+  - Maschinenlesbar und interoperabel
+  - Direkte Übermittlung an Dritte (optional)
+
+**Art. 25 - Datenschutz durch Technikgestaltung:**
+- [ ] Privacy by Design
+  - Minimale Datenerhebung (nur Pflichtfelder)
+  - Verschlüsselung sensibler Daten (IBAN, etc.)
+  - Pseudonymisierung wo möglich
+  - Automatische Datenlöschung nach Frist
+
+**Art. 30 - Verzeichnis von Verarbeitungstätigkeiten:**
+- [ ] Verarbeitungsverzeichnis
+  - Automatisch generierte Übersicht
+  - Welche Daten, Zweck, Speicherdauer
+  - Export für Datenschutzbeauftragten
+
+**Art. 32 - Sicherheit der Verarbeitung:**
+- [ ] Technische Sicherheit
+  - Zugriffskontrolle (RBAC bereits implementiert)
+  - Verschlüsselung at rest (Nextcloud)
+  - Verschlüsselung in transit (HTTPS)
+  - Regelmäßige Sicherheitsupdates
+
+**Art. 33/34 - Meldung von Datenschutzverletzungen:**
+- [ ] Breach Detection
+  - Logging aller Zugriffe auf personenbezogene Daten
+  - Anomalie-Erkennung (ungewöhnliche Zugriffsmuster)
+  - Benachrichtigungs-Workflow bei Verdacht
+
+**Zusätzliche Implementierungen:**
+- [ ] Datenschutz-Dashboard für Admin
+  - Übersicht aller Einwilligungen
+  - Offene Löschanfragen
+  - Audit-Log der letzten Zugriffe
+  - DSGVO-Checkliste mit Status
+- [ ] Automatische Löschfristen
+  - Konfigurierbare Aufbewahrungsdauer
+  - Automatische Anonymisierung/Löschung
+  - Warnung vor Ablauf
+- [ ] Cookie-Consent (falls relevant)
+  - Banner bei Erstnutzung
+  - Granulare Auswahl
+
 ### 💾 Data Export Erwiterungen
 - [ ] SEPA XML Export (für Bankentransfers)
 - [ ] Excel-Export mit Formeln
