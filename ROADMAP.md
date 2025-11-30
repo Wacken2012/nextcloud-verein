@@ -259,6 +259,102 @@
   - Banner bei Erstnutzung
   - Granulare Auswahl
 
+### ⚖️ Deutsches Vereinsrecht (BGB §§ 21-79)
+
+**Vereinsregister & Rechtsfähigkeit (§§ 21, 55-79 BGB):**
+- [ ] Vereinsdaten-Verwaltung
+  - Vereinsname, Sitz, Registergericht, VR-Nummer
+  - Gründungsdatum, Satzungsdatum
+  - Gemeinnützigkeitsstatus (falls vorhanden)
+  - Freistellungsbescheid-Verwaltung
+
+**Mitgliederverwaltung (§ 38 BGB):**
+- [ ] Mitgliedschafts-Lifecycle
+  - Aufnahmeantrag mit Workflow
+  - Aufnahmebestätigung generieren
+  - Austrittserklärung (Kündigungsfrist lt. Satzung)
+  - Ausschlussverfahren dokumentieren
+  - Mitgliedsnummer automatisch vergeben
+
+**Vorstand (§§ 26-27 BGB):**
+- [ ] Vorstandsverwaltung
+  - Vorstandsmitglieder mit Funktion (1./2. Vorsitz, Schatzmeister, etc.)
+  - Vertretungsberechtigung (einzeln/gemeinsam)
+  - Amtszeit & Wahlperiode
+  - Vorstandswechsel dokumentieren
+  - Unterschriftsberechtigungen
+
+**Mitgliederversammlung (§§ 32-37 BGB):**
+- [ ] Versammlungsmanagement
+  - Einladung mit Tagesordnung (Fristwahrung lt. Satzung)
+  - Teilnehmerliste mit Anwesenheitsnachweis
+  - Beschlussfähigkeit prüfen (Quorum)
+  - Abstimmungen protokollieren (Mehrheiten)
+  - Protokoll erstellen (Unterschriften)
+  - Beschlusssammlung
+
+**Beitrags- und Finanzwesen (§ 58 Nr. 2 BGB, AO):**
+- [ ] Beitragsverwaltung
+  - Beitragsordnung hinterlegen
+  - Beitragskategorien (Vollmitglied, ermäßigt, passiv, Ehrenmitglied)
+  - Beitragsbefreiung/Ermäßigung mit Begründung
+  - Mahnwesen mit Fristen
+  - SEPA-Lastschriftmandate verwalten
+- [ ] Kassenbuch & Buchhaltung
+  - Einnahmen-/Ausgabenrechnung
+  - Belege zuordnen
+  - Kassenprüfung vorbereiten
+  - Jahresabschluss erstellen
+
+**Gemeinnützigkeit (§§ 51-68 AO):**
+- [ ] Gemeinnützigkeits-Compliance (optional)
+  - Zweckbindung der Mittel dokumentieren
+  - Mittelverwendungsnachweis
+  - Spendenbescheinigungen ausstellen
+  - Rücklagenbildung nachweisen
+  - Tätigkeitsbericht generieren
+
+**Aufbewahrungsfristen (§ 147 AO, § 257 HGB):**
+- [ ] Dokumentenaufbewahrung
+  - Buchungsbelege: 10 Jahre
+  - Geschäftsbriefe: 6 Jahre
+  - Protokolle: dauerhaft
+  - Mitgliederdaten: bis Austritt + 3 Jahre (Verjährung)
+  - Automatische Archivierung
+  - Löschhinweise nach Fristablauf
+
+**Satzung & Ordnungen:**
+- [ ] Dokumentenverwaltung
+  - Satzung (aktuelle + historische Versionen)
+  - Beitragsordnung
+  - Geschäftsordnung
+  - Datenschutzordnung
+  - Wahlordnung
+  - Versionshistorie mit Änderungsdatum
+
+**Wahlen & Abstimmungen:**
+- [ ] Wahlmodul
+  - Kandidatenaufstellung
+  - Wahlzettel generieren
+  - Geheime Abstimmung (anonymisiert)
+  - Auszählung & Ergebnis
+  - Wahlprotokoll
+  - Online-Wahlen (optional, satzungsabhängig)
+
+**Haftung & Versicherung (§ 31 BGB):**
+- [ ] Haftungsdokumentation
+  - Versicherungspolicen verwalten
+  - Unfallmeldungen
+  - Haftungsverzichtserklärungen
+  - Aufsichtspflicht-Dokumentation
+
+**Jugendschutz (falls Minderjährige):**
+- [ ] Jugendschutz-Compliance
+  - Einverständniserklärung Erziehungsberechtigte
+  - Erweitertes Führungszeugnis (Nachweis)
+  - Betreuungsschlüssel
+  - Notfallkontakte
+
 ### 💾 Data Export Erwiterungen
 - [ ] SEPA XML Export (für Bankentransfers)
 - [ ] Excel-Export mit Formeln
