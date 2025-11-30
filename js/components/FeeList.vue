@@ -4,10 +4,11 @@
     
     <!-- Controls Section -->
     <div class="controls">
-      <button @click="showAddForm = true" class="button primary">
-        ➕ Neuer Beitrag
-      </button>
-      
+      <div class="left-controls">
+        <button @click="showAddForm = true" class="button primary">
+          ➕ Neuer Beitrag
+        </button>
+      </div>
       <div class="filters">
         <select v-model="statusFilter" class="status-filter">
           <option value="">Alle Status</option>
@@ -15,10 +16,7 @@
           <option value="paid">Bezahlt</option>
           <option value="overdue">Überfällig</option>
         </select>
-        
-        <button @click="exportCsv" class="button">
-          📥 CSV Export
-        </button>
+        <ExportButtons resource="fees" inline @success="showSuccess" @error="showError" />
       </div>
     </div>
     
@@ -124,9 +122,12 @@
 <script>
 import axios from '@nextcloud/axios'
 import { generateUrl } from '@nextcloud/router'
+import * as notify from '../notify'
+import ExportButtons from './ExportButtons.vue'
 
 export default {
   name: 'FeeList',
+  components: { ExportButtons },
   data() {
     return {
       fees: [],
@@ -251,26 +252,6 @@ export default {
         this.showError('Fehler beim Aktualisieren des Beitragsstatus')
       }
     },
-    async exportCsv() {
-      try {
-        const response = await axios.get(
-          generateUrl('/apps/verein/api/fees/export/csv'),
-          { responseType: 'blob' }
-        )
-        
-        const blob = new Blob([response.data], { type: 'text/csv' })
-        const url = window.URL.createObjectURL(blob)
-        const a = document.createElement('a')
-        a.href = url
-        a.download = `beitraege_export_${new Date().toISOString().split('T')[0]}.csv`
-        a.click()
-        window.URL.revokeObjectURL(url)
-        this.showSuccess('CSV-Export erfolgreich')
-      } catch (error) {
-        console.error('Error exporting CSV:', error)
-        this.showError('Fehler beim CSV-Export')
-      }
-    },
     cancelEdit() {
       this.showAddForm = false
       this.editingFee = null
@@ -314,14 +295,8 @@ export default {
       }
       return ''
     },
-    showSuccess(message) {
-      // TODO: Implement toast notification
-      alert(message)
-    },
-    showError(message) {
-      // TODO: Implement toast notification
-      alert(message)
-    }
+    showSuccess(message) { notify.success(message) },
+    showError(message) { notify.error(message) }
   }
 }
 </script>

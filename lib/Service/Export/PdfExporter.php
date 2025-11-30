@@ -2,8 +2,8 @@
 
 namespace OCA\Verein\Service\Export;
 
-// Require TCPDF if available
-$tcpdf_file = __DIR__ . '/../../../../vendor/tecnickcom/tcpdf/tcpdf.php';
+// Require TCPDF if available (lib/Service/Export -> 3 levels up to app root)
+$tcpdf_file = __DIR__ . '/../../../vendor/tecnickcom/tcpdf/tcpdf.php';
 if (file_exists($tcpdf_file)) {
     require_once $tcpdf_file;
 }
@@ -18,6 +18,9 @@ class PdfExporter {
      * @return TCPDF
      */
     private function createPdf() {
+        if (!class_exists('TCPDF')) {
+            throw new \RuntimeException('TCPDF library not available on server. Ensure vendor dependencies are deployed.');
+        }
         $pdf = new \TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 
         // Set document properties
@@ -75,12 +78,12 @@ class PdfExporter {
         foreach ($members as $member) {
             // Handle both array and object formats
             $id = is_array($member) ? ($member['id'] ?? '') : $member->getId();
-            $name = is_array($member) ? ($member['name'] ?? '') : ($member->getFirstname() . ' ' . $member->getLastname());
+            $name = is_array($member) ? ($member['name'] ?? '') : $member->getName();
             $email = is_array($member) ? ($member['email'] ?? '') : $member->getEmail();
             $role = is_array($member) ? ($member['role'] ?? '') : $member->getRole();
-            $iban = is_array($member) ? ($member['iban'] ?? '') : $member->getIban();
-            $bic = is_array($member) ? ($member['bic'] ?? '') : $member->getBic();
-            $createdAt = is_array($member) ? ($member['created_at'] ?? '') : $member->getCreatedAt();
+            $iban = is_array($member) ? ($member['iban'] ?? '') : ($member->getIban() ?? '');
+            $bic = is_array($member) ? ($member['bic'] ?? '') : ($member->getBic() ?? '');
+            $createdAt = is_array($member) ? ($member['created_at'] ?? '') : ($member->getCreatedAt() ?? '');
 
             // Format IBAN/BIC (truncate if too long)
             $iban = strlen((string)$iban) > 20 ? substr((string)$iban, 0, 20) . '...' : (string)$iban;
@@ -148,8 +151,8 @@ class PdfExporter {
         $pdf->SetFont('helvetica', 'B', 10);
         $pdf->SetFillColor(200, 220, 255);
 
-        $w = [15, 25, 45, 20, 25, 20, 30];
-        $headers = ['ID', 'Mit-ID', 'Mitglied', 'Betrag', 'Periode', 'Status', 'Erstellt'];
+        $w = [15, 25, 30, 50, 25, 30];
+        $headers = ['ID', 'Mit-ID', 'Betrag', 'Beschreibung', 'Status', 'Fällig am'];
 
         foreach ($headers as $i => $header) {
             $pdf->Cell($w[$i], 7, $header, 1, 0, 'C', true);
@@ -164,12 +167,11 @@ class PdfExporter {
         foreach ($fees as $fee) {
             // Handle both array and object formats
             $id = is_array($fee) ? ($fee['id'] ?? '') : $fee->getId();
-            $memberId = is_array($fee) ? ($fee['member_id'] ?? '') : $fee->getMemberId();
-            $memberName = is_array($fee) ? ($fee['member_name'] ?? '') : $fee->getMemberName();
-            $amount = is_array($fee) ? ($fee['amount'] ?? '') : $fee->getAmount();
-            $period = is_array($fee) ? ($fee['period'] ?? '') : $fee->getPeriod();
+            $memberId = is_array($fee) ? ($fee['member_id'] ?? $fee['memberId'] ?? '') : $fee->getMemberId();
+            $amount = is_array($fee) ? ($fee['amount'] ?? 0) : $fee->getAmount();
+            $description = is_array($fee) ? ($fee['description'] ?? '') : ($fee->getDescription() ?? '');
             $status = is_array($fee) ? ($fee['status'] ?? '') : $fee->getStatus();
-            $createdAt = is_array($fee) ? ($fee['created_at'] ?? '') : $fee->getCreatedAt();
+            $dueDate = is_array($fee) ? ($fee['due_date'] ?? $fee['dueDate'] ?? '') : $fee->getDueDate();
 
             // Format amount
             if (is_numeric($amount)) {
@@ -178,26 +180,29 @@ class PdfExporter {
                 $amount = (string)$amount;
             }
 
-            // Format created date
-            if ($createdAt instanceof \DateTime) {
-                $createdAt = $createdAt->format('d.m.Y');
-            } elseif (is_string($createdAt)) {
+            // Format due date
+            if ($dueDate instanceof \DateTime) {
+                $dueDate = $dueDate->format('d.m.Y');
+            } elseif (is_string($dueDate) && !empty($dueDate)) {
                 try {
-                    $createdAt = (new \DateTime($createdAt))->format('d.m.Y');
+                    $dueDate = (new \DateTime($dueDate))->format('d.m.Y');
                 } catch (\Exception $e) {
-                    $createdAt = (string)$createdAt;
+                    $dueDate = (string)$dueDate;
                 }
             } else {
-                $createdAt = (string)$createdAt;
+                $dueDate = '-';
             }
+
+            // Translate status
+            $statusLabels = ['open' => 'Offen', 'paid' => 'Bezahlt', 'overdue' => 'Überfällig'];
+            $statusLabel = $statusLabels[$status] ?? $status;
 
             $pdf->Cell($w[0], 6, (string)$id, 1, 0, 'C', $fill);
             $pdf->Cell($w[1], 6, (string)$memberId, 1, 0, 'C', $fill);
-            $pdf->Cell($w[2], 6, substr((string)$memberName, 0, 23), 1, 0, 'L', $fill);
-            $pdf->Cell($w[3], 6, (string)$amount . ' €', 1, 0, 'R', $fill);
-            $pdf->Cell($w[4], 6, substr((string)$period, 0, 12), 1, 0, 'C', $fill);
-            $pdf->Cell($w[5], 6, substr((string)$status, 0, 12), 1, 0, 'C', $fill);
-            $pdf->Cell($w[6], 6, (string)$createdAt, 1, 0, 'C', $fill);
+            $pdf->Cell($w[2], 6, (string)$amount . ' €', 1, 0, 'R', $fill);
+            $pdf->Cell($w[3], 6, substr((string)$description, 0, 28), 1, 0, 'L', $fill);
+            $pdf->Cell($w[4], 6, (string)$statusLabel, 1, 0, 'C', $fill);
+            $pdf->Cell($w[5], 6, (string)$dueDate, 1, 0, 'C', $fill);
             $pdf->Ln();
 
             $fill = !$fill;

@@ -61,12 +61,7 @@
       <div class="section-header">
         <h2>Gebührenliste</h2>
         <div class="export-buttons">
-          <button @click="exportFeesAsCsv" class="btn btn-secondary" title="Gebühren als CSV herunterladen">
-            📊 CSV Export
-          </button>
-          <button @click="exportFeesAsPdf" class="btn btn-secondary" title="Gebühren als PDF herunterladen">
-            📄 PDF Export
-          </button>
+          <ExportButtons resource="fees" inline />
         </div>
       </div>
       <div class="table-wrapper">
@@ -152,11 +147,13 @@
 <script>
 import { ref, onMounted, computed } from 'vue'
 import { api } from '../api'
+import ExportButtons from './ExportButtons.vue'
 import axios from '@nextcloud/axios'
 import { generateUrl } from '@nextcloud/router'
 
 export default {
   name: 'Finance',
+  components: { ExportButtons },
   setup() {
     const fees = ref([])
     const members = ref([])
@@ -284,40 +281,7 @@ export default {
         .reduce((sum, f) => sum + (f.amount || 0), 0)
     })
 
-    const exportFeesAsCsv = async () => {
-      try {
-        const response = await axios.get(generateUrl('/apps/verein/export/fees/csv'), {
-          responseType: 'blob'
-        })
-        downloadFile(response.data, 'fees.csv', 'text/csv')
-      } catch (error) {
-        console.error('Error exporting CSV:', error)
-        alert('Fehler beim CSV-Export')
-      }
-    }
-
-    const exportFeesAsPdf = async () => {
-      try {
-        const response = await axios.get(generateUrl('/apps/verein/export/fees/pdf'), {
-          responseType: 'blob'
-        })
-        downloadFile(response.data, 'fees.pdf', 'application/pdf')
-      } catch (error) {
-        console.error('Error exporting PDF:', error)
-        alert('Fehler beim PDF-Export')
-      }
-    }
-
-    const downloadFile = (blob, filename, mimeType) => {
-      const url = window.URL.createObjectURL(new Blob([blob], { type: mimeType }))
-      const link = document.createElement('a')
-      link.href = url
-      link.setAttribute('download', filename)
-      document.body.appendChild(link)
-      link.click()
-      link.parentNode.removeChild(link)
-      window.URL.revokeObjectURL(url)
-    }
+    // Export is handled by <ExportButtons /> now
 
     return {
       fees,
@@ -335,9 +299,7 @@ export default {
       deleteFee,
       getMemberName,
       getStatusLabel,
-      formatDate,
-      exportFeesAsCsv,
-      exportFeesAsPdf
+      formatDate
     }
   }
 }

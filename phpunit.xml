@@ -7,6 +7,13 @@
         <testsuite name="Unit Tests">
             <directory suffix="Test.php">tests/Unit</directory>
         </testsuite>
+        <testsuite name="Fast">
+            <!-- Focus on pure, dependency-light tests for quick feedback -->
+            <directory suffix="Test.php">tests/Unit/Service/Export/PDF</directory>
+            <directory suffix="Test.php">tests/Unit/Service/Export/SEPA</directory>
+            <directory suffix="Test.php">tests/Unit/Service/Export</directory>
+            <directory suffix="Test.php">tests/Unit/Validation</directory>
+        </testsuite>
     </testsuites>
     <coverage>
         <include>

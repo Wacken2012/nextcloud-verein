@@ -11,13 +11,14 @@
 | Version | Status | Release | Fokus |
 |---------|--------|---------|-------|
 | **v0.1.0-alpha** | ✅ Stabil | Nov 2025 | Basis CRUD, MVP |
-| **v0.2.0-beta** | 🔄 95% fertig | 1. Dez 2025 | RBAC, Admin-Panel, CSV/PDF Export ✅ |
+| **v0.2.0-beta** | ✅ Released | 30. Nov 2025 | RBAC, Admin-Panel, CSV/PDF Export |
+| **v0.2.1** | 🔄 In Arbeit | Dez 2025 | API Docs, Developer Guide |
 | **v0.3.0** | 📋 Geplant | Q2 2026 | Automatisierung, Integrationen |
 | **v1.0.0** | 🎯 Ziel | Q4 2026 | Production-Ready |
 
 ---
 
-## ✅ v0.1.0-alpha (AKTUELL — Stabil)
+## ✅ v0.1.0-alpha (Stabil)
 
 **Release**: November 2025
 
@@ -36,7 +37,7 @@
 
 ---
 
-## 🔄 v0.2.0-beta (95% FERTIG — Release 1. Dezember 2025)
+## ✅ v0.2.0-beta (RELEASED — 30. November 2025)
 
 ### 🎯 Fokus: Berechtigungen & Datenqualität & Export
 
