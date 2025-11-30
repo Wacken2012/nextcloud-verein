@@ -141,9 +141,15 @@
 | **Vorstand** | ✅ Voll | ✅ Lesen | ✅ Lesen | ✅ Voll | ✅ Voll | ✅ Lesen | ❌ | ✅ Vergeben* |
 | **Kassenwart** | 📊 Finanzen | ❌ | ✅ Voll | ❌ | 📨 Zugewiesen | ❌ | ❌ | ❌ |
 | **Notenwart** | 📊 Basis | ❌ | ❌ | ❌ | 📨 Zugewiesen | ✅ Admin | ❌ | ❌ |
-| **Mitglied** | 📊 Eigene | 👤 Eigene | ❌ | 📅 Eigene | 📨 Zugewiesen | 📁 Freigegeben | ❌ | ❌ |
+| **Mitglied** | 📊 Eigene | ❌ **KEIN ZUGRIFF** | ❌ **KEIN ZUGRIFF** | 📅 Eigene | 📨 Zugewiesen | 📁 **NUR Freigegeben** | ❌ | ❌ |
 
 *Vorstand kann Rollen vergeben, aber keine neuen Rollen erstellen oder Admin-Rechte vergeben
+
+**⚠️ DSGVO-Anforderungen (Pflicht für v1.0):**
+- Mitglieder haben **keinen** Zugriff auf Mitgliederliste (Datenschutz)
+- Mitglieder haben **keinen** Zugriff auf Finanzen
+- Mitglieder sehen **nur** explizit freigegebene Noten
+- Alle personenbezogenen Daten nur für berechtigte Rollen sichtbar
 
 - [ ] Rollenverwaltungs-UI für Admin & Vorstand
   - Rollen an Mitglieder zuweisen/entziehen
@@ -151,7 +157,12 @@
   - Berechtigungen pro Rolle konfigurieren (nur Admin)
   - Übersicht aller Rollen-Zuweisungen
 - [ ] Custom Permissions
-- [ ] Datenschutz (GDPR Compliance)
+- [ ] **DSGVO-Compliance (Pflicht für v1.0)**
+  - Einwilligungserklärung für Datenspeicherung
+  - Recht auf Auskunft (Datenexport für Mitglied)
+  - Recht auf Löschung (Datenlöschung auf Anfrage)
+  - Datenminimierung (nur notwendige Daten)
+  - Zugriffsprotokollierung (wer hat wann was gesehen)
 - [ ] Audit Logs exportierbar
 
 ### 💾 Data Export Erwiterungen
