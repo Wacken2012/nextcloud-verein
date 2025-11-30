@@ -58,7 +58,17 @@
 
     <!-- Fees Table -->
     <div class="table-section">
-      <h2>Gebührenliste</h2>
+      <div class="section-header">
+        <h2>Gebührenliste</h2>
+        <div class="export-buttons">
+          <button @click="exportFeesAsCsv" class="btn btn-secondary" title="Gebühren als CSV herunterladen">
+            📊 CSV Export
+          </button>
+          <button @click="exportFeesAsPdf" class="btn btn-secondary" title="Gebühren als PDF herunterladen">
+            📄 PDF Export
+          </button>
+        </div>
+      </div>
       <div class="table-wrapper">
         <table class="fees-table">
           <thead>
@@ -142,6 +152,8 @@
 <script>
 import { ref, onMounted, computed } from 'vue'
 import { api } from '../api'
+import axios from '@nextcloud/axios'
+import { generateUrl } from '@nextcloud/router'
 
 export default {
   name: 'Finance',
@@ -272,6 +284,41 @@ export default {
         .reduce((sum, f) => sum + (f.amount || 0), 0)
     })
 
+    const exportFeesAsCsv = async () => {
+      try {
+        const response = await axios.get(generateUrl('/apps/verein/export/fees/csv'), {
+          responseType: 'blob'
+        })
+        downloadFile(response.data, 'fees.csv', 'text/csv')
+      } catch (error) {
+        console.error('Error exporting CSV:', error)
+        alert('Fehler beim CSV-Export')
+      }
+    }
+
+    const exportFeesAsPdf = async () => {
+      try {
+        const response = await axios.get(generateUrl('/apps/verein/export/fees/pdf'), {
+          responseType: 'blob'
+        })
+        downloadFile(response.data, 'fees.pdf', 'application/pdf')
+      } catch (error) {
+        console.error('Error exporting PDF:', error)
+        alert('Fehler beim PDF-Export')
+      }
+    }
+
+    const downloadFile = (blob, filename, mimeType) => {
+      const url = window.URL.createObjectURL(new Blob([blob], { type: mimeType }))
+      const link = document.createElement('a')
+      link.href = url
+      link.setAttribute('download', filename)
+      document.body.appendChild(link)
+      link.click()
+      link.parentNode.removeChild(link)
+      window.URL.revokeObjectURL(url)
+    }
+
     return {
       fees,
       members,
@@ -288,7 +335,9 @@ export default {
       deleteFee,
       getMemberName,
       getStatusLabel,
-      formatDate
+      formatDate,
+      exportFeesAsCsv,
+      exportFeesAsPdf
     }
   }
 }
@@ -296,17 +345,30 @@ export default {
 
 <style scoped lang="scss">
 .finance-container {
-  max-width: 1200px;
-  margin: 0 auto;
+  /* Use full width with responsive layout */
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+
+  @media (min-width: 1200px) {
+    /* two-column layout for wide screens: form on the left, stats/table on the right */
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 2rem;
+    align-items: start;
+  }
 }
 
 .form-section,
 .table-section {
-  background: var(--color-main-background);
-  border-radius: 4px;
-  padding: 20px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  padding: 24px;
   margin-bottom: 20px;
-  border: 1px solid var(--color-border);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 
   h2 {
     margin-top: 0;
@@ -374,6 +436,25 @@ export default {
 
 .table-wrapper {
   overflow-x: auto;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  gap: 16px;
+  flex-wrap: wrap;
+
+  h2 {
+    margin: 0;
+    flex: 1;
+  }
+}
+
+.export-buttons {
+  display: flex;
+  gap: 8px;
 }
 
 .fees-table {
@@ -494,6 +575,17 @@ export default {
     background: var(--color-error);
     color: white;
     border-color: var(--color-error);
+  }
+
+  &.btn-secondary {
+    background: var(--color-main-background);
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+
+    &:hover:not(:disabled) {
+      background: var(--color-background-hover);
+      border-color: var(--color-primary);
+    }
   }
 
   &.btn-secondary {

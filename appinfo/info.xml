@@ -7,7 +7,7 @@
     <description><![CDATA[
 A comprehensive club/association management solution for Nextcloud with member management, fee tracking, SEPA export, and dashboard integration.
     ]]></description>
-    <version>0.1.0</version>
+    <version>0.2.0-beta</version>
     <licence>agpl</licence>
     <author mail="your-email@example.com">Your Name</author>
     <namespace>Verein</namespace>
@@ -28,4 +28,9 @@ A comprehensive club/association management solution for Nextcloud with member m
             <order>10</order>
         </navigation>
     </navigations>
+
+    <settings>
+        <admin>OCA\Verein\Settings\AdminSettings</admin>
+        <admin-section>OCA\Verein\Settings\AdminSection</admin-section>
+    </settings>
 </info>

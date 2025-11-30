@@ -1,0 +1,218 @@
+--- /var/www/html/nextcloud/apps/files_sharing/appinfo/routes.php	2025-10-23 20:34:13.000000000 +0200
++++ ./appinfo/routes.php	2025-11-18 18:30:35.231057454 +0100
+@@ -1,184 +1,34 @@
+ <?php
+-
+-/**
+- * SPDX-FileCopyrightText: 2016-2024 Nextcloud GmbH and Nextcloud contributors
+- * SPDX-FileCopyrightText: 2016 ownCloud, Inc.
+- * SPDX-License-Identifier: AGPL-3.0-only
+- */
+ return [
+-	'resources' => [
+-		'ExternalShares' => ['url' => '/api/externalShares'],
+-	],
+-	'routes' => [
+-		[
+-			'name' => 'Share#showShare',
+-			'url' => '/s/{token}',
+-			'verb' => 'GET',
+-			'root' => '',
+-		],
+-		[
+-			'name' => 'Share#showAuthenticate',
+-			'url' => '/s/{token}/authenticate/{redirect}',
+-			'verb' => 'GET',
+-			'root' => '',
+-		],
+-		[
+-			'name' => 'Share#authenticate',
+-			'url' => '/s/{token}/authenticate/{redirect}',
+-			'verb' => 'POST',
+-			'root' => '',
+-		],
+-		[
+-			'name' => 'Share#downloadShare',
+-			'url' => '/s/{token}/download/{filename}',
+-			'verb' => 'GET',
+-			'root' => '',
+-			'defaults' => ['filename' => '']
+-		],
+-		[
+-			'name' => 'PublicPreview#directLink',
+-			'url' => '/s/{token}/preview',
+-			'verb' => 'GET',
+-			'root' => '',
+-		],
+-		[
+-			'name' => 'PublicPreview#getPreview',
+-			'url' => '/publicpreview/{token}',
+-			'verb' => 'GET',
+-		],
+-		[
+-			'name' => 'ShareInfo#info',
+-			'url' => '/shareinfo',
+-			'verb' => 'POST',
+-		],
+-		[
+-			'name' => 'Settings#setDefaultAccept',
+-			'url' => '/settings/defaultAccept',
+-			'verb' => 'PUT',
+-		],
+-		[
+-			'name' => 'Settings#setUserShareFolder',
+-			'url' => '/settings/shareFolder',
+-			'verb' => 'PUT',
+-		],
+-		[
+-			'name' => 'Settings#resetUserShareFolder',
+-			'url' => '/settings/shareFolder',
+-			'verb' => 'DELETE',
+-		],
+-		[
+-			'name' => 'Accept#accept',
+-			'url' => '/accept/{shareId}',
+-			'verb' => 'GET',
+-		],
+-	],
+-	'ocs' => [
+-		/*
+-		 * OCS Share API
+-		 */
+-		[
+-			'name' => 'ShareAPI#getShares',
+-			'url' => '/api/v1/shares',
+-			'verb' => 'GET',
+-		],
+-		[
+-			'name' => 'ShareAPI#getInheritedShares',
+-			'url' => '/api/v1/shares/inherited',
+-			'verb' => 'GET',
+-		],
+-		[
+-			'name' => 'ShareAPI#createShare',
+-			'url' => '/api/v1/shares',
+-			'verb' => 'POST',
+-		],
+-		[
+-			'name' => 'ShareAPI#pendingShares',
+-			'url' => '/api/v1/shares/pending',
+-			'verb' => 'GET',
+-		],
+-		[
+-			'name' => 'ShareAPI#getShare',
+-			'url' => '/api/v1/shares/{id}',
+-			'verb' => 'GET',
+-		],
+-		[
+-			'name' => 'ShareAPI#updateShare',
+-			'url' => '/api/v1/shares/{id}',
+-			'verb' => 'PUT',
+-		],
+-		[
+-			'name' => 'ShareAPI#deleteShare',
+-			'url' => '/api/v1/shares/{id}',
+-			'verb' => 'DELETE',
+-		],
+-		[
+-			'name' => 'ShareAPI#sendShareEmail',
+-			'url' => '/api/v1/shares/{id}/send-email',
+-			'verb' => 'POST',
+-		],
+-		[
+-			'name' => 'ShareAPI#acceptShare',
+-			'url' => '/api/v1/shares/pending/{id}',
+-			'verb' => 'POST',
+-		],
+-		/*
+-		 * Deleted Shares
+-		 */
+-		[
+-			'name' => 'DeletedShareAPI#index',
+-			'url' => '/api/v1/deletedshares',
+-			'verb' => 'GET',
+-		],
+-		[
+-			'name' => 'DeletedShareAPI#undelete',
+-			'url' => '/api/v1/deletedshares/{id}',
+-			'verb' => 'POST',
+-		],
+-		/*
+-		 * OCS Sharee API
+-		 */
+-		[
+-			'name' => 'ShareesAPI#search',
+-			'url' => '/api/v1/sharees',
+-			'verb' => 'GET',
+-		],
+-		[
+-			'name' => 'ShareesAPI#findRecommended',
+-			'url' => '/api/v1/sharees_recommended',
+-			'verb' => 'GET',
+-		],
+-		/*
+-		 * Remote Shares
+-		 */
+-		[
+-			'name' => 'Remote#getShares',
+-			'url' => '/api/v1/remote_shares',
+-			'verb' => 'GET',
+-		],
+-		[
+-			'name' => 'Remote#getOpenShares',
+-			'url' => '/api/v1/remote_shares/pending',
+-			'verb' => 'GET',
+-		],
+-		[
+-			'name' => 'Remote#acceptShare',
+-			'url' => '/api/v1/remote_shares/pending/{id}',
+-			'verb' => 'POST',
+-		],
+-		[
+-			'name' => 'Remote#declineShare',
+-			'url' => '/api/v1/remote_shares/pending/{id}',
+-			'verb' => 'DELETE',
+-		],
+-		[
+-			'name' => 'Remote#getShare',
+-			'url' => '/api/v1/remote_shares/{id}',
+-			'verb' => 'GET',
+-		],
+-		[
+-			'name' => 'Remote#unshare',
+-			'url' => '/api/v1/remote_shares/{id}',
+-			'verb' => 'DELETE',
+-		],
+-	],
++    'routes' => [
++        // Dashboard page
++        ['name' => 'page#index', 'url' => '/', 'verb' => 'GET'],
++
++        // Dashboard data endpoints
++        ['name' => 'member#index', 'url' => '/members', 'verb' => 'GET'],
++        ['name' => 'member#create', 'url' => '/members', 'verb' => 'POST'],
++        ['name' => 'member#show', 'url' => '/members/{id}', 'verb' => 'GET'],
++        ['name' => 'member#update', 'url' => '/members/{id}', 'verb' => 'PUT'],
++        ['name' => 'member#destroy', 'url' => '/members/{id}', 'verb' => 'DELETE'],
++        
++        ['name' => 'finance#index', 'url' => '/finance', 'verb' => 'GET'],
++        ['name' => 'finance#create', 'url' => '/finance', 'verb' => 'POST'],
++        ['name' => 'finance#update', 'url' => '/finance/{id}', 'verb' => 'PUT'],
++        ['name' => 'finance#destroy', 'url' => '/finance/{id}', 'verb' => 'DELETE'],
++        
++        ['name' => 'sepa#export', 'url' => '/sepa/export', 'verb' => 'GET'],
++
++        // RBAC & permissions
++        ['name' => 'role#index', 'url' => '/roles', 'verb' => 'GET'],
++        ['name' => 'role#store', 'url' => '/roles', 'verb' => 'POST'],
++        ['name' => 'role#show', 'url' => '/roles/{id}', 'verb' => 'GET'],
++        ['name' => 'role#update', 'url' => '/roles/{id}', 'verb' => 'PUT'],
++        ['name' => 'role#destroy', 'url' => '/roles/{id}', 'verb' => 'DELETE'],
++        ['name' => 'role#indexByClubType', 'url' => '/roles/club/{clubType}', 'verb' => 'GET'],
++        ['name' => 'role#getUserRoles', 'url' => '/roles/users/{userId}', 'verb' => 'GET'],
++        ['name' => 'role#assignRole', 'url' => '/roles/users', 'verb' => 'POST'],
++        ['name' => 'role#removeRoles', 'url' => '/roles/users', 'verb' => 'DELETE'],
++
++        ['name' => 'permission#index', 'url' => '/permissions', 'verb' => 'GET'],
++    ]
+ ];

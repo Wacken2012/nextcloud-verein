@@ -4,9 +4,17 @@
     
     <!-- Controls Section -->
     <div class="controls">
-      <button @click="showAddForm = true" class="button primary">
-        ➕ Neues Mitglied
-      </button>
+      <div class="buttons">
+        <button @click="showAddForm = true" class="button primary">
+          ➕ Neues Mitglied
+        </button>
+        <button @click="exportMembersAsCsv" class="button" title="Mitglieder als CSV herunterladen">
+          📊 CSV Export
+        </button>
+        <button @click="exportMembersAsPdf" class="button" title="Mitglieder als PDF herunterladen">
+          📄 PDF Export
+        </button>
+      </div>
       
       <div class="filters">
         <input
@@ -192,8 +200,41 @@ export default {
     showError(message) {
       // TODO: Implement toast notification
       alert(message)
+    },
+    async exportMembersAsCsv() {
+      try {
+        const response = await axios.get(generateUrl('/apps/verein/export/members/csv'), {
+          responseType: 'blob'
+        })
+        this.downloadFile(response.data, 'members.csv', 'text/csv')
+        this.showSuccess('Mitglieder als CSV exportiert')
+      } catch (error) {
+        console.error('Error exporting CSV:', error)
+        this.showError('Fehler beim CSV-Export')
+      }
+    },
+    async exportMembersAsPdf() {
+      try {
+        const response = await axios.get(generateUrl('/apps/verein/export/members/pdf'), {
+          responseType: 'blob'
+        })
+        this.downloadFile(response.data, 'members.pdf', 'application/pdf')
+        this.showSuccess('Mitglieder als PDF exportiert')
+      } catch (error) {
+        console.error('Error exporting PDF:', error)
+        this.showError('Fehler beim PDF-Export')
+      }
+    },
+    downloadFile(blob, filename, mimeType) {
+      const url = window.URL.createObjectURL(new Blob([blob], { type: mimeType }))
+      const link = document.createElement('a')
+      link.href = url
+      link.setAttribute('download', filename)
+      document.body.appendChild(link)
+      link.click()
+      link.parentNode.removeChild(link)
+      window.URL.revokeObjectURL(url)
     }
-  }
 }
 </script>
 
@@ -208,6 +249,13 @@ export default {
   align-items: center;
   margin-bottom: 20px;
   gap: 20px;
+  flex-wrap: wrap;
+}
+
+.buttons {
+  display: flex;
+  gap: 10px;
+  align-items: center;
 }
 
 .filters {

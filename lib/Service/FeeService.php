@@ -28,13 +28,15 @@ class FeeService {
         int $memberId,
         float $amount,
         string $status,
-        string $dueDate
+        string $dueDate,
+        ?string $description = null
     ): Fee {
         $fee = new Fee();
         $fee->setMemberId($memberId);
         $fee->setAmount($amount);
         $fee->setStatus($status);
         $fee->setDueDate($dueDate);
+        $fee->setDescription($description);
         $fee->setCreatedAt(date('Y-m-d H:i:s'));
         $fee->setUpdatedAt(date('Y-m-d H:i:s'));
         return $this->mapper->insert($fee);
@@ -45,13 +47,15 @@ class FeeService {
         int $memberId,
         float $amount,
         string $status,
-        string $dueDate
+        string $dueDate,
+        ?string $description = null
     ): Fee {
         $fee = $this->mapper->find($id);
         $fee->setMemberId($memberId);
         $fee->setAmount($amount);
         $fee->setStatus($status);
         $fee->setDueDate($dueDate);
+        $fee->setDescription($description);
         $fee->setUpdatedAt(date('Y-m-d H:i:s'));
         return $this->mapper->update($fee);
     }

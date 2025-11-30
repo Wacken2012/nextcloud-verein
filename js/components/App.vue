@@ -1,16 +1,22 @@
 <template>
   <div id="verein-app" class="verein-app">
     <!-- Tabs Navigation -->
-    <nav class="verein-tabs" role="navigation" aria-label="Hauptnavigation">
-      <div class="verein-tabs-container">
+    <nav id="verein-navigation" class="verein-tabs" role="navigation" aria-label="Hauptnavigation" tabindex="-1">
+      <div class="verein-tabs-container" role="tablist" aria-label="Hauptnavigation">
         <button
           v-for="tab in tabs"
           :key="tab.id"
           :class="['verein-tab', { active: activeTab === tab.id }]"
+          :id="'verein-tab-' + tab.id"
           :aria-current="activeTab === tab.id ? 'page' : false"
           @click="activeTab = tab.id"
+          role="tab"
+          aria-controls="app-content"
+          :aria-selected="activeTab === tab.id"
+          :tabindex="activeTab === tab.id ? 0 : -1"
+          @keydown="onKeyDown($event, tab)"
         >
-          <span class="verein-tab-icon">{{ tab.icon }}</span>
+          <span :class="['verein-tab-icon', 'icon-' + tab.icon]"></span>
           <span class="verein-tab-label">{{ tab.label }}</span>
         </button>
       </div>
@@ -18,11 +24,14 @@
 
     <!-- Tab Content -->
     <main class="verein-content-wrapper">
+      <div id="verein-tab-panel" role="region" :aria-labelledby="'verein-tab-' + activeTab">
       <div class="verein-container">
         <component
           :is="currentComponent"
           :key="activeTab"
+          @navigate="(tab) => { activeTab = tab }"
         />
+      </div>
       </div>
     </main>
 
@@ -34,13 +43,14 @@
 </template>
 
 <script>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import Members from './Members.vue'
 import Finance from './Finance.vue'
 import Statistics from './Statistics.vue'
 import Calendar from './Calendar.vue'
 import Deck from './Deck.vue'
 import Documents from './Documents.vue'
+import Settings from './Settings.vue'
 
 export default {
   name: 'App',
@@ -50,19 +60,21 @@ export default {
     Statistics,
     Calendar,
     Deck,
-    Documents
+    Documents,
+    Settings
   },
   setup() {
     const activeTab = ref('dashboard')
     const notification = ref(null)
 
     const tabs = [
-      { id: 'dashboard', label: '📊 Dashboard', icon: 'dashboard' },
-      { id: 'members', label: '👥 Mitglieder', icon: 'users' },
-      { id: 'finance', label: '💰 Finanzen', icon: 'finance' },
-      { id: 'calendar', label: '📅 Termine', icon: 'calendar' },
-      { id: 'deck', label: '📋 Aufgaben', icon: 'deck' },
-      { id: 'documents', label: '📄 Dokumente', icon: 'documents' }
+      { id: 'dashboard', label: 'Dashboard', icon: 'dashboard' },
+      { id: 'members', label: 'Mitglieder', icon: 'users' },
+      { id: 'finance', label: 'Finanzen', icon: 'finance' },
+      { id: 'calendar', label: 'Termine', icon: 'calendar' },
+      { id: 'deck', label: 'Aufgaben', icon: 'deck' },
+      { id: 'documents', label: 'Dokumente', icon: 'documents' },
+      { id: 'settings', label: 'Einstellungen', icon: 'settings' }
     ]
 
     const componentMap = {
@@ -71,7 +83,8 @@ export default {
       finance: 'Finance',
       calendar: 'Calendar',
       deck: 'Deck',
-      documents: 'Documents'
+      documents: 'Documents',
+      settings: 'Settings'
     }
 
     const showNotification = (message, type = 'success') => {
@@ -81,14 +94,41 @@ export default {
       }, 3000)
     }
 
+    const currentComponent = computed(() => {
+      return componentMap[activeTab.value]
+    })
+
+    const onKeyDown = (event, tab) => {
+      const index = tabs.findIndex(t => t.id === tab.id)
+      if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
+        const next = (index + 1) % tabs.length
+        activeTab.value = tabs[next].id
+        setTimeout(() => {
+          const nodes = document.querySelectorAll('.verein-tab')
+          if (nodes[next]) nodes[next].focus()
+        }, 0)
+        event.preventDefault()
+      } else if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
+        const prev = (index - 1 + tabs.length) % tabs.length
+        activeTab.value = tabs[prev].id
+        setTimeout(() => {
+          const nodes = document.querySelectorAll('.verein-tab')
+          if (nodes[prev]) nodes[prev].focus()
+        }, 0)
+        event.preventDefault()
+      } else if (event.key === 'Enter' || event.key === ' ') {
+        activeTab.value = tab.id
+        event.preventDefault()
+      }
+    }
+
     return {
       activeTab,
       tabs,
       notification,
       showNotification,
-      get currentComponent() {
-        return componentMap[activeTab.value]
-      }
+      currentComponent
+      ,onKeyDown
     }
   }
 }
@@ -98,7 +138,7 @@ export default {
 // Responsive Breakpoints
 $breakpoint-tablet: 768px;
 $breakpoint-desktop: 1024px;
-$max-container-width: 1200px;
+$max-container-width: 1200px; // retained for fallback but not enforced for full-width layout
 
 ::-webkit-scrollbar {
   width: 8px;
@@ -122,32 +162,38 @@ $max-container-width: 1200px;
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  background: var(--color-main-background);
+  background: transparent;
   color: var(--color-text);
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
 .verein-tabs {
-  background: var(--color-main-background);
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
   border-bottom: 1px solid var(--color-border);
   position: sticky;
-  top: 0;
+  top: var(--header-height, 50px);
   z-index: 100;
+  z-index: 2100; /* place tabs above header area so they remain clickable */
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .verein-tabs-container {
   display: flex;
   gap: 0;
-  max-width: $max-container-width;
-  margin: 0 auto;
-  width: 100%;
+  /* allow the tab bar to use the full available width inside Nextcloud's content area
+     but keep a small horizontal padding so it doesn't touch browser edges */
+  max-width: none;
+  margin: 0 20px;
+  width: calc(100% - 40px);
   padding: 0;
   overflow-x: auto;
   overflow-y: hidden;
   -webkit-overflow-scrolling: touch;
 
   @media (max-width: $breakpoint-tablet) {
+    margin: 0;
+    width: 100%;
     overflow-x: auto;
     scroll-behavior: smooth;
   }
@@ -218,23 +264,29 @@ $max-container-width: 1200px;
   flex: 1;
   display: flex;
   width: 100%;
-  background: var(--color-main-background);
+  background: transparent;
+  padding: 2rem 0;
 }
 
 .verein-container {
+  /* expand to use the available content width inside Nextcloud */
   width: 100%;
-  max-width: $max-container-width;
+  max-width: 100%;
   margin: 0 auto;
-  padding: 1rem;
+  padding: 0 1.5rem;
   display: flex;
   flex-direction: column;
 
+  @media (min-width: 1400px) {
+    padding: 0 3rem;
+  }
+
   @media (max-width: $breakpoint-tablet) {
-    padding: 1rem 0.75rem;
+    padding: 0 1rem;
   }
 
   @media (max-width: 480px) {
-    padding: 0.75rem 0.5rem;
+    padding: 0 0.75rem;
   }
 }
 

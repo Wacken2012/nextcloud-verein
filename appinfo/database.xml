@@ -26,4 +26,42 @@
     <field name="created_at" type="datetime" notnull="true" />
     <field name="updated_at" type="datetime" />
   </table>
+
+  <!-- RBAC: Rollen Definitionen -->
+  <table name="verein_roles">
+    <field name="id" type="integer" autoincrement="true" primary="true" />
+    <field name="name" type="string" length="128" notnull="true" />
+    <field name="description" type="string" length="500" />
+    <field name="permissions" type="text" notnull="true" />
+    <field name="club_type" type="string" length="64" notnull="true" default="music" />
+    <field name="created_at" type="datetime" notnull="true" />
+    <field name="updated_at" type="datetime" />
+
+    <index name="vn_roles_name_club_idx" type="unique">
+      <field name="name" />
+      <field name="club_type" />
+    </index>
+  </table>
+
+  <!-- RBAC: User-Rollen-Zuweisungen -->
+  <table name="verein_user_roles">
+    <field name="id" type="integer" autoincrement="true" primary="true" />
+    <field name="user_id" type="string" length="64" notnull="true" />
+    <field name="role_id" type="integer" notnull="true" />
+    <field name="club_id" type="integer" notnull="true" default="0" />
+    <field name="granted_by" type="string" length="64" />
+    <field name="granted_at" type="datetime" />
+
+    <index name="vn_user_roles_user_idx">
+      <field name="user_id" />
+    </index>
+    <index name="vn_user_roles_role_idx">
+      <field name="role_id" />
+    </index>
+    <index name="vn_user_roles_unique" type="unique">
+      <field name="user_id" />
+      <field name="role_id" />
+      <field name="club_id" />
+    </index>
+  </table>
 </tables>

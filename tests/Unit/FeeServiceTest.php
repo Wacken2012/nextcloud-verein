@@ -91,7 +91,8 @@ class FeeServiceTest extends TestCase {
             1,
             50.00,
             'open',
-            '2024-12-31'
+            '2024-12-31',
+            'Jahresbeitrag 2024'
         );
         
         // Assert
@@ -124,7 +125,8 @@ class FeeServiceTest extends TestCase {
             1,
             75.00,
             'paid',
-            '2024-12-31'
+            '2024-12-31',
+            'Nachberechnung'
         );
         
         // Assert

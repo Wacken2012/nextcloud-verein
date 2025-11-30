@@ -57,7 +57,17 @@
 
     <!-- Members Table -->
     <div class="table-section">
-      <h2>Mitgliederliste</h2>
+      <div class="section-header">
+        <h2>Mitgliederliste</h2>
+        <div class="export-buttons">
+          <button @click="exportMembersAsCsv" class="btn btn-secondary" title="Mitglieder als CSV herunterladen">
+            📊 CSV Export
+          </button>
+          <button @click="exportMembersAsPdf" class="btn btn-secondary" title="Mitglieder als PDF herunterladen">
+            📄 PDF Export
+          </button>
+        </div>
+      </div>
       <div class="table-wrapper">
         <table class="members-table">
           <thead>
@@ -145,6 +155,8 @@
 
 <script>
 import { ref, onMounted } from 'vue'
+import axios from 'axios'
+import { generateUrl } from '@nextcloud/router'
 import { api } from '../api'
 import Alert from './Alert.vue'
 
@@ -166,8 +178,8 @@ export default {
       email: '',
       address: '',
       iban: '',
-      bic: '',
-      role: 'Mitglied'
+  bic: '',
+  role: 'member'
     })
 
     const editData = ref({})
@@ -199,7 +211,7 @@ export default {
           alertErrors.value = response.data.errors || []
           if (alertRef.value) alertRef.value.open()
         } else {
-          formData.value = { name: '', email: '', address: '', iban: '', bic: '', role: 'Mitglied' }
+          formData.value = { name: '', email: '', address: '', iban: '', bic: '', role: 'member' }
           await fetchMembers()
         }
       } catch (error) {
@@ -212,9 +224,22 @@ export default {
       }
     }
 
-    const startEdit = (member) => {
+    const startEdit = async (member) => {
       editingId.value = member.id
       editData.value = { ...member }
+
+      try {
+        const response = await api.getMember(member.id)
+        const latest = response.data?.data || response.data?.member
+        if (latest) {
+          editData.value = { ...latest }
+        }
+      } catch (error) {
+        console.error('Error loading member details:', error)
+        alertError.value = 'Fehler beim Laden des Mitglieds'
+        alertErrors.value = []
+        if (alertRef.value) alertRef.value.open()
+      }
     }
 
     const saveEdit = async (id) => {
@@ -249,6 +274,43 @@ export default {
       }
     }
 
+    const exportMembersAsCsv = async () => {
+      try {
+        const response = await axios.get(generateUrl('/apps/verein/export/members/csv'), {
+          responseType: 'blob'
+        })
+        downloadFile(response.data, 'members.csv', 'text/csv')
+        alert('Mitglieder als CSV exportiert')
+      } catch (error) {
+        console.error('Error exporting CSV:', error)
+        alert('Fehler beim CSV-Export')
+      }
+    }
+
+    const exportMembersAsPdf = async () => {
+      try {
+        const response = await axios.get(generateUrl('/apps/verein/export/members/pdf'), {
+          responseType: 'blob'
+        })
+        downloadFile(response.data, 'members.pdf', 'application/pdf')
+        alert('Mitglieder als PDF exportiert')
+      } catch (error) {
+        console.error('Error exporting PDF:', error)
+        alert('Fehler beim PDF-Export')
+      }
+    }
+
+    const downloadFile = (blob, filename, mimeType) => {
+      const url = window.URL.createObjectURL(new Blob([blob], { type: mimeType }))
+      const link = document.createElement('a')
+      link.href = url
+      link.setAttribute('download', filename)
+      document.body.appendChild(link)
+      link.click()
+      link.parentNode.removeChild(link)
+      window.URL.revokeObjectURL(url)
+    }
+
     return {
       members,
       loading,
@@ -260,6 +322,8 @@ export default {
       saveEdit,
       cancelEdit,
       deleteMember,
+      exportMembersAsCsv,
+      exportMembersAsPdf,
       alertRef,
       alertError,
       alertErrors
@@ -270,17 +334,30 @@ export default {
 
 <style scoped lang="scss">
 .members-container {
-  max-width: 1200px;
-  margin: 0 auto;
+  /* Use full width on all screens with responsive padding */
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+
+  @media (min-width: 1200px) {
+    /* three-column layout: form + two lists on wide screens */
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 2rem;
+    align-items: start;
+  }
 }
 
 .form-section,
 .table-section {
-  background: var(--color-main-background);
-  border-radius: 4px;
-  padding: 20px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  padding: 24px;
   margin-bottom: 20px;
-  border: 1px solid var(--color-border);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 
   h2 {
     margin-top: 0;
@@ -288,6 +365,28 @@ export default {
     font-size: 18px;
     color: var(--color-text);
   }
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+
+  h2 {
+    margin: 0;
+    font-size: 18px;
+    color: var(--color-text);
+  }
+}
+
+.export-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+@media (min-width: 1100px) {
+  .form-section { margin-bottom: 0; }
 }
 
 .member-form {

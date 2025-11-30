@@ -16,6 +16,20 @@ class MemberService {
         return $this->mapper->findAll();
     }
 
+    /**
+     * Search members by query (name or email), remote-friendly for autocomplete.
+     *
+     * @param string $query
+     * @param int $limit
+     * @return array
+     */
+    public function search(string $query, int $limit = 50): array {
+        if (trim($query) === '') {
+            return [];
+        }
+        return $this->mapper->search($query, $limit);
+    }
+
     public function find(int $id): Member {
         try {
             return $this->mapper->find($id);

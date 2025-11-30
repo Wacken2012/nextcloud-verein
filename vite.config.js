@@ -12,7 +12,9 @@ export default defineConfig({
     lib: {
       entry: path.resolve(__dirname, 'js/main.js'),
       name: 'VereinApp',
-      formats: ['es']
+      formats: ['es'],
+      // produce an ES module file with .mjs extension so Nextcloud can load it as module
+      fileName: (format) => `nextcloud-verein.mjs`
     },
     rollupOptions: {
       external: [],

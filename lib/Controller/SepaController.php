@@ -1,6 +1,7 @@
 <?php
 namespace OCA\Verein\Controller;
 
+use OCA\Verein\Attributes\RequirePermission;
 use OCP\IRequest;
 use OCP\AppFramework\Http\DataResponse;
 use OCP\AppFramework\Http\StreamResponse;
@@ -33,6 +34,7 @@ class SepaController extends ApiController {
      * @param string $creditorId Creditor ID for SEPA
      * @return StreamResponse
      */
+    #[RequirePermission('verein.sepa.export')]
     public function export(
         string $creditorName,
         string $creditorIban,
@@ -58,6 +60,7 @@ class SepaController extends ApiController {
      * 
      * Preview SEPA export (without downloading)
      */
+    #[RequirePermission('verein.sepa.export')]
     public function preview(
         string $creditorName,
         string $creditorIban,

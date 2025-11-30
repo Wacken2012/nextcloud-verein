@@ -1,0 +1,5 @@
+# Comparing . <-> /var/www/html/nextcloud/apps/files_sharing
+## File stats
+>>> appinfo/routes.php
+>>> lib/AppInfo/Application.php
+## RBAC keyword hits

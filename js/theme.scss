@@ -87,6 +87,12 @@ $breakpoint-mobile: 480px;
  * Globale Styles für die Nextcloud Vereins-App
  */
 
+/* 
+   ACHTUNG: Wir dürfen html und body nicht global stylen, 
+   da dies das Nextcloud-Layout zerstört und Skip-Links sichtbar macht.
+   Stattdessen nutzen wir .verein-app als Scope.
+*/
+/*
 html,
 body {
   margin: 0;
@@ -97,10 +103,13 @@ body {
   background: var(--color-main-background);
   line-height: 1.5;
 }
+*/
 
+/*
 * {
   box-sizing: border-box;
 }
+*/
 
 a {
   color: var(--color-primary);
@@ -189,6 +198,49 @@ textarea {
 
 .no-scroll {
   overflow: hidden;
+}
+
+/* Hide Nextcloud skip links inside the app unless focused (accessibility preserved) */
+/* Global skip links hiding unless focused (preserve accessibility) */
+a.skip-navigation:not(:focus) {
+  position: absolute !important;
+  left: -10000px !important;
+  top: auto !important;
+  width: 1px !important;
+  height: 1px !important;
+  overflow: hidden !important;
+}
+
+a.skip-navigation:focus {
+  position: static !important;
+  left: 0 !important;
+  width: auto !important;
+  height: auto !important;
+  padding: 0.5rem 0.75rem;
+  background: #fff;
+  color: #000;
+  border: 2px solid var(--color-primary);
+  z-index: 1000;
+}
+
+/* Placeholder chart containers styling */
+.chart-placeholders .chart-container.placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  min-height: 160px;
+  background: var(--color-background);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--border-radius-md);
+  padding: 1rem;
+  color: var(--color-text-secondary);
+}
+
+.chart-disabled-hint {
+  margin: 0.5rem 0 0;
+  font-size: var(--font-size-sm);
+  opacity: 0.85;
 }
 
 .truncate {
