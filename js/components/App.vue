@@ -43,10 +43,11 @@
 </template>
 
 <script>
-import { ref, computed } from 'vue'
+import { ref, computed, defineAsyncComponent } from 'vue'
 import Members from './Members.vue'
 import Finance from './Finance.vue'
-import Statistics from './Statistics.vue'
+// Lazy-load Statistics (includes Chart.js ~500KB) for better initial load
+const Statistics = defineAsyncComponent(() => import('./Statistics.vue'))
 import Calendar from './Calendar.vue'
 import Deck from './Deck.vue'
 import Documents from './Documents.vue'

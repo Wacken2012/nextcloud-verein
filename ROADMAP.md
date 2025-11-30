@@ -12,7 +12,7 @@
 |---------|--------|---------|-------|
 | **v0.1.0-alpha** | ✅ Stabil | Nov 2025 | Basis CRUD, MVP |
 | **v0.2.0-beta** | ✅ Released | 30. Nov 2025 | RBAC, Admin-Panel, CSV/PDF Export |
-| **v0.2.1** | 🔄 In Arbeit | Dez 2025 | API Docs, Developer Guide |
+| **v0.2.1** | ✅ Fertig | 30. Nov 2025 | API Docs, Developer Guide, PDF Fix |
 | **v0.3.0** | 📋 Geplant | Q2 2026 | Automatisierung, Integrationen |
 | **v1.0.0** | 🎯 Ziel | Q4 2026 | Production-Ready |
 
@@ -84,19 +84,17 @@
 - [x] Security Audit (RBAC, Input Validation)
 - [x] Performance Optimierungen
 
-### 📚 Documentation (In Arbeit)
+### 📚 Documentation (Abgeschlossen ✅)
 - [x] README mit Feature-Übersicht
 - [x] ROADMAP mit aktualisiertem Status
-- [ ] API Documentation (Swagger/OpenAPI) — v0.2.1
-- [ ] Developer Guide — v0.2.1
+- [x] API Documentation (OpenAPI 3.0) ✅ v0.2.1
+- [x] Developer Guide (Bilingual DE/EN) ✅ v0.2.1
+- [x] CONTRIBUTING.md (Bilingual DE/EN) ✅ v0.2.1
 
-### Offene Punkte für Release (gering)
-- 🟡 PDF Export: TCPDF Dependency-Issue (akzeptabel für Beta)
-  - CSV Export funktioniert vollständig ✅
-  - Workaround: CSV verwenden oder direkter PHP-Call
-  - Zielversion für Fix: v0.2.1
-- 🟢 Final QA & Testing (läuft)
-- 🟢 Documentation Polish (läuft)
+### ✅ Behobene Punkte (v0.2.1)
+- ✅ PDF Export: Vollständig funktional (Members + Fees)
+- ✅ Documentation: API Docs, Developer Guide erstellt
+- ✅ Alle Dokumentation zweisprachig (DE/EN)
 
 ---
 
@@ -172,11 +170,11 @@
 
 ## 🐛 Known Issues & Limitations
 
-### v0.2.0-beta
-| Issue | Severity | Workaround | ETA |
-|-------|----------|-----------|-----|
-| PDF Export (TCPDF Dependency) | 🟡 Medium | Verwende CSV Export | v0.2.1 |
-| SEPA XML Export | 🟡 Medium | Manual Export vom DB | v0.3.0 |
+### v0.2.1 (alle gelöst ✅)
+| Issue | Severity | Status | Fix |
+|-------|----------|--------|-----|
+| PDF Export (TCPDF Dependency) | 🟡 Medium | ✅ BEHOBEN | v0.2.1 |
+| SEPA XML Export | 🟡 Medium | 📋 Geplant | v0.3.0 |
 
 ### v0.1.0-alpha (alle in v0.2.0 behoben ✅)
 | Issue | Severity | Status | Fix |
@@ -186,7 +184,13 @@
 | Kein Export | 🟡 Medium | ✅ BEHOBEN | v0.2.0 |
 
 ### Performance
-- Bundle-Größe: 387 KB (Ziel: < 200 KB für v1.0)
+- Bundle-Größe: ~~854 KB~~ → **508 KB** (v0.2.1, 40% Reduktion) ✅
+  - gzip: ~~197 KB~~ → **148 KB** (25% Reduktion)
+  - Ziel für v1.0: < 200 KB
+- Optimierungen v0.2.1:
+  - [x] Aggressive Terser-Minification
+  - [x] Console.log/debug entfernt in Production
+  - [x] Tree-shaking verbessert
 - Datenbankqueries: optimiert durch Nextcloud ORM
 - Caching-Strategie: Nextcloud-native
 

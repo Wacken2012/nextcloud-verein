@@ -4,9 +4,7 @@ import App from './components/App.vue'
 // Nextcloud Theme Integration
 import './theme.scss'
 
-// Register Chart.js 'Filler' plugin to avoid runtime warnings when using 'fill'
-import { Chart, Filler } from 'chart.js'
-Chart.register(Filler)
+// Chart.js is now lazy-loaded with Statistics component for better initial load
 
 createApp(App)
   .mount('#app')
