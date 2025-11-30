@@ -50,6 +50,7 @@ import Statistics from './Statistics.vue'
 import Calendar from './Calendar.vue'
 import Deck from './Deck.vue'
 import Documents from './Documents.vue'
+import Settings from './Settings.vue'
 
 export default {
   name: 'App',
@@ -59,7 +60,8 @@ export default {
     Statistics,
     Calendar,
     Deck,
-    Documents
+    Documents,
+    Settings
   },
   setup() {
     const activeTab = ref('dashboard')

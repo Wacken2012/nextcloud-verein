@@ -79,7 +79,9 @@
       <div class="chart-container">
         <h3 class="chart-title">💰 Gebührenstatus</h3>
         <div class="chart-wrapper">
-          <Bar
+          <component
+            v-if="chartsReady"
+            :is="BarComp"
             :data="feeStatusChartData"
             :options="chartOptions.bar"
           />
@@ -90,7 +92,9 @@
       <div class="chart-container">
         <h3 class="chart-title">📈 Mitgliederwachstum (Letzte 6 Monate)</h3>
         <div class="chart-wrapper">
-          <Line
+          <component
+            v-if="chartsReady"
+            :is="LineComp"
             :data="memberGrowthChartData"
             :options="chartOptions.line"
           />
@@ -112,10 +116,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, reactive, computed, watch } from 'vue'
+import { ref, onMounted, reactive, computed, watch, nextTick, shallowRef } from 'vue'
 // Lazy load chart components to avoid early DOM binding issues
 let Bar: any = null
 let Line: any = null
+const BarComp = shallowRef<any | null>(null)
+const LineComp = shallowRef<any | null>(null)
+const chartsReady = ref(false)
 import api from '../api'
 import Alert from './Alert.vue'
 import { settingsStore } from '../store/settings'
@@ -160,10 +167,18 @@ const ensureChartsLoaded = async () => {
   )
   Bar = vueChartMod.Bar
   Line = vueChartMod.Line
+  BarComp.value = vueChartMod.Bar
+  LineComp.value = vueChartMod.Line
+  chartsReady.value = true
 }
 
 watch(showCharts, async (val) => {
-  if (val) await ensureChartsLoaded()
+  if (val) {
+    // Defer to ensure DOM is fully ready and containers sized
+    await nextTick()
+    await new Promise((resolve) => requestAnimationFrame(() => resolve(null)))
+    await ensureChartsLoaded()
+  }
 })
 
 interface Statistics {

@@ -1,5 +1,7 @@
 # 🎉 Release Notes: Nextcloud Verein v0.2.0-beta
 
+English release notes: https://github.com/Wacken2012/nextcloud-verein/blob/main/RELEASE_NOTES_v0.2.0-beta_EN.md
+
 **Release Datum**: 30. November 2025  
 **Version**: 0.2.0-beta  
 **Status**: ✅ Stabil & Produktionsbereit für Testers  
