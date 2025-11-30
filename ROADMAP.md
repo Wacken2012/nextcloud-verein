@@ -144,6 +144,9 @@
 
 ### 📊 Statistiken & Reporting
 - [ ] Charts & Diagramme
+  - Anwesenheitsstatistik im Dashboard (Diagramm)
+  - Anwesenheitsquote pro Mitglied
+  - Teilnahme-Trends über Zeit
 - [ ] Historische Daten
 - [ ] Trends & Prognosen
 
