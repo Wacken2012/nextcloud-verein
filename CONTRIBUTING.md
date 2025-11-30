@@ -2,6 +2,8 @@
 
 Vielen Dank dass du zur Nextcloud Vereins-App beitragen möchtest! Diese Richtlinien helfen uns, Qualität und Konsistenz zu bewahren.
 
+> 📚 **Für detaillierte technische Informationen siehe den [Developer Guide](docs/DEVELOPER_GUIDE.md)**
+
 ---
 
 ## 📋 Inhaltsverzeichnis
