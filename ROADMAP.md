@@ -107,21 +107,23 @@
   - Cronjob für Beiträge
   - E-Mail Benachrichtigungen
   - Mahnstufen (1., 2., Mahnung)
-- [ ] Kalender Integration
+- [ ] Kalender Integration (nach Vorbild "Konzertmeister")
   - Gebühren-Fristen als Events
-  - Terminverwaltung (Versammlungen, Proben, Events)
+  - Terminverwaltung (Versammlungen, Proben, Events, Konzerte)
   - Teilnehmer-Abfrage (RSVP: Zu-/Absage)
-  - Anwesenheitsverwaltung
+  - Anwesenheitsverwaltung & Statistik
   - Wiederkehrende Termine (z.B. wöchentliche Proben)
+  - Programm-/Setlist-Planung pro Termin
 - [ ] Deck Integration
   - Aufgaben-Management
   - Beitragsabrechnung
-- [ ] Direktnachrichten (Talk)
+- [ ] Direktnachrichten (Talk) (nach Vorbild "Konzertmeister")
   - Benachrichtigungen via Chat
   - Admin-Alerts
   - Termin-Erinnerungen an Mitglieder
   - Automatische Einladungen zu Veranstaltungen
   - Abfrage-Benachrichtigungen (Zu-/Absage anfordern)
+  - Gruppen-Kommunikation nach Register/Stimme
 - [ ] Files Integration (Notenverwaltung)
   - Noten-Archiv nach Vorbild "SoftNote"
   - Kategorisierung nach Instrument/Stimme
