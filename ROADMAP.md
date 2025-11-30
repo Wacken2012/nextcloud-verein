@@ -116,6 +116,12 @@
 - [ ] Direktnachrichten (Talk)
   - Benachrichtigungen via Chat
   - Admin-Alerts
+- [ ] Files Integration (Notenverwaltung)
+  - Noten-Archiv nach Vorbild "SoftNote"
+  - Kategorisierung nach Instrument/Stimme
+  - Such- und Filterfunktion
+  - Verknüpfung mit Mitgliedern (Stimme/Register)
+  - PDF-Vorschau und Download
 
 ### 🔐 Security & Permissions
 - [ ] Erweiterte Rollen
