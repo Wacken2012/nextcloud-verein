@@ -109,13 +109,19 @@
   - Mahnstufen (1., 2., Mahnung)
 - [ ] Kalender Integration
   - Gebühren-Fristen als Events
-  - Mitgliederverwaltung im Kalender
+  - Terminverwaltung (Versammlungen, Proben, Events)
+  - Teilnehmer-Abfrage (RSVP: Zu-/Absage)
+  - Anwesenheitsverwaltung
+  - Wiederkehrende Termine (z.B. wöchentliche Proben)
 - [ ] Deck Integration
   - Aufgaben-Management
   - Beitragsabrechnung
 - [ ] Direktnachrichten (Talk)
   - Benachrichtigungen via Chat
   - Admin-Alerts
+  - Termin-Erinnerungen an Mitglieder
+  - Automatische Einladungen zu Veranstaltungen
+  - Abfrage-Benachrichtigungen (Zu-/Absage anfordern)
 - [ ] Files Integration (Notenverwaltung)
   - Noten-Archiv nach Vorbild "SoftNote"
   - Kategorisierung nach Instrument/Stimme
