@@ -13,7 +13,8 @@
 | **v0.1.0-alpha** | ✅ Stabil | Nov 2025 | Basis CRUD, MVP |
 | **v0.2.0-beta** | ✅ Released | 30. Nov 2025 | RBAC, Admin-Panel, CSV/PDF Export |
 | **v0.2.1** | ✅ Fertig | 30. Nov 2025 | API Docs, Developer Guide, PDF Fix |
-| **v0.3.0** | 📋 Geplant | Q2 2026 | Automatisierung, Integrationen |
+| **v0.3.0** | 📋 Geplant | Q2 2026 | Automatisierung, Integrationen (Kalender, Talk, Files, Deck) |
+| **v0.4.0** | 📋 Geplant | Q3 2026 | Materialverwaltung (Zeugwart) |
 | **v1.0.0** | 🎯 Ziel | Q4 2026 | Production-Ready |
 
 ---
@@ -132,10 +133,19 @@
   - PDF-Vorschau und Download
 
 ### 🔐 Security & Permissions
-- [ ] Erweiterte Rollen
-  - Custom Permissions
-  - Datenschutz (GDPR Compliance)
-  - Audit Logs mit exportierbar
+- [ ] Erweiterte Rollen mit granularen Berechtigungen:
+
+| Rolle | Dashboard | Mitglieder | Finanzen | Kalender | Talk | Noten (Files) | Einstellungen |
+|-------|-----------|------------|----------|----------|------|---------------|---------------|
+| **Admin** | ✅ Voll | ✅ Voll | ✅ Voll | ✅ Voll | ✅ Voll | ✅ Voll | ✅ Voll |
+| **Vorstand** | ✅ Voll | ✅ Lesen | ✅ Lesen | ✅ Voll | ✅ Voll | ✅ Lesen | ❌ |
+| **Kassenwart** | 📊 Finanzen | ❌ | ✅ Voll | ❌ | 📨 Zugewiesen | ❌ | ❌ |
+| **Notenwart** | 📊 Basis | ❌ | ❌ | ❌ | 📨 Zugewiesen | ✅ Admin | ❌ |
+| **Mitglied** | 📊 Eigene | 👤 Eigene | ❌ | 📅 Eigene | 📨 Zugewiesen | 📁 Freigegeben | ❌ |
+
+- [ ] Custom Permissions
+- [ ] Datenschutz (GDPR Compliance)
+- [ ] Audit Logs exportierbar
 
 ### 💾 Data Export Erwiterungen
 - [ ] SEPA XML Export (für Bankentransfers)
@@ -149,6 +159,32 @@
   - Teilnahme-Trends über Zeit
 - [ ] Historische Daten
 - [ ] Trends & Prognosen
+
+---
+
+## 📋 v0.4.0 (Q3 2026 — Materialverwaltung)
+
+### 🎯 Fokus: Zeugwart & Inventar
+
+**Geplante Features:**
+- [ ] Materialverwaltung (Zeugwart-Modul)
+  - Inventarliste aller Materialien/Instrumente
+  - Status-Tracking (verfügbar, ausgegeben, Reparatur)
+  - Ausgabe-Protokoll (wer hat was wann erhalten)
+  - Rückgabe-Verwaltung
+  - Reparatur-Tracking mit Status & Kosten
+  - Wartungs-Erinnerungen
+- [ ] Zeugwart-Rolle
+  - Zugriff auf Materialverwaltungs-Tab
+  - Ausgabe/Rücknahme-Berechtigung
+  - Reparatur-Aufträge erstellen
+
+| Rolle | Materialverwaltung |
+|-------|-------------------|
+| **Admin** | ✅ Voll |
+| **Vorstand** | ✅ Lesen |
+| **Zeugwart** | ✅ Admin |
+| **Mitglied** | 👤 Eigene Ausleihen |
 
 ---
 
