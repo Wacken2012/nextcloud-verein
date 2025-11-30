@@ -135,14 +135,21 @@
 ### 🔐 Security & Permissions
 - [ ] Erweiterte Rollen mit granularen Berechtigungen:
 
-| Rolle | Dashboard | Mitglieder | Finanzen | Kalender | Talk | Noten (Files) | Einstellungen |
-|-------|-----------|------------|----------|----------|------|---------------|---------------|
-| **Admin** | ✅ Voll | ✅ Voll | ✅ Voll | ✅ Voll | ✅ Voll | ✅ Voll | ✅ Voll |
-| **Vorstand** | ✅ Voll | ✅ Lesen | ✅ Lesen | ✅ Voll | ✅ Voll | ✅ Lesen | ❌ |
-| **Kassenwart** | 📊 Finanzen | ❌ | ✅ Voll | ❌ | 📨 Zugewiesen | ❌ | ❌ |
-| **Notenwart** | 📊 Basis | ❌ | ❌ | ❌ | 📨 Zugewiesen | ✅ Admin | ❌ |
-| **Mitglied** | 📊 Eigene | 👤 Eigene | ❌ | 📅 Eigene | 📨 Zugewiesen | 📁 Freigegeben | ❌ |
+| Rolle | Dashboard | Mitglieder | Finanzen | Kalender | Talk | Noten (Files) | Einstellungen | Rollenverwaltung |
+|-------|-----------|------------|----------|----------|------|---------------|---------------|------------------|
+| **Admin** | ✅ Voll | ✅ Voll | ✅ Voll | ✅ Voll | ✅ Voll | ✅ Voll | ✅ Voll | ✅ Voll |
+| **Vorstand** | ✅ Voll | ✅ Lesen | ✅ Lesen | ✅ Voll | ✅ Voll | ✅ Lesen | ❌ | ✅ Vergeben* |
+| **Kassenwart** | 📊 Finanzen | ❌ | ✅ Voll | ❌ | 📨 Zugewiesen | ❌ | ❌ | ❌ |
+| **Notenwart** | 📊 Basis | ❌ | ❌ | ❌ | 📨 Zugewiesen | ✅ Admin | ❌ | ❌ |
+| **Mitglied** | 📊 Eigene | 👤 Eigene | ❌ | 📅 Eigene | 📨 Zugewiesen | 📁 Freigegeben | ❌ | ❌ |
 
+*Vorstand kann Rollen vergeben, aber keine neuen Rollen erstellen oder Admin-Rechte vergeben
+
+- [ ] Rollenverwaltungs-UI für Admin & Vorstand
+  - Rollen an Mitglieder zuweisen/entziehen
+  - Neue Rollen erstellen (nur Admin)
+  - Berechtigungen pro Rolle konfigurieren (nur Admin)
+  - Übersicht aller Rollen-Zuweisungen
 - [ ] Custom Permissions
 - [ ] Datenschutz (GDPR Compliance)
 - [ ] Audit Logs exportierbar
