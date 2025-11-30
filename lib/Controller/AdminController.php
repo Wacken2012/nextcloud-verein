@@ -1,6 +1,7 @@
 <?php
 namespace OCA\Verein\Controller;
 
+use OCA\Verein\Attributes\RequirePermission;
 use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http\TemplateResponse;
 use OCP\IRequest;
@@ -26,6 +27,7 @@ class AdminController extends Controller {
      * Zeige die Rollen-Admin-Seite
      * @return TemplateResponse
      */
+    #[RequirePermission('verein.role.manage')]
     public function roles(): TemplateResponse {
         try {
             $roles = $this->roleMapper->findAll();

@@ -4,14 +4,15 @@ namespace OCA\Verein\Settings;
 use OCP\IL10N;
 use OCP\IURLGenerator;
 use OCP\Settings\IIconSection;
+use OCP\AppFramework\IAppContainer;
 
 class AdminSection implements IIconSection {
     private IL10N $l;
     private IURLGenerator $url;
 
-    public function __construct(IURLGenerator $url, IL10N $l) {
-        $this->url = $url;
-        $this->l = $l;
+    public function __construct(IAppContainer $container) {
+        $this->url = $container->query(IURLGenerator::class);
+        $this->l = $container->query(IL10N::class);
     }
 
     /**

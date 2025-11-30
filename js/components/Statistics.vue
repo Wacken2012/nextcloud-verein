@@ -23,7 +23,7 @@
     <!-- Statistik-Widgets -->
     <div v-else class="stats-grid">
       <!-- Widget: Mitglieder -->
-      <div class="stat-widget">
+      <div class="stat-widget" role="button" tabindex="0" @click="emit('navigate','members')" @keydown.enter="emit('navigate','members')">
         <div class="stat-header">
           <h3 class="stat-title">👥 Mitglieder</h3>
           <span class="stat-icon primary">👥</span>
@@ -33,7 +33,7 @@
       </div>
 
       <!-- Widget: Offene Gebühren -->
-      <div class="stat-widget warning">
+      <div class="stat-widget warning" role="button" tabindex="0" @click="emit('navigate','finance')" @keydown.enter="emit('navigate','finance')">
         <div class="stat-header">
           <h3 class="stat-title">📋 Offene Gebühren</h3>
           <span class="stat-icon warning-icon">📋</span>
@@ -43,7 +43,7 @@
       </div>
 
       <!-- Widget: Bezahlte Gebühren -->
-      <div class="stat-widget success">
+      <div class="stat-widget success" role="button" tabindex="0" @click="emit('navigate','finance')" @keydown.enter="emit('navigate','finance')">
         <div class="stat-header">
           <h3 class="stat-title">✓ Bezahlte Gebühren</h3>
           <span class="stat-icon success-icon">✓</span>
@@ -52,8 +52,18 @@
         <p class="stat-label">{{ statistics.paidCount }} Einträge</p>
       </div>
 
+      <!-- Widget: Fällige Gebühren -->
+      <div class="stat-widget warning" role="button" tabindex="0" @click="emit('navigate','finance')" @keydown.enter="emit('navigate','finance')">
+        <div class="stat-header">
+          <h3 class="stat-title">📋 Fällige Gebühren</h3>
+          <span class="stat-icon warning-icon">📋</span>
+        </div>
+        <p class="stat-value">{{ formatCurrency(statistics.totalDue) }}</p>
+        <p class="stat-label">{{ statistics.dueCount }} Einträge</p>
+      </div>
+
       <!-- Widget: Überfällige Gebühren -->
-      <div class="stat-widget error">
+      <div class="stat-widget error" role="button" tabindex="0" @click="emit('navigate','finance')" @keydown.enter="emit('navigate','finance')">
         <div class="stat-header">
           <h3 class="stat-title">⚠️ Überfällige Gebühren</h3>
           <span class="stat-icon error-icon">⚠️</span>
@@ -63,8 +73,8 @@
       </div>
     </div>
 
-    <!-- Charts -->
-    <div v-if="!loading" class="charts-grid">
+    <!-- Charts (temporarily disabled to restore navigation) -->
+    <div v-if="!loading && showCharts" class="charts-grid">
       <!-- Balkendiagramm: Gebührenstatus -->
       <div class="chart-container">
         <h3 class="chart-title">💰 Gebührenstatus</h3>
@@ -87,48 +97,85 @@
         </div>
       </div>
     </div>
+    <!-- Placeholder boxes when charts are disabled -->
+    <div v-else-if="!loading && !showCharts" class="charts-grid chart-placeholders">
+      <div class="chart-container placeholder">
+        <h3 class="chart-title">💰 Gebührenstatus</h3>
+        <p class="chart-disabled-hint">Diagramm vorübergehend deaktiviert.</p>
+      </div>
+      <div class="chart-container placeholder">
+        <h3 class="chart-title">📈 Mitgliederwachstum (Letzte 6 Monate)</h3>
+        <p class="chart-disabled-hint">Diagramm vorübergehend deaktiviert.</p>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, reactive } from 'vue'
-import { Bar, Line } from 'vue-chartjs'
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-  Colors,
-} from 'chart.js'
+import { ref, onMounted, reactive, computed, watch } from 'vue'
+// Lazy load chart components to avoid early DOM binding issues
+let Bar: any = null
+let Line: any = null
 import api from '../api'
 import Alert from './Alert.vue'
+import { settingsStore } from '../store/settings'
 
-// Registriere ChartJS Komponenten
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-  Colors
-)
+// allow widgets to ask the parent to navigate to a different tab
+const emit = defineEmits(['navigate'])
+
+// Charts visibility controlled by global settings store (guard if not loaded or settings failed)
+const showCharts = computed(() => settingsStore.loaded && settingsStore.enable_charts)
+
+// Lazy registration: load Chart.js and vue-chartjs only when needed
+const ensureChartsLoaded = async () => {
+  if (Bar && Line) return
+  const [chartJsMod, vueChartMod] = await Promise.all([
+    import('chart.js'),
+    import('vue-chartjs')
+  ])
+  const ChartJS: any = chartJsMod.Chart
+  const {
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    BarElement,
+    Filler,
+    Title,
+    Tooltip,
+    Legend,
+    Colors,
+  } = chartJsMod
+  ChartJS.register(
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    BarElement,
+    Filler,
+    Title,
+    Tooltip,
+    Legend,
+    Colors
+  )
+  Bar = vueChartMod.Bar
+  Line = vueChartMod.Line
+}
+
+watch(showCharts, async (val) => {
+  if (val) await ensureChartsLoaded()
+})
 
 interface Statistics {
   memberCount: number
   totalOpen: number
   totalPaid: number
   totalOverdue: number
+  totalDue: number
   openCount: number
   paidCount: number
   overdueCount: number
+  dueCount: number
 }
 
 const loading = ref(true)
@@ -141,9 +188,11 @@ const statistics = reactive<Statistics>({
   totalOpen: 0,
   totalPaid: 0,
   totalOverdue: 0,
+  totalDue: 0,
   openCount: 0,
   paidCount: 0,
   overdueCount: 0,
+  dueCount: 0,
 })
 
 // Chart Daten und Optionen
@@ -241,41 +290,26 @@ const loadStatistics = async () => {
     errorMessage.value = ''
     errorList.value = []
 
-    // Lade Mitglieder
-    const membersResponse = await api.getMembers()
-    if (membersResponse.status === 'ok') {
-      statistics.memberCount = membersResponse.members?.length || 0
+    // Lade Mitglieder-Statistiken
+    const memberStatsResponse = await api.getMemberStatistics()
+    if (memberStatsResponse.data.status === 'ok') {
+      statistics.memberCount = memberStatsResponse.data.data.total || 0
     }
 
-    // Lade Gebühren
-    const feesResponse = await api.getFees()
-    if (feesResponse.status === 'ok') {
-      const fees = feesResponse.fees || []
+    // Lade Gebühren-Statistiken
+    const feeStatsResponse = await api.getFeeStatistics()
+    if (feeStatsResponse.data.status === 'ok') {
+      const feeData = feeStatsResponse.data.data
 
-      // Berechne Statistiken
-      statistics.totalOpen = 0
-      statistics.totalPaid = 0
-      statistics.totalOverdue = 0
-      statistics.openCount = 0
-      statistics.paidCount = 0
-      statistics.overdueCount = 0
-
-      fees.forEach((fee) => {
-        switch (fee.status) {
-          case 'open':
-            statistics.totalOpen += fee.amount
-            statistics.openCount++
-            break
-          case 'paid':
-            statistics.totalPaid += fee.amount
-            statistics.paidCount++
-            break
-          case 'overdue':
-            statistics.totalOverdue += fee.amount
-            statistics.overdueCount++
-            break
-        }
-      })
+      // Aktualisiere Statistiken
+      statistics.totalOpen = feeData.pendingAmount || 0
+      statistics.totalPaid = feeData.paidAmount || 0
+      statistics.totalOverdue = feeData.overdueAmount || 0
+      statistics.totalDue = feeData.dueAmount || 0
+      statistics.openCount = feeData.counts?.pending || 0
+      statistics.paidCount = feeData.counts?.paid || 0
+      statistics.overdueCount = feeData.counts?.overdue || 0
+      statistics.dueCount = feeData.counts?.due || 0
 
       // Aktualisiere Chart-Daten
       feeStatusChartData.value.datasets[0].data = [
@@ -296,6 +330,29 @@ const loadStatistics = async () => {
   }
 }
 
+// Debug instrumentation for Chart.js root cause (logs once when charts become enabled)
+watch(showCharts, (val) => {
+  if (val) {
+    // Defer to ensure DOM layout stable
+    requestAnimationFrame(() => {
+      const chartWrappers = document.querySelectorAll('.chart-wrapper')
+      chartWrappers.forEach((el, i) => {
+        // Log element type and dimensions
+        // Avoid throwing if element missing
+        try {
+          console.log('[ChartDebug] wrapper', i, {
+            nodeName: el.nodeName,
+            width: (el as HTMLElement).offsetWidth,
+            height: (el as HTMLElement).offsetHeight
+          })
+        } catch (e) {
+          console.warn('[ChartDebug] error inspecting wrapper', e)
+        }
+      })
+    })
+  }
+})
+
 onMounted(() => {
   loadStatistics()
 })
@@ -311,6 +368,20 @@ $breakpoint-mobile: 480px;
   flex-direction: column;
   gap: 2rem;
   width: 100%;
+
+  @media (min-width: 1200px) {
+    /* three-column layout on large screens */
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    align-items: start;
+  }
+
+  @media (min-width: 768px) and (max-width: 1199px) {
+    /* two-column layout on tablets */
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
 }
 
 .section-header {
@@ -375,30 +446,32 @@ $breakpoint-mobile: 480px;
 /* Statistik-Widgets */
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 16px;
+  grid-template-columns: 1fr;
+  gap: 18px;
   width: 100%;
 
-  @media (max-width: $breakpoint-tablet) {
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 12px;
+  @media (min-width: 1100px) {
+    /* stack stat cards vertically in the left column on wide screens */
+    grid-auto-flow: row;
   }
 
-  @media (max-width: $breakpoint-mobile) {
+  @media (max-width: $breakpoint-tablet) {
     grid-template-columns: 1fr;
-    gap: 10px;
+    gap: 12px;
   }
 }
 
 .stat-widget {
-  background: var(--color-background, #ffffff);
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
-  padding: 20px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
   transition: all 0.2s ease;
   display: flex;
   flex-direction: column;
+  cursor: pointer;
 
   @media (max-width: $breakpoint-tablet) {
     padding: 16px;
@@ -500,9 +573,15 @@ $breakpoint-mobile: 480px;
 /* Charts Grid */
 .charts-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  grid-template-columns: 1fr;
   gap: 20px;
   width: 100%;
+  align-items: start;
+
+  @media (min-width: 1100px) {
+    /* allow two charts side-by-side in the right column */
+    grid-template-columns: repeat(2, minmax(320px, 1fr));
+  }
 
   @media (max-width: $breakpoint-tablet) {
     grid-template-columns: 1fr;
@@ -515,11 +594,12 @@ $breakpoint-mobile: 480px;
 }
 
 .chart-container {
-  background: var(--color-background, #ffffff);
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
-  padding: 20px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
   display: flex;
   flex-direction: column;
 

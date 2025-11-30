@@ -18,6 +18,20 @@ return [
         
         ['name' => 'sepa#export', 'url' => '/sepa/export', 'verb' => 'GET'],
 
+        // Export endpoints
+        ['name' => 'export#exportMembersAsCsv', 'url' => '/export/members/csv', 'verb' => 'GET'],
+        ['name' => 'export#exportMembersAsPdf', 'url' => '/export/members/pdf', 'verb' => 'GET'],
+        ['name' => 'export#exportFeesAsCsv', 'url' => '/export/fees/csv', 'verb' => 'GET'],
+        ['name' => 'export#exportFeesAsPdf', 'url' => '/export/fees/pdf', 'verb' => 'GET'],
+
+        // Statistics endpoints
+        ['name' => 'statistics#getMemberStatistics', 'url' => '/statistics/members', 'verb' => 'GET'],
+        ['name' => 'statistics#getFeeStatistics', 'url' => '/statistics/fees', 'verb' => 'GET'],
+
+        // App settings
+        ['name' => 'settings#getAppSettings', 'url' => '/settings/app', 'verb' => 'GET'],
+        ['name' => 'settings#setChartsEnabled', 'url' => '/settings/charts', 'verb' => 'POST'],
+
         // RBAC & permissions
         ['name' => 'role#index', 'url' => '/roles', 'verb' => 'GET'],
         ['name' => 'role#store', 'url' => '/roles', 'verb' => 'POST'],

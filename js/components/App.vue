@@ -29,6 +29,7 @@
         <component
           :is="currentComponent"
           :key="activeTab"
+          @navigate="(tab) => { activeTab = tab }"
         />
       </div>
       </div>
@@ -70,7 +71,8 @@ export default {
       { id: 'finance', label: 'Finanzen', icon: 'finance' },
       { id: 'calendar', label: 'Termine', icon: 'calendar' },
       { id: 'deck', label: 'Aufgaben', icon: 'deck' },
-      { id: 'documents', label: 'Dokumente', icon: 'documents' }
+      { id: 'documents', label: 'Dokumente', icon: 'documents' },
+      { id: 'settings', label: 'Einstellungen', icon: 'settings' }
     ]
 
     const componentMap = {
@@ -79,7 +81,8 @@ export default {
       finance: 'Finance',
       calendar: 'Calendar',
       deck: 'Deck',
-      documents: 'Documents'
+      documents: 'Documents',
+      settings: 'Settings'
     }
 
     const showNotification = (message, type = 'success') => {
@@ -133,7 +136,7 @@ export default {
 // Responsive Breakpoints
 $breakpoint-tablet: 768px;
 $breakpoint-desktop: 1024px;
-$max-container-width: 1200px;
+$max-container-width: 1200px; // retained for fallback but not enforced for full-width layout
 
 ::-webkit-scrollbar {
   width: 8px;
@@ -157,13 +160,14 @@ $max-container-width: 1200px;
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  background: var(--color-main-background);
+  background: transparent;
   color: var(--color-text);
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
 .verein-tabs {
-  background: var(--color-main-background);
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
   border-bottom: 1px solid var(--color-border);
   position: sticky;
   top: var(--header-height, 50px);
@@ -175,15 +179,19 @@ $max-container-width: 1200px;
 .verein-tabs-container {
   display: flex;
   gap: 0;
-  max-width: $max-container-width;
-  margin: 0 auto;
-  width: 100%;
+  /* allow the tab bar to use the full available width inside Nextcloud's content area
+     but keep a small horizontal padding so it doesn't touch browser edges */
+  max-width: none;
+  margin: 0 20px;
+  width: calc(100% - 40px);
   padding: 0;
   overflow-x: auto;
   overflow-y: hidden;
   -webkit-overflow-scrolling: touch;
 
   @media (max-width: $breakpoint-tablet) {
+    margin: 0;
+    width: 100%;
     overflow-x: auto;
     scroll-behavior: smooth;
   }
@@ -254,23 +262,29 @@ $max-container-width: 1200px;
   flex: 1;
   display: flex;
   width: 100%;
-  background: var(--color-main-background);
+  background: transparent;
+  padding: 2rem 0;
 }
 
 .verein-container {
+  /* expand to use the available content width inside Nextcloud */
   width: 100%;
-  max-width: $max-container-width;
+  max-width: 100%;
   margin: 0 auto;
-  padding: 1rem;
+  padding: 0 1.5rem;
   display: flex;
   flex-direction: column;
 
+  @media (min-width: 1400px) {
+    padding: 0 3rem;
+  }
+
   @media (max-width: $breakpoint-tablet) {
-    padding: 1rem 0.75rem;
+    padding: 0 1rem;
   }
 
   @media (max-width: 480px) {
-    padding: 0.75rem 0.5rem;
+    padding: 0 0.75rem;
   }
 }
 

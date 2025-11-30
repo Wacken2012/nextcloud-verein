@@ -4,6 +4,7 @@ namespace OCA\Verein\Controller;
 use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http\ContentSecurityPolicy;
 use OCP\AppFramework\Http\TemplateResponse;
+use OCP\Util;
 use OCP\IRequest;
 
 class PageController extends Controller {
@@ -24,13 +25,13 @@ class PageController extends Controller {
             'id-app-navigation' => '#verein-navigation',
             'pageTitle' => 'Verein',
         ]);
-        
-        // Do not override the default Nextcloud Content Security Policy here.
-        // Leaving CSP management to the Nextcloud core ensures the required
-        // inline scripts (nonces / hashes) and global runtime objects (like
-        // OC) are available to apps. Setting a CSP here caused inline scripts
-        // to be blocked (OC undefined) in some browsers.
-        
+
+        // Ensure Nextcloud core scripts are loaded so OC and translations are available
+        Util::addScript('core', 'common');
+        Util::addScript('core', 'main');
+
+        // Rely on Nextcloud's default CSP with nonces; do not override here
+
         return $response;
     }
 }
