@@ -4,6 +4,10 @@ import FeeList from './components/FeeList.vue'
 import SepaExport from './components/SepaExport.vue'
 import Roles from './components/Roles.vue'
 import Settings from './components/Settings.vue'
+import RolesManager from './components/RolesManager.vue'
+import ReminderSettings from './components/ReminderSettings.vue'
+import ReminderLog from './components/ReminderLog.vue'
+import PrivacySettings from './components/PrivacySettings.vue'
 
 const routes = [
   {
@@ -36,6 +40,26 @@ const routes = [
     path: '/settings',
     name: 'Settings',
     component: Settings
+  },
+  {
+    path: '/settings/roles',
+    name: 'RolesManager',
+    component: RolesManager
+  },
+  {
+    path: '/settings/reminders',
+    name: 'ReminderSettings',
+    component: ReminderSettings
+  },
+  {
+    path: '/settings/reminders/log',
+    name: 'ReminderLog',
+    component: ReminderLog
+  },
+  {
+    path: '/settings/privacy',
+    name: 'PrivacySettings',
+    component: PrivacySettings
   }
 ]
 

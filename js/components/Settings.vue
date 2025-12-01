@@ -4,13 +4,31 @@
 
     <div class="settings-grid">
       <div class="card">
-        <h3>Rollen & Berechtigungen</h3>
+        <h3>🔐 Rollen & Berechtigungen</h3>
         <p>Verwalte Rollen und die zugehörigen Berechtigungen.</p>
-        <router-link to="/roles" class="button">Zu Rollen</router-link>
+        <router-link to="/settings/roles" class="button">Zu Rollen-Manager</router-link>
       </div>
 
       <div class="card">
-        <h3>SEPA / Exporte</h3>
+        <h3>📧 Automatische Mahnungen</h3>
+        <p>Konfiguriere automatische Mahnungen für fällige Zahlungen.</p>
+        <router-link to="/settings/reminders" class="button">Zu Mahnungen</router-link>
+      </div>
+
+      <div class="card">
+        <h3>📋 Mahnung-Protokoll</h3>
+        <p>Übersicht aller versendeten Mahnungen und deren Status.</p>
+        <router-link to="/settings/reminders/log" class="button">Zum Protokoll</router-link>
+      </div>
+
+      <div class="card">
+        <h3>🔒 Datenschutz & DSGVO</h3>
+        <p>Verwalte Datenexport, Löschung und Einwilligungen.</p>
+        <router-link to="/settings/privacy" class="button">Zu Datenschutz</router-link>
+      </div>
+
+      <div class="card">
+        <h3>💾 SEPA / Exporte</h3>
         <p>Export-Optionen verwalten und SEPA-Export erstellen.</p>
         <router-link to="/sepa" class="button">Zu SEPA</router-link>
       </div>
@@ -25,8 +43,56 @@ export default {
 </script>
 
 <style scoped>
-.settings-page { padding: 20px }
-.settings-grid { display:grid; grid-template-columns: repeat(auto-fit,minmax(240px,1fr)); gap:16px }
-.card { background: var(--color-main-background); border:1px solid var(--color-border); padding:16px; border-radius:8px }
-.button { margin-top:12px; display:inline-block }
+.settings-page { 
+  padding: 20px;
+}
+
+.settings-grid { 
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.card { 
+  background: var(--color-main-background);
+  border: 1px solid var(--color-border);
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.2s;
+}
+
+.card:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.card h3 {
+  margin: 0 0 10px 0;
+  color: #0082c9;
+  font-size: 1.1em;
+}
+
+.card p {
+  color: var(--color-text-maxcontrast);
+  margin: 0 0 15px 0;
+  font-size: 0.9em;
+  line-height: 1.4;
+}
+
+.button {
+  display: inline-block;
+  padding: 8px 16px;
+  background: #0082c9;
+  color: white;
+  border-radius: 4px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: background 0.2s;
+  margin-top: 12px;
+}
+
+.button:hover {
+  background: #006aa3;
+}
 </style>
