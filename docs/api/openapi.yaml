@@ -1,0 +1,963 @@
+openapi: 3.0.3
+info:
+  title: Nextcloud Vereins-App API
+  description: |
+    REST API für die Nextcloud Vereins-App zur Verwaltung von Mitgliedern, 
+    Gebühren, Rollen und Export-Funktionen.
+    
+    ## Authentifizierung
+    Alle Endpunkte erfordern eine gültige Nextcloud-Session oder App-Passwort.
+    
+    ## Berechtigungen (RBAC)
+    Die App verwendet ein rollenbasiertes Berechtigungssystem:
+    - **Admin**: Volle Kontrolle über alle Funktionen
+    - **Kassierer**: Gebühren verwalten, Export
+    - **Mitglied**: Nur eigene Daten einsehen
+    
+  version: 0.2.1
+  contact:
+    name: Nextcloud Vereins-App
+    url: https://github.com/Wacken2012/nextcloud-verein
+  license:
+    name: AGPL-3.0
+    url: https://www.gnu.org/licenses/agpl-3.0.html
+
+servers:
+  - url: /index.php/apps/verein
+    description: Nextcloud App Server
+
+tags:
+  - name: Members
+    description: Mitgliederverwaltung
+  - name: Finance
+    description: Gebühren und Finanzen
+  - name: Export
+    description: CSV und PDF Export
+  - name: Statistics
+    description: Statistiken und Dashboards
+  - name: Roles
+    description: Rollen- und Berechtigungsverwaltung (RBAC)
+  - name: SEPA
+    description: SEPA XML Export
+
+paths:
+  # ============================================
+  # MEMBERS
+  # ============================================
+  /members:
+    get:
+      tags: [Members]
+      summary: Liste aller Mitglieder
+      description: Gibt alle Mitglieder zurück, die der aktuelle Benutzer sehen darf.
+      operationId: getMembers
+      security:
+        - nextcloudSession: []
+      responses:
+        '200':
+          description: Erfolgreiche Abfrage
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Member'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+    
+    post:
+      tags: [Members]
+      summary: Neues Mitglied erstellen
+      description: Erstellt ein neues Mitglied. Erfordert `members.create` Berechtigung.
+      operationId: createMember
+      security:
+        - nextcloudSession: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MemberInput'
+      responses:
+        '201':
+          description: Mitglied erfolgreich erstellt
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Member'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /members/{id}:
+    get:
+      tags: [Members]
+      summary: Einzelnes Mitglied abrufen
+      operationId: getMember
+      security:
+        - nextcloudSession: []
+      parameters:
+        - $ref: '#/components/parameters/MemberId'
+      responses:
+        '200':
+          description: Mitglied gefunden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Member'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    
+    put:
+      tags: [Members]
+      summary: Mitglied aktualisieren
+      description: Aktualisiert ein bestehendes Mitglied. Erfordert `members.update` Berechtigung.
+      operationId: updateMember
+      security:
+        - nextcloudSession: []
+      parameters:
+        - $ref: '#/components/parameters/MemberId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MemberInput'
+      responses:
+        '200':
+          description: Mitglied erfolgreich aktualisiert
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Member'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    
+    delete:
+      tags: [Members]
+      summary: Mitglied löschen
+      description: Löscht ein Mitglied. Erfordert `members.delete` Berechtigung.
+      operationId: deleteMember
+      security:
+        - nextcloudSession: []
+      parameters:
+        - $ref: '#/components/parameters/MemberId'
+      responses:
+        '200':
+          description: Mitglied erfolgreich gelöscht
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # ============================================
+  # FINANCE (FEES)
+  # ============================================
+  /finance:
+    get:
+      tags: [Finance]
+      summary: Liste aller Gebühren
+      description: Gibt alle Gebühren zurück. Erfordert `fees.view` Berechtigung.
+      operationId: getFees
+      security:
+        - nextcloudSession: []
+      responses:
+        '200':
+          description: Erfolgreiche Abfrage
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Fee'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+    
+    post:
+      tags: [Finance]
+      summary: Neue Gebühr erstellen
+      description: Erstellt eine neue Gebühr für ein Mitglied. Erfordert `fees.create` Berechtigung.
+      operationId: createFee
+      security:
+        - nextcloudSession: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FeeInput'
+      responses:
+        '201':
+          description: Gebühr erfolgreich erstellt
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Fee'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+
+  /finance/{id}:
+    put:
+      tags: [Finance]
+      summary: Gebühr aktualisieren
+      description: Aktualisiert eine bestehende Gebühr. Erfordert `fees.update` Berechtigung.
+      operationId: updateFee
+      security:
+        - nextcloudSession: []
+      parameters:
+        - $ref: '#/components/parameters/FeeId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FeeInput'
+      responses:
+        '200':
+          description: Gebühr erfolgreich aktualisiert
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Fee'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    
+    delete:
+      tags: [Finance]
+      summary: Gebühr löschen
+      description: Löscht eine Gebühr. Erfordert `fees.delete` Berechtigung.
+      operationId: deleteFee
+      security:
+        - nextcloudSession: []
+      parameters:
+        - $ref: '#/components/parameters/FeeId'
+      responses:
+        '200':
+          description: Gebühr erfolgreich gelöscht
+
+  # ============================================
+  # EXPORT
+  # ============================================
+  /export/members/csv:
+    get:
+      tags: [Export]
+      summary: Mitglieder als CSV exportieren
+      description: |
+        Exportiert alle Mitglieder als CSV-Datei (UTF-8 mit BOM für Excel-Kompatibilität).
+        Erfordert `export.members` Berechtigung.
+      operationId: exportMembersCsv
+      security:
+        - nextcloudSession: []
+      responses:
+        '200':
+          description: CSV-Datei
+          content:
+            text/csv:
+              schema:
+                type: string
+                format: binary
+          headers:
+            Content-Disposition:
+              schema:
+                type: string
+                example: 'attachment; filename="members_2025-11-30_181500.csv"'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /export/members/pdf:
+    get:
+      tags: [Export]
+      summary: Mitglieder als PDF exportieren
+      description: |
+        Exportiert alle Mitglieder als PDF-Dokument mit professionellem Layout.
+        Erfordert `export.members` Berechtigung.
+      operationId: exportMembersPdf
+      security:
+        - nextcloudSession: []
+      responses:
+        '200':
+          description: PDF-Datei
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+          headers:
+            Content-Disposition:
+              schema:
+                type: string
+                example: 'attachment; filename="members_2025-11-30_181500.pdf"'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /export/fees/csv:
+    get:
+      tags: [Export]
+      summary: Gebühren als CSV exportieren
+      description: |
+        Exportiert alle Gebühren als CSV-Datei.
+        Erfordert `export.fees` Berechtigung.
+      operationId: exportFeesCsv
+      security:
+        - nextcloudSession: []
+      responses:
+        '200':
+          description: CSV-Datei
+          content:
+            text/csv:
+              schema:
+                type: string
+                format: binary
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /export/fees/pdf:
+    get:
+      tags: [Export]
+      summary: Gebühren als PDF exportieren
+      description: |
+        Exportiert alle Gebühren als PDF-Dokument.
+        Erfordert `export.fees` Berechtigung.
+      operationId: exportFeesPdf
+      security:
+        - nextcloudSession: []
+      responses:
+        '200':
+          description: PDF-Datei
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  # ============================================
+  # STATISTICS
+  # ============================================
+  /statistics/members:
+    get:
+      tags: [Statistics]
+      summary: Mitgliederstatistiken
+      description: Gibt Statistiken über Mitglieder zurück (Anzahl, Wachstum, etc.)
+      operationId: getMemberStatistics
+      security:
+        - nextcloudSession: []
+      responses:
+        '200':
+          description: Mitgliederstatistiken
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MemberStatistics'
+
+  /statistics/fees:
+    get:
+      tags: [Statistics]
+      summary: Gebührenstatistiken
+      description: Gibt Statistiken über Gebühren zurück (Summen, Status-Verteilung, etc.)
+      operationId: getFeeStatistics
+      security:
+        - nextcloudSession: []
+      responses:
+        '200':
+          description: Gebührenstatistiken
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FeeStatistics'
+
+  # ============================================
+  # SEPA
+  # ============================================
+  /sepa/export:
+    get:
+      tags: [SEPA]
+      summary: SEPA XML Export
+      description: |
+        Exportiert offene Gebühren als SEPA XML (pain.001) für Bankentransfers.
+        Erfordert `export.sepa` Berechtigung.
+      operationId: exportSepa
+      security:
+        - nextcloudSession: []
+      responses:
+        '200':
+          description: SEPA XML-Datei
+          content:
+            application/xml:
+              schema:
+                type: string
+                format: binary
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  # ============================================
+  # ROLES (RBAC)
+  # ============================================
+  /roles:
+    get:
+      tags: [Roles]
+      summary: Liste aller Rollen
+      description: Gibt alle verfügbaren Rollen zurück.
+      operationId: getRoles
+      security:
+        - nextcloudSession: []
+      responses:
+        '200':
+          description: Liste der Rollen
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Role'
+    
+    post:
+      tags: [Roles]
+      summary: Neue Rolle erstellen
+      description: Erstellt eine neue Rolle. Nur für Admins.
+      operationId: createRole
+      security:
+        - nextcloudSession: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoleInput'
+      responses:
+        '201':
+          description: Rolle erfolgreich erstellt
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Role'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /roles/{id}:
+    get:
+      tags: [Roles]
+      summary: Einzelne Rolle abrufen
+      operationId: getRole
+      security:
+        - nextcloudSession: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Rolle gefunden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Role'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    
+    put:
+      tags: [Roles]
+      summary: Rolle aktualisieren
+      operationId: updateRole
+      security:
+        - nextcloudSession: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoleInput'
+      responses:
+        '200':
+          description: Rolle erfolgreich aktualisiert
+    
+    delete:
+      tags: [Roles]
+      summary: Rolle löschen
+      operationId: deleteRole
+      security:
+        - nextcloudSession: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Rolle erfolgreich gelöscht
+
+  /roles/users/{userId}:
+    get:
+      tags: [Roles]
+      summary: Rollen eines Benutzers abrufen
+      description: Gibt alle Rollen eines bestimmten Benutzers zurück.
+      operationId: getUserRoles
+      security:
+        - nextcloudSession: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Benutzerrollen
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Role'
+
+  /roles/users:
+    post:
+      tags: [Roles]
+      summary: Rolle einem Benutzer zuweisen
+      description: Weist einem Benutzer eine Rolle zu. Nur für Admins.
+      operationId: assignRole
+      security:
+        - nextcloudSession: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [userId, roleId]
+              properties:
+                userId:
+                  type: string
+                  description: Nextcloud Benutzer-ID
+                roleId:
+                  type: integer
+                  description: Rollen-ID
+      responses:
+        '200':
+          description: Rolle erfolgreich zugewiesen
+        '403':
+          $ref: '#/components/responses/Forbidden'
+    
+    delete:
+      tags: [Roles]
+      summary: Rolle von Benutzer entfernen
+      operationId: removeRoles
+      security:
+        - nextcloudSession: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [userId, roleId]
+              properties:
+                userId:
+                  type: string
+                roleId:
+                  type: integer
+      responses:
+        '200':
+          description: Rolle erfolgreich entfernt
+
+  /permissions:
+    get:
+      tags: [Roles]
+      summary: Liste aller Berechtigungen
+      description: Gibt alle verfügbaren Berechtigungen zurück.
+      operationId: getPermissions
+      security:
+        - nextcloudSession: []
+      responses:
+        '200':
+          description: Liste der Berechtigungen
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Permission'
+
+# ============================================
+# COMPONENTS
+# ============================================
+components:
+  securitySchemes:
+    nextcloudSession:
+      type: apiKey
+      in: cookie
+      name: nc_session_id
+      description: Nextcloud Session Cookie
+    
+    basicAuth:
+      type: http
+      scheme: basic
+      description: Nextcloud Benutzername und App-Passwort
+
+  parameters:
+    MemberId:
+      name: id
+      in: path
+      required: true
+      description: Mitglieds-ID
+      schema:
+        type: integer
+        minimum: 1
+    
+    FeeId:
+      name: id
+      in: path
+      required: true
+      description: Gebühren-ID
+      schema:
+        type: integer
+        minimum: 1
+
+  schemas:
+    # ---------- Member ----------
+    Member:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Eindeutige ID
+          example: 1
+        name:
+          type: string
+          description: Vollständiger Name
+          example: "Max Mustermann"
+        email:
+          type: string
+          format: email
+          description: E-Mail-Adresse
+          example: "max@example.com"
+        address:
+          type: string
+          nullable: true
+          description: Anschrift
+          example: "Musterstraße 123, 12345 Berlin"
+        iban:
+          type: string
+          nullable: true
+          description: IBAN (ISO 13616)
+          example: "DE89370400440532013000"
+        bic:
+          type: string
+          nullable: true
+          description: BIC/SWIFT (ISO 9362)
+          example: "COBADEFFXXX"
+        role:
+          type: string
+          description: Vereinsrolle
+          enum: [member, admin, treasurer]
+          example: "member"
+        createdAt:
+          type: string
+          format: date-time
+          description: Erstellungszeitpunkt
+        updatedAt:
+          type: string
+          format: date-time
+          nullable: true
+          description: Letzter Änderungszeitpunkt
+    
+    MemberInput:
+      type: object
+      required: [name, email]
+      properties:
+        name:
+          type: string
+          minLength: 2
+          maxLength: 255
+          description: Vollständiger Name
+        email:
+          type: string
+          format: email
+          description: E-Mail-Adresse (wird validiert inkl. MX-Check)
+        address:
+          type: string
+          nullable: true
+        iban:
+          type: string
+          nullable: true
+          description: IBAN (wird nach ISO 13616 validiert)
+        bic:
+          type: string
+          nullable: true
+          description: BIC (wird nach ISO 9362 validiert)
+        role:
+          type: string
+          enum: [member, admin, treasurer]
+          default: member
+
+    # ---------- Fee ----------
+    Fee:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        memberId:
+          type: integer
+          description: Zugehöriges Mitglied
+          example: 5
+        amount:
+          type: number
+          format: float
+          description: Betrag in Euro
+          example: 50.00
+        status:
+          type: string
+          enum: [open, paid, overdue]
+          description: Zahlungsstatus
+          example: "open"
+        dueDate:
+          type: string
+          format: date
+          description: Fälligkeitsdatum
+          example: "2025-12-31"
+        paidDate:
+          type: string
+          format: date
+          nullable: true
+          description: Zahlungsdatum
+        description:
+          type: string
+          nullable: true
+          description: Beschreibung/Verwendungszweck
+          example: "Mitgliedsbeitrag 2025"
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+          nullable: true
+    
+    FeeInput:
+      type: object
+      required: [memberId, amount, dueDate]
+      properties:
+        memberId:
+          type: integer
+          minimum: 1
+        amount:
+          type: number
+          format: float
+          minimum: 0.01
+        status:
+          type: string
+          enum: [open, paid, overdue]
+          default: open
+        dueDate:
+          type: string
+          format: date
+        paidDate:
+          type: string
+          format: date
+          nullable: true
+        description:
+          type: string
+          nullable: true
+
+    # ---------- Role ----------
+    Role:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+          example: "admin"
+        displayName:
+          type: string
+          example: "Administrator"
+        permissions:
+          type: array
+          items:
+            type: string
+          example: ["members.view", "members.create", "fees.view"]
+    
+    RoleInput:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+        displayName:
+          type: string
+        permissions:
+          type: array
+          items:
+            type: string
+
+    Permission:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "members.create"
+        name:
+          type: string
+          example: "Mitglieder erstellen"
+        category:
+          type: string
+          example: "members"
+
+    # ---------- Statistics ----------
+    MemberStatistics:
+      type: object
+      properties:
+        total:
+          type: integer
+          description: Gesamtzahl der Mitglieder
+          example: 16
+        byRole:
+          type: object
+          additionalProperties:
+            type: integer
+          example:
+            member: 14
+            admin: 1
+            treasurer: 1
+        growth:
+          type: array
+          description: Mitgliederwachstum der letzten 6 Monate
+          items:
+            type: object
+            properties:
+              month:
+                type: string
+                example: "2025-11"
+              count:
+                type: integer
+                example: 2
+    
+    FeeStatistics:
+      type: object
+      properties:
+        total:
+          type: number
+          format: float
+          description: Gesamtsumme aller Gebühren
+          example: 645.00
+        byStatus:
+          type: object
+          properties:
+            open:
+              type: number
+              format: float
+              example: 0.00
+            paid:
+              type: number
+              format: float
+              example: 645.00
+            overdue:
+              type: number
+              format: float
+              example: 0.00
+        count:
+          type: object
+          properties:
+            total:
+              type: integer
+              example: 12
+            open:
+              type: integer
+              example: 0
+            paid:
+              type: integer
+              example: 12
+            overdue:
+              type: integer
+              example: 0
+
+  responses:
+    Unauthorized:
+      description: Nicht authentifiziert
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: error
+              message:
+                type: string
+                example: "Authentication required"
+    
+    Forbidden:
+      description: Keine Berechtigung
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: error
+              message:
+                type: string
+                example: "Missing permission: members.create"
+    
+    NotFound:
+      description: Ressource nicht gefunden
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: error
+              message:
+                type: string
+                example: "Member not found"
+    
+    ValidationError:
+      description: Validierungsfehler
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: error
+              message:
+                type: string
+                example: "Validation failed"
+              errors:
+                type: object
+                additionalProperties:
+                  type: array
+                  items:
+                    type: string
+                example:
+                  email: ["Ungültiges E-Mail-Format"]
+                  iban: ["Ungültige IBAN-Prüfsumme"]

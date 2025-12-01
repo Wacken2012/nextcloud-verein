@@ -8,12 +8,7 @@
         <button @click="showAddForm = true" class="button primary">
           ➕ Neues Mitglied
         </button>
-        <button @click="exportMembersAsCsv" class="button" title="Mitglieder als CSV herunterladen">
-          📊 CSV Export
-        </button>
-        <button @click="exportMembersAsPdf" class="button" title="Mitglieder als PDF herunterladen">
-          📄 PDF Export
-        </button>
+        <ExportButtons resource="members" @success="showSuccess" @error="showError" />
       </div>
       
       <div class="filters">
@@ -89,12 +84,15 @@
 <script>
 import axios from '@nextcloud/axios'
 import { generateUrl } from '@nextcloud/router'
+import * as notify from '../notify'
 import MemberForm from './MemberForm.vue'
+import ExportButtons from './ExportButtons.vue'
 
 export default {
   name: 'MemberList',
   components: {
-    MemberForm
+    MemberForm,
+    ExportButtons
   },
   data() {
     return {
@@ -193,47 +191,8 @@ export default {
       }
       return labels[role] || role
     },
-    showSuccess(message) {
-      // TODO: Implement toast notification
-      alert(message)
-    },
-    showError(message) {
-      // TODO: Implement toast notification
-      alert(message)
-    },
-    async exportMembersAsCsv() {
-      try {
-        const response = await axios.get(generateUrl('/apps/verein/export/members/csv'), {
-          responseType: 'blob'
-        })
-        this.downloadFile(response.data, 'members.csv', 'text/csv')
-        this.showSuccess('Mitglieder als CSV exportiert')
-      } catch (error) {
-        console.error('Error exporting CSV:', error)
-        this.showError('Fehler beim CSV-Export')
-      }
-    },
-    async exportMembersAsPdf() {
-      try {
-        const response = await axios.get(generateUrl('/apps/verein/export/members/pdf'), {
-          responseType: 'blob'
-        })
-        this.downloadFile(response.data, 'members.pdf', 'application/pdf')
-        this.showSuccess('Mitglieder als PDF exportiert')
-      } catch (error) {
-        console.error('Error exporting PDF:', error)
-        this.showError('Fehler beim PDF-Export')
-      }
-    },
-    downloadFile(blob, filename, mimeType) {
-      const url = window.URL.createObjectURL(new Blob([blob], { type: mimeType }))
-      const link = document.createElement('a')
-      link.href = url
-      link.setAttribute('download', filename)
-      document.body.appendChild(link)
-      link.click()
-      link.parentNode.removeChild(link)
-      window.URL.revokeObjectURL(url)
+    showSuccess(message) { notify.success(message) },
+    showError(message) { notify.error(message) },
     }
 }
 </script>

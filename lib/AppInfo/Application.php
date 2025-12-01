@@ -13,7 +13,6 @@ use OCA\Verein\Service\Export\PdfExporter;
 use OCA\Verein\Service\MemberService;
 use OCA\Verein\Service\FeeService;
 use OCA\Verein\Service\StatisticsService;
-use OCA\Verein\Service\AppSettingsService;
 use OCA\Verein\Settings\AdminSection;
 use OCA\Verein\Settings\AdminSettings;
 use OCP\AppFramework\App;
@@ -79,15 +78,6 @@ class Application extends App implements IBootstrap {
             return new StatisticsService(
                 $container->query(MemberMapper::class),
                 $container->query(FeeMapper::class)
-            );
-        });
-
-        // App settings service (for feature toggles like charts)
-        $context->registerService(AppSettingsService::class, function (IAppContainer $container): AppSettingsService {
-            /** @var IL10N $l10n */
-            return new AppSettingsService(
-                $container->query(\OCP\IConfig::class),
-                self::APP_ID
             );
         });
 

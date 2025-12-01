@@ -42,8 +42,8 @@ class PdfExporterTest extends TestCase {
      * Test 2: Invoice PDF requires club data
      */
     public function testInvoicePdfRequiresClubData(): void {
-        $this->expectException(ValidationException::class);
-        $this->expectExceptionMessage('Vereinsname erforderlich');
+        $this->expectException(ExportException::class);
+        $this->expectExceptionMessage('PDF-Validierungsfehler: Vereinsname erforderlich');
         
         $this->exporter->generateInvoicePdf(
             [], // Missing club name
@@ -56,8 +56,8 @@ class PdfExporterTest extends TestCase {
      * Test 3: Invoice PDF requires member name
      */
     public function testInvoicePdfRequiresMemberName(): void {
-        $this->expectException(ValidationException::class);
-        $this->expectExceptionMessage('Mitglieder-Name erforderlich');
+        $this->expectException(ExportException::class);
+        $this->expectExceptionMessage('PDF-Validierungsfehler: Mitglieder-Name erforderlich');
         
         $this->exporter->generateInvoicePdf(
             $this->getValidClubData(),
@@ -70,8 +70,8 @@ class PdfExporterTest extends TestCase {
      * Test 4: Invoice PDF requires valid amount
      */
     public function testInvoicePdfRequiresValidAmount(): void {
-        $this->expectException(ValidationException::class);
-        $this->expectExceptionMessage('Betrag ungültig');
+        $this->expectException(ExportException::class);
+        $this->expectExceptionMessage('PDF-Validierungsfehler: Betrag ungültig');
         
         $this->exporter->generateInvoicePdf(
             $this->getValidClubData(),

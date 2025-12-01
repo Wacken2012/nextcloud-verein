@@ -58,27 +58,25 @@ class StatisticsService {
             $amount = (float)$fee->getAmount();
             $totalAmount += $amount;
             $dueDate = $fee->getDueDate();
-            $status = $fee->getStatus();
 
-            switch ($status) {
+            switch ($fee->getStatus()) {
                 case 'paid':
                     $paidAmount += $amount;
                     $paidCount++;
                     break;
-                case 'pending': // legacy / alternate status name (if any remain)
-                case 'open':
+                case 'pending':
                     $pendingAmount += $amount;
                     $pendingCount++;
+                    // Check if due date has passed
                     if ($dueDate) {
                         try {
                             $dueDateObj = new \DateTime($dueDate);
                             if ($dueDateObj < $now) {
-                                // Mark as fällig (past due but not yet in 'overdue' state)
                                 $dueAmount += $amount;
                                 $dueCount++;
                             }
                         } catch (\Exception $e) {
-                            // ignore invalid date
+                            // Invalid date format, skip
                         }
                     }
                     break;

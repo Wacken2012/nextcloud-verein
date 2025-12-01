@@ -11,13 +11,15 @@
 | Version | Status | Release | Fokus |
 |---------|--------|---------|-------|
 | **v0.1.0-alpha** | ✅ Stabil | Nov 2025 | Basis CRUD, MVP |
-| **v0.2.0-beta** | 🔄 95% fertig | 1. Dez 2025 | RBAC, Admin-Panel, CSV/PDF Export ✅ |
-| **v0.3.0** | 📋 Geplant | Q2 2026 | Automatisierung, Integrationen |
+| **v0.2.0-beta** | ✅ Released | 30. Nov 2025 | RBAC, Admin-Panel, CSV/PDF Export |
+| **v0.2.1** | ✅ Fertig | 30. Nov 2025 | API Docs, Developer Guide, PDF Fix |
+| **v0.3.0** | 📋 Geplant | Q2 2026 | Automatisierung, Integrationen (Kalender, Talk, Files, Deck) |
+| **v0.4.0** | 📋 Geplant | Q3 2026 | Materialverwaltung (Zeugwart) |
 | **v1.0.0** | 🎯 Ziel | Q4 2026 | Production-Ready |
 
 ---
 
-## ✅ v0.1.0-alpha (AKTUELL — Stabil)
+## ✅ v0.1.0-alpha (Stabil)
 
 **Release**: November 2025
 
@@ -36,7 +38,7 @@
 
 ---
 
-## 🔄 v0.2.0-beta (95% FERTIG — Release 1. Dezember 2025)
+## ✅ v0.2.0-beta (RELEASED — 30. November 2025)
 
 ### 🎯 Fokus: Berechtigungen & Datenqualität & Export
 
@@ -83,19 +85,17 @@
 - [x] Security Audit (RBAC, Input Validation)
 - [x] Performance Optimierungen
 
-### 📚 Documentation (In Arbeit)
+### 📚 Documentation (Abgeschlossen ✅)
 - [x] README mit Feature-Übersicht
 - [x] ROADMAP mit aktualisiertem Status
-- [ ] API Documentation (Swagger/OpenAPI) — v0.2.1
-- [ ] Developer Guide — v0.2.1
+- [x] API Documentation (OpenAPI 3.0) ✅ v0.2.1
+- [x] Developer Guide (Bilingual DE/EN) ✅ v0.2.1
+- [x] CONTRIBUTING.md (Bilingual DE/EN) ✅ v0.2.1
 
-### Offene Punkte für Release (gering)
-- 🟡 PDF Export: TCPDF Dependency-Issue (akzeptabel für Beta)
-  - CSV Export funktioniert vollständig ✅
-  - Workaround: CSV verwenden oder direkter PHP-Call
-  - Zielversion für Fix: v0.2.1
-- 🟢 Final QA & Testing (läuft)
-- 🟢 Documentation Polish (läuft)
+### ✅ Behobene Punkte (v0.2.1)
+- ✅ PDF Export: Vollständig funktional (Members + Fees)
+- ✅ Documentation: API Docs, Developer Guide erstellt
+- ✅ Alle Dokumentation zweisprachig (DE/EN)
 
 ---
 
@@ -108,21 +108,252 @@
   - Cronjob für Beiträge
   - E-Mail Benachrichtigungen
   - Mahnstufen (1., 2., Mahnung)
-- [ ] Kalender Integration
+- [ ] Kalender Integration (nach Vorbild "Konzertmeister")
   - Gebühren-Fristen als Events
-  - Mitgliederverwaltung im Kalender
+  - Terminverwaltung (Versammlungen, Proben, Events, Konzerte)
+  - Teilnehmer-Abfrage (RSVP: Zu-/Absage)
+  - Anwesenheitsverwaltung & Statistik
+  - Wiederkehrende Termine (z.B. wöchentliche Proben)
+  - Programm-/Setlist-Planung pro Termin
 - [ ] Deck Integration
   - Aufgaben-Management
   - Beitragsabrechnung
-- [ ] Direktnachrichten (Talk)
+- [ ] Direktnachrichten (Talk) (nach Vorbild "Konzertmeister")
   - Benachrichtigungen via Chat
   - Admin-Alerts
+  - Termin-Erinnerungen an Mitglieder
+  - Automatische Einladungen zu Veranstaltungen
+  - Abfrage-Benachrichtigungen (Zu-/Absage anfordern)
+  - Gruppen-Kommunikation nach Register/Stimme
+- [ ] Files Integration (Notenverwaltung)
+  - Noten-Archiv nach Vorbild "SoftNote"
+  - Kategorisierung nach Instrument/Stimme
+  - Such- und Filterfunktion
+  - Verknüpfung mit Mitgliedern (Stimme/Register)
+  - PDF-Vorschau und Download
 
 ### 🔐 Security & Permissions
-- [ ] Erweiterte Rollen
-  - Custom Permissions
-  - Datenschutz (GDPR Compliance)
-  - Audit Logs mit exportierbar
+- [ ] Erweiterte Rollen mit granularen Berechtigungen:
+
+| Rolle | Dashboard | Mitglieder | Finanzen | Kalender | Talk | Noten (Files) | Einstellungen | Rollenverwaltung |
+|-------|-----------|------------|----------|----------|------|---------------|---------------|------------------|
+| **Admin** | ✅ Voll | ✅ Voll | ✅ Voll | ✅ Voll | ✅ Voll | ✅ Voll | ✅ Voll | ✅ Voll |
+| **Vorstand** | ✅ Voll | ✅ Lesen | ✅ Lesen | ✅ Voll | ✅ Voll | ✅ Lesen | ❌ | ✅ Vergeben* |
+| **Kassenwart** | 📊 Finanzen | ❌ | ✅ Voll | ❌ | 📨 Zugewiesen | ❌ | ❌ | ❌ |
+| **Notenwart** | 📊 Basis | ❌ | ❌ | ❌ | 📨 Zugewiesen | ✅ Admin | ❌ | ❌ |
+| **Mitglied** | 📊 Eigene | ❌ **KEIN ZUGRIFF** | ❌ **KEIN ZUGRIFF** | 📅 Eigene | 📨 Zugewiesen | 📁 **NUR Freigegeben** | ❌ | ❌ |
+
+*Vorstand kann Rollen vergeben, aber keine neuen Rollen erstellen oder Admin-Rechte vergeben
+
+**⚠️ DSGVO-Anforderungen (Pflicht für v1.0):**
+- Mitglieder haben **keinen** Zugriff auf Mitgliederliste (Datenschutz)
+- Mitglieder haben **keinen** Zugriff auf Finanzen
+- Mitglieder sehen **nur** explizit freigegebene Noten
+- Alle personenbezogenen Daten nur für berechtigte Rollen sichtbar
+
+- [ ] Rollenverwaltungs-UI für Admin & Vorstand
+  - Rollen an Mitglieder zuweisen/entziehen
+  - Neue Rollen erstellen (nur Admin)
+  - Berechtigungen pro Rolle konfigurieren (nur Admin)
+  - Übersicht aller Rollen-Zuweisungen
+- [ ] Custom Permissions
+- [ ] **DSGVO-Compliance (Pflicht für v1.0)**
+  - Einwilligungserklärung für Datenspeicherung
+  - Recht auf Auskunft (Datenexport für Mitglied)
+  - Recht auf Löschung (Datenlöschung auf Anfrage)
+  - Datenminimierung (nur notwendige Daten)
+  - Zugriffsprotokollierung (wer hat wann was gesehen)
+- [ ] Audit Logs exportierbar
+
+### 🛡️ DSGVO-Umsetzung (Software-Anforderungen)
+
+**Art. 6 - Rechtmäßigkeit der Verarbeitung:**
+- [ ] Einwilligungs-Management
+  - Opt-in bei Registrierung mit Checkbox
+  - Speicherung des Einwilligungszeitpunkts
+  - Einwilligungstext versioniert speichern
+  - Widerruf der Einwilligung möglich
+
+**Art. 7 - Bedingungen für die Einwilligung:**
+- [ ] Einwilligungs-Nachweis
+  - Protokollierung: Wer, Wann, Welche Version
+  - Export der Einwilligungshistorie
+  - Trennung von optionalen Einwilligungen (z.B. Fotos, Newsletter)
+
+**Art. 13/14 - Informationspflicht:**
+- [ ] Datenschutzhinweise
+  - Anzeige bei erster Nutzung
+  - Link zur Datenschutzerklärung im Footer
+  - Auflistung aller gespeicherten Daten
+
+**Art. 15 - Auskunftsrecht:**
+- [ ] Datenexport für Mitglieder
+  - "Meine Daten exportieren" Button im Profil
+  - Export als JSON/PDF (maschinenlesbar + lesbar)
+  - Alle gespeicherten Daten inkl. Logs
+  - Automatische Bereitstellung innerhalb 30 Tagen
+
+**Art. 16 - Recht auf Berichtigung:**
+- [ ] Datenkorrektur
+  - Mitglied kann eigene Stammdaten bearbeiten
+  - Änderungshistorie für Admin sichtbar
+  - Benachrichtigung bei Änderungen
+
+**Art. 17 - Recht auf Löschung ("Vergessenwerden"):**
+- [ ] Löschfunktion
+  - "Mein Konto löschen" Anfrage-Button
+  - Admin-Workflow für Löschanfragen
+  - Vollständige Datenlöschung (nicht nur Deaktivierung)
+  - Löschprotokoll (anonymisiert) aufbewahren
+  - Ausnahme: Gesetzliche Aufbewahrungsfristen (Finanzen)
+
+**Art. 18 - Recht auf Einschränkung der Verarbeitung:**
+- [ ] Datensperre
+  - Mitglied kann Sperrung beantragen
+  - Gesperrte Daten nur noch für Pflichten nutzbar
+  - Entsperrung auf Antrag
+
+**Art. 20 - Recht auf Datenübertragbarkeit:**
+- [ ] Portabilität
+  - Export in strukturiertem Format (JSON, CSV)
+  - Maschinenlesbar und interoperabel
+  - Direkte Übermittlung an Dritte (optional)
+
+**Art. 25 - Datenschutz durch Technikgestaltung:**
+- [ ] Privacy by Design
+  - Minimale Datenerhebung (nur Pflichtfelder)
+  - Verschlüsselung sensibler Daten (IBAN, etc.)
+  - Pseudonymisierung wo möglich
+  - Automatische Datenlöschung nach Frist
+
+**Art. 30 - Verzeichnis von Verarbeitungstätigkeiten:**
+- [ ] Verarbeitungsverzeichnis
+  - Automatisch generierte Übersicht
+  - Welche Daten, Zweck, Speicherdauer
+  - Export für Datenschutzbeauftragten
+
+**Art. 32 - Sicherheit der Verarbeitung:**
+- [ ] Technische Sicherheit
+  - Zugriffskontrolle (RBAC bereits implementiert)
+  - Verschlüsselung at rest (Nextcloud)
+  - Verschlüsselung in transit (HTTPS)
+  - Regelmäßige Sicherheitsupdates
+
+**Art. 33/34 - Meldung von Datenschutzverletzungen:**
+- [ ] Breach Detection
+  - Logging aller Zugriffe auf personenbezogene Daten
+  - Anomalie-Erkennung (ungewöhnliche Zugriffsmuster)
+  - Benachrichtigungs-Workflow bei Verdacht
+
+**Zusätzliche Implementierungen:**
+- [ ] Datenschutz-Dashboard für Admin
+  - Übersicht aller Einwilligungen
+  - Offene Löschanfragen
+  - Audit-Log der letzten Zugriffe
+  - DSGVO-Checkliste mit Status
+- [ ] Automatische Löschfristen
+  - Konfigurierbare Aufbewahrungsdauer
+  - Automatische Anonymisierung/Löschung
+  - Warnung vor Ablauf
+- [ ] Cookie-Consent (falls relevant)
+  - Banner bei Erstnutzung
+  - Granulare Auswahl
+
+### ⚖️ Deutsches Vereinsrecht (BGB §§ 21-79)
+
+**Vereinsregister & Rechtsfähigkeit (§§ 21, 55-79 BGB):**
+- [ ] Vereinsdaten-Verwaltung
+  - Vereinsname, Sitz, Registergericht, VR-Nummer
+  - Gründungsdatum, Satzungsdatum
+  - Gemeinnützigkeitsstatus (falls vorhanden)
+  - Freistellungsbescheid-Verwaltung
+
+**Mitgliederverwaltung (§ 38 BGB):**
+- [ ] Mitgliedschafts-Lifecycle
+  - Aufnahmeantrag mit Workflow
+  - Aufnahmebestätigung generieren
+  - Austrittserklärung (Kündigungsfrist lt. Satzung)
+  - Ausschlussverfahren dokumentieren
+  - Mitgliedsnummer automatisch vergeben
+
+**Vorstand (§§ 26-27 BGB):**
+- [ ] Vorstandsverwaltung
+  - Vorstandsmitglieder mit Funktion (1./2. Vorsitz, Schatzmeister, etc.)
+  - Vertretungsberechtigung (einzeln/gemeinsam)
+  - Amtszeit & Wahlperiode
+  - Vorstandswechsel dokumentieren
+  - Unterschriftsberechtigungen
+
+**Mitgliederversammlung (§§ 32-37 BGB):**
+- [ ] Versammlungsmanagement
+  - Einladung mit Tagesordnung (Fristwahrung lt. Satzung)
+  - Teilnehmerliste mit Anwesenheitsnachweis
+  - Beschlussfähigkeit prüfen (Quorum)
+  - Abstimmungen protokollieren (Mehrheiten)
+  - Protokoll erstellen (Unterschriften)
+  - Beschlusssammlung
+
+**Beitrags- und Finanzwesen (§ 58 Nr. 2 BGB, AO):**
+- [ ] Beitragsverwaltung
+  - Beitragsordnung hinterlegen
+  - Beitragskategorien (Vollmitglied, ermäßigt, passiv, Ehrenmitglied)
+  - Beitragsbefreiung/Ermäßigung mit Begründung
+  - Mahnwesen mit Fristen
+  - SEPA-Lastschriftmandate verwalten
+- [ ] Kassenbuch & Buchhaltung
+  - Einnahmen-/Ausgabenrechnung
+  - Belege zuordnen
+  - Kassenprüfung vorbereiten
+  - Jahresabschluss erstellen
+
+**Gemeinnützigkeit (§§ 51-68 AO):**
+- [ ] Gemeinnützigkeits-Compliance (optional)
+  - Zweckbindung der Mittel dokumentieren
+  - Mittelverwendungsnachweis
+  - Spendenbescheinigungen ausstellen
+  - Rücklagenbildung nachweisen
+  - Tätigkeitsbericht generieren
+
+**Aufbewahrungsfristen (§ 147 AO, § 257 HGB):**
+- [ ] Dokumentenaufbewahrung
+  - Buchungsbelege: 10 Jahre
+  - Geschäftsbriefe: 6 Jahre
+  - Protokolle: dauerhaft
+  - Mitgliederdaten: bis Austritt + 3 Jahre (Verjährung)
+  - Automatische Archivierung
+  - Löschhinweise nach Fristablauf
+
+**Satzung & Ordnungen:**
+- [ ] Dokumentenverwaltung
+  - Satzung (aktuelle + historische Versionen)
+  - Beitragsordnung
+  - Geschäftsordnung
+  - Datenschutzordnung
+  - Wahlordnung
+  - Versionshistorie mit Änderungsdatum
+
+**Wahlen & Abstimmungen:**
+- [ ] Wahlmodul
+  - Kandidatenaufstellung
+  - Wahlzettel generieren
+  - Geheime Abstimmung (anonymisiert)
+  - Auszählung & Ergebnis
+  - Wahlprotokoll
+  - Online-Wahlen (optional, satzungsabhängig)
+
+**Haftung & Versicherung (§ 31 BGB):**
+- [ ] Haftungsdokumentation
+  - Versicherungspolicen verwalten
+  - Unfallmeldungen
+  - Haftungsverzichtserklärungen
+  - Aufsichtspflicht-Dokumentation
+
+**Jugendschutz (falls Minderjährige):**
+- [ ] Jugendschutz-Compliance
+  - Einverständniserklärung Erziehungsberechtigte
+  - Erweitertes Führungszeugnis (Nachweis)
+  - Betreuungsschlüssel
+  - Notfallkontakte
 
 ### 💾 Data Export Erwiterungen
 - [ ] SEPA XML Export (für Bankentransfers)
@@ -131,8 +362,37 @@
 
 ### 📊 Statistiken & Reporting
 - [ ] Charts & Diagramme
+  - Anwesenheitsstatistik im Dashboard (Diagramm)
+  - Anwesenheitsquote pro Mitglied
+  - Teilnahme-Trends über Zeit
 - [ ] Historische Daten
 - [ ] Trends & Prognosen
+
+---
+
+## 📋 v0.4.0 (Q3 2026 — Materialverwaltung)
+
+### 🎯 Fokus: Zeugwart & Inventar
+
+**Geplante Features:**
+- [ ] Materialverwaltung (Zeugwart-Modul)
+  - Inventarliste aller Materialien/Instrumente
+  - Status-Tracking (verfügbar, ausgegeben, Reparatur)
+  - Ausgabe-Protokoll (wer hat was wann erhalten)
+  - Rückgabe-Verwaltung
+  - Reparatur-Tracking mit Status & Kosten
+  - Wartungs-Erinnerungen
+- [ ] Zeugwart-Rolle
+  - Zugriff auf Materialverwaltungs-Tab
+  - Ausgabe/Rücknahme-Berechtigung
+  - Reparatur-Aufträge erstellen
+
+| Rolle | Materialverwaltung |
+|-------|-------------------|
+| **Admin** | ✅ Voll |
+| **Vorstand** | ✅ Lesen |
+| **Zeugwart** | ✅ Admin |
+| **Mitglied** | 👤 Eigene Ausleihen |
 
 ---
 
@@ -171,11 +431,11 @@
 
 ## 🐛 Known Issues & Limitations
 
-### v0.2.0-beta
-| Issue | Severity | Workaround | ETA |
-|-------|----------|-----------|-----|
-| PDF Export (TCPDF Dependency) | 🟡 Medium | Verwende CSV Export | v0.2.1 |
-| SEPA XML Export | 🟡 Medium | Manual Export vom DB | v0.3.0 |
+### v0.2.1 (alle gelöst ✅)
+| Issue | Severity | Status | Fix |
+|-------|----------|--------|-----|
+| PDF Export (TCPDF Dependency) | 🟡 Medium | ✅ BEHOBEN | v0.2.1 |
+| SEPA XML Export | 🟡 Medium | 📋 Geplant | v0.3.0 |
 
 ### v0.1.0-alpha (alle in v0.2.0 behoben ✅)
 | Issue | Severity | Status | Fix |
@@ -185,7 +445,13 @@
 | Kein Export | 🟡 Medium | ✅ BEHOBEN | v0.2.0 |
 
 ### Performance
-- Bundle-Größe: 387 KB (Ziel: < 200 KB für v1.0)
+- Bundle-Größe: ~~854 KB~~ → **508 KB** (v0.2.1, 40% Reduktion) ✅
+  - gzip: ~~197 KB~~ → **148 KB** (25% Reduktion)
+  - Ziel für v1.0: < 200 KB
+- Optimierungen v0.2.1:
+  - [x] Aggressive Terser-Minification
+  - [x] Console.log/debug entfernt in Production
+  - [x] Tree-shaking verbessert
 - Datenbankqueries: optimiert durch Nextcloud ORM
 - Caching-Strategie: Nextcloud-native
 

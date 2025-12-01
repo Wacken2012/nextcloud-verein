@@ -73,15 +73,13 @@
       </div>
     </div>
 
-    <!-- Charts (temporarily disabled to restore navigation) -->
-    <div v-if="!loading && showCharts" class="charts-grid">
+    <!-- Charts -->
+    <div v-if="!loading" class="charts-grid">
       <!-- Balkendiagramm: Gebührenstatus -->
       <div class="chart-container">
         <h3 class="chart-title">💰 Gebührenstatus</h3>
         <div class="chart-wrapper">
-          <component
-            v-if="chartsReady"
-            :is="BarComp"
+          <Bar
             :data="feeStatusChartData"
             :options="chartOptions.bar"
           />
@@ -92,94 +90,51 @@
       <div class="chart-container">
         <h3 class="chart-title">📈 Mitgliederwachstum (Letzte 6 Monate)</h3>
         <div class="chart-wrapper">
-          <component
-            v-if="chartsReady"
-            :is="LineComp"
+          <Line
             :data="memberGrowthChartData"
             :options="chartOptions.line"
           />
         </div>
       </div>
     </div>
-    <!-- Placeholder boxes when charts are disabled -->
-    <div v-else-if="!loading && !showCharts" class="charts-grid chart-placeholders">
-      <div class="chart-container placeholder">
-        <h3 class="chart-title">💰 Gebührenstatus</h3>
-        <p class="chart-disabled-hint">Diagramm vorübergehend deaktiviert.</p>
-      </div>
-      <div class="chart-container placeholder">
-        <h3 class="chart-title">📈 Mitgliederwachstum (Letzte 6 Monate)</h3>
-        <p class="chart-disabled-hint">Diagramm vorübergehend deaktiviert.</p>
-      </div>
-    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, reactive, computed, watch, nextTick, shallowRef } from 'vue'
-// Lazy load chart components to avoid early DOM binding issues
-let Bar: any = null
-let Line: any = null
-const BarComp = shallowRef<any | null>(null)
-const LineComp = shallowRef<any | null>(null)
-const chartsReady = ref(false)
+import { ref, onMounted, reactive } from 'vue'
+import { Bar, Line } from 'vue-chartjs'
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  BarElement,
+  Filler,
+  Title,
+  Tooltip,
+  Legend,
+  Colors,
+} from 'chart.js'
 import api from '../api'
 import Alert from './Alert.vue'
-import { settingsStore } from '../store/settings'
 
 // allow widgets to ask the parent to navigate to a different tab
 const emit = defineEmits(['navigate'])
 
-// Charts visibility controlled by global settings store (guard if not loaded or settings failed)
-const showCharts = computed(() => settingsStore.loaded && settingsStore.enable_charts)
-
-// Lazy registration: load Chart.js and vue-chartjs only when needed
-const ensureChartsLoaded = async () => {
-  if (Bar && Line) return
-  const [chartJsMod, vueChartMod] = await Promise.all([
-    import('chart.js'),
-    import('vue-chartjs')
-  ])
-  const ChartJS: any = chartJsMod.Chart
-  const {
-    CategoryScale,
-    LinearScale,
-    PointElement,
-    LineElement,
-    BarElement,
-    Filler,
-    Title,
-    Tooltip,
-    Legend,
-    Colors,
-  } = chartJsMod
-  ChartJS.register(
-    CategoryScale,
-    LinearScale,
-    PointElement,
-    LineElement,
-    BarElement,
-    Filler,
-    Title,
-    Tooltip,
-    Legend,
-    Colors
-  )
-  Bar = vueChartMod.Bar
-  Line = vueChartMod.Line
-  BarComp.value = vueChartMod.Bar
-  LineComp.value = vueChartMod.Line
-  chartsReady.value = true
-}
-
-watch(showCharts, async (val) => {
-  if (val) {
-    // Defer to ensure DOM is fully ready and containers sized
-    await nextTick()
-    await new Promise((resolve) => requestAnimationFrame(() => resolve(null)))
-    await ensureChartsLoaded()
-  }
-})
+// Registriere ChartJS Komponenten
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  BarElement,
+  Filler,
+  Title,
+  Tooltip,
+  Legend,
+  Colors
+)
 
 interface Statistics {
   memberCount: number
@@ -344,29 +299,6 @@ const loadStatistics = async () => {
     console.error('Statistics Error:', error)
   }
 }
-
-// Debug instrumentation for Chart.js root cause (logs once when charts become enabled)
-watch(showCharts, (val) => {
-  if (val) {
-    // Defer to ensure DOM layout stable
-    requestAnimationFrame(() => {
-      const chartWrappers = document.querySelectorAll('.chart-wrapper')
-      chartWrappers.forEach((el, i) => {
-        // Log element type and dimensions
-        // Avoid throwing if element missing
-        try {
-          console.log('[ChartDebug] wrapper', i, {
-            nodeName: el.nodeName,
-            width: (el as HTMLElement).offsetWidth,
-            height: (el as HTMLElement).offsetHeight
-          })
-        } catch (e) {
-          console.warn('[ChartDebug] error inspecting wrapper', e)
-        }
-      })
-    })
-  }
-})
 
 onMounted(() => {
   loadStatistics()

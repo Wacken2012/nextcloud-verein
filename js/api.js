@@ -56,15 +56,6 @@ export const api = {
     return instance.get('statistics/fees')
   },
 
-  // Settings
-  getAppSettings() {
-    return instance.get('settings/app')
-  },
-  setChartsEnabled(enabled) {
-    const data = { enabled: enabled ? '1' : '0' }
-    return instance.post('settings/charts', data)
-  },
-
   // Fees
   getFees() {
     return instance.get('finance')

@@ -1,6 +1,6 @@
 # 🎉 Release Notes: Nextcloud Verein v0.2.0-beta (English)
 
-**Release Date**: November 30, 2025  
+**Release Date**: December 1, 2025  
 **Version**: 0.2.0-beta  
 **Status**: ✅ Stable & Production-Ready for Testers  
 **Nextcloud Compatibility**: 28.0.0+
@@ -129,17 +129,11 @@ Data is fetched live from the server and updates automatically.
 - Logger integration for debugging
 - Better validation messages
 - Query performance optimizations
- - Charts now lazy-loaded (Chart.js/vue-chartjs) to avoid DOM readiness issues
- - Settings: chart toggle moved to `POST /settings/charts`
- - Navigation: "Settings" item is always visible; Roles link remains permission-based
- - CSP: removed custom CSP, rely on Nextcloud defaults with nonces (reduces inline warnings)
 
 ### Bug Fixes
 - CSV export with correct member names
 - Fee export without missing methods
 - Statistics service DateTime handling
- - Fixes “OC is not defined” by loading Nextcloud core scripts
- - Mitigates chart initialization error (“el.addEventListener is not a function”) via lazy-load
 
 ---
 

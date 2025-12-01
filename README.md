@@ -2,23 +2,19 @@
 
 Eine moderne, benutzerfreundliche **Nextcloud-App zur Verwaltung von Vereinen, Verbänden und Organisationen**. Mit vollständiger Mitglieder- und Finanzverwaltung.
 
-**Status**: v0.2.0-beta (✅ 100% fertig) | **Lizenz**: AGPL-3.0 | **Nextcloud**: 28+ | **Release**: 1. Dezember 2025
+**Status**: v0.2.0-beta ✅ Released | **Aktuell**: v0.2.1 (In Arbeit) | **Lizenz**: AGPL-3.0 | **Nextcloud**: 28+
 
 ---
 
 ## Deutsch
-### 📚 Handbuch
-- Kurzanleitung: siehe `HANDBUCH_DE.md`
-- English quick handbook: `HANDBOOK_EN.md`
-
 
 ### 📊 Release Status
 
 | Version | Status | Release | Fokus |
 |---------|--------|---------|-------|
 | **v0.1.0-alpha** | ✅ Stabil | Nov 2025 | Basis CRUD, MVP |
-| **v0.2.0-beta** | ✅ **RELEASED** | 1. Dez 2025 | RBAC, Admin-Panel, CSV/PDF Export, Statistics |
-| **v0.2.1** | 📋 Geplant | Q1 2026 | PDF-Export, Bugfixes, Performance |
+| **v0.2.0-beta** | ✅ **Released** | 30. Nov 2025 | RBAC, Admin-Panel, CSV/PDF Export, Statistics |
+| **v0.2.1** | 🔄 In Arbeit | Dez 2025 | API Docs, Developer Guide, Bugfixes |
 | **v0.3.0** | 📋 Geplant | Q2 2026 | Automatisierung, Integrationen |
 | **v1.0.0** | 🎯 Ziel | Q4 2026 | Production-Ready, 100% Test-Coverage |
 
@@ -117,10 +113,6 @@ Eine moderne, benutzerfreundliche **Nextcloud-App zur Verwaltung von Vereinen, V
 ---
 
 ## English
-### 📚 Handbook
-- Quick handbook: see `HANDBOOK_EN.md`
-- Deutsche Kurzanleitung: `HANDBUCH_DE.md`
-
 
 ### 📊 Release Status
 
@@ -569,9 +561,21 @@ Diese App muss unter der gleichen Lizenz verteilt werden und ist für die Verwen
 
 ## ❓ Support — Deutsch & English
 
-- **GitHub Issues** (Deutsch/English): [Bugs & Feature Requests](https://github.com/yourusername/nextcloud-verein/issues)
-- **Discussions** (Deutsch/English): [Q&A & Ideas](https://github.com/yourusername/nextcloud-verein/discussions)
-- **Email**: (deine-email@example.com)
+- **GitHub Issues** (Deutsch/English): [Bugs & Feature Requests](https://github.com/Wacken2012/nextcloud-verein/issues)
+- **Discussions** (Deutsch/English): [Q&A & Ideas](https://github.com/Wacken2012/nextcloud-verein/discussions)
+
+---
+
+## 📖 Dokumentation
+
+| Dokument | Beschreibung |
+|----------|--------------|
+| [API Documentation](docs/api/README.md) | REST API Referenz mit Beispielen |
+| [OpenAPI Spec](docs/api/openapi.yaml) | OpenAPI 3.0 Spezifikation (Swagger) |
+| [Developer Guide](docs/DEVELOPER_GUIDE.md) | Setup, Architektur, Contributing |
+| [Contributing](CONTRIBUTING.md) | Richtlinien für Beiträge |
+| [Roadmap](ROADMAP.md) | Geplante Features & Versionen |
+| [Installation](INSTALLATION.md) | Installationsanleitung |
 
 ---
 

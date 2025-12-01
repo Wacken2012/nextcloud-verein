@@ -14,6 +14,7 @@ DIST_DIR="$REPO_ROOT/js/dist"
 LIB_DIR="$REPO_ROOT/lib"
 TEMPLATES_DIR="$REPO_ROOT/templates"
 APPINFO_DIR="$REPO_ROOT/appinfo"
+VENDOR_DIR="$REPO_ROOT/vendor"
 
 if [[ ! -d "$DIST_DIR" ]]; then
   echo "Error: built assets not found at $DIST_DIR"
@@ -88,12 +89,21 @@ run_rsync "$LIB_DIR/" "$TARGET/lib/"
 run_rsync "$TEMPLATES_DIR/" "$TARGET/templates/"
 run_rsync "$APPINFO_DIR/" "$TARGET/appinfo/"
 
-# Set ownership to www-data (recommended for most Nextcloud installs)
+# Sync composer vendor dependencies (includes TCPDF)
+if [[ -d "$VENDOR_DIR" ]]; then
+  run_rsync "$VENDOR_DIR/" "$TARGET/vendor/"
+fi
+
+# Set ownership to www-data (recommended for most Nextcloud installs) if run as root
 if [[ "$DRY_RUN" -eq 1 ]]; then
-  echo "+ chown -R www-data:www-data $TARGET"
+  echo "+ chown -R www-data:www-data $TARGET (skipped in dry-run)"
 else
-  echo "+ chown -R www-data:www-data $TARGET"
-  chown -R www-data:www-data "$TARGET"
+  if [[ "$(id -u)" -eq 0 ]]; then
+    echo "+ chown -R www-data:www-data $TARGET"
+    chown -R www-data:www-data "$TARGET"
+  else
+    echo "! Skipping chown (not running as root)."
+  fi
 fi
 
 echo "Deployment complete."

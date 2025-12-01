@@ -28,10 +28,6 @@ return [
         ['name' => 'statistics#getMemberStatistics', 'url' => '/statistics/members', 'verb' => 'GET'],
         ['name' => 'statistics#getFeeStatistics', 'url' => '/statistics/fees', 'verb' => 'GET'],
 
-        // App settings
-        ['name' => 'settings#getAppSettings', 'url' => '/settings/app', 'verb' => 'GET'],
-        ['name' => 'settings#setChartsEnabled', 'url' => '/settings/charts', 'verb' => 'POST'],
-
         // RBAC & permissions
         ['name' => 'role#index', 'url' => '/roles', 'verb' => 'GET'],
         ['name' => 'role#store', 'url' => '/roles', 'verb' => 'POST'],

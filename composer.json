@@ -28,6 +28,7 @@
         }
     },
     "scripts": {
-        "test": "phpunit --configuration phpunit.xml"
+        "test": "phpunit --configuration phpunit.xml",
+        "test-fast": "phpunit --configuration phpunit.xml --testsuite Fast"
     }
 }

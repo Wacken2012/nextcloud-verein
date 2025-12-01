@@ -1,8 +1,6 @@
 # 🎉 Release Notes: Nextcloud Verein v0.2.0-beta
 
-English release notes: https://github.com/Wacken2012/nextcloud-verein/blob/main/RELEASE_NOTES_v0.2.0-beta_EN.md
-
-**Release Datum**: 30. November 2025  
+**Release Datum**: 1. Dezember 2025  
 **Version**: 0.2.0-beta  
 **Status**: ✅ Stabil & Produktionsbereit für Testers  
 **Nextcloud Kompatibilität**: 28.0.0+
@@ -131,17 +129,11 @@ Die Daten werden live vom Server abgerufen und aktualisieren sich automatisch.
 - Logger-Integration für Debugging
 - Bessere Validierungsmeldungen
 - Performance-Optimierungen in Queries
- - Charts werden jetzt lazy geladen (Chart.js/vue-chartjs), um DOM-Ready-Probleme zu vermeiden
- - Einstellungen: Toggle für Diagramme auf `POST /settings/charts` umgestellt
- - Navigationspunkt „Einstellungen“ immer sichtbar; Rollen-Link weiterhin berechtigungsbasiert
- - CSP: Eigene CSP entfernt, Nutzung der Nextcloud-Standardrichtlinie mit Nonces (verhindert Blockaden, reduziert Inline-Warnungen)
 
 ### Bug Fixes
 - CSV Export mit korrekten Member-Namen
 - Fee Export ohne fehlende Methoden
 - Statistics Service DateTime-Handling
- - Behebt „OC ist nicht definiert“ durch Laden der Core-Skripte
- - Diagramm-Initialisierungsfehler („el.addEventListener is not a function“) durch Lazy-Load entschärft
 
 ---
 
