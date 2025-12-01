@@ -109,11 +109,11 @@ export default {
     async loadLogs() {
       try {
         this.loading = true;
-        const response = await api.get('/reminders/log');
+        const response = await api.getReminderLog();
         this.logs = response.data || [];
       } catch (error) {
         console.error('Error loading reminder logs:', error);
-        this.error = this.$t('common.error.load', 'Fehler beim Laden');
+        this.error = 'Fehler beim Laden';
       } finally {
         this.loading = false;
       }
@@ -131,21 +131,21 @@ export default {
 
     getStatusLabel(status) {
       const labels = {
-        'pending': this.$t('reminders.log.pending', 'Ausstehend'),
-        'sent': this.$t('reminders.log.sent', 'Versandt'),
-        'resolved': this.$t('reminders.log.resolved', 'Bezahlt'),
-        'error': this.$t('reminders.log.error', 'Fehler'),
+        'pending': 'Ausstehend',
+        'sent': 'Versandt',
+        'resolved': 'Bezahlt',
+        'error': 'Fehler',
       };
       return labels[status] || status;
     },
 
     getActionLabel(action) {
       const labels = {
-        'reminder_sent': this.$t('reminders.log.reminderSent', 'Mahnung versandt'),
-        'email_sent': this.$t('reminders.log.emailSent', 'Email versandt'),
-        'email_error': this.$t('reminders.log.emailError', 'Email-Fehler'),
-        'email_missing': this.$t('reminders.log.emailMissing', 'Email fehlt'),
-        'marked_resolved': this.$t('reminders.log.markedResolved', 'Als bezahlt markiert'),
+        'reminder_sent': 'Mahnung versandt',
+        'email_sent': 'Email versandt',
+        'email_error': 'Email-Fehler',
+        'email_missing': 'Email fehlt',
+        'marked_resolved': 'Als bezahlt markiert',
       };
       return labels[action] || action;
     },

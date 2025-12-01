@@ -136,7 +136,7 @@
 
 <script>
 import { api } from '@/api';
-import { marked } from 'https://cdn.jsdelivr.net/npm/marked/+esm';
+import { getCurrentUser } from '@nextcloud/auth';
 
 export default {
   name: 'PrivacySettings',
@@ -148,32 +148,34 @@ export default {
       privacyPolicy: '',
       consents: {},
       message: null,
+      currentUser: null,
       consentTypes: [
         {
           key: 'newsletter',
-          label: this.$t('privacy.consent.newsletter', 'Newsletter'),
-          description: this.$t('privacy.consent.newsletterDesc', 'Regelmäßige Updates über Vereinsaktivitäten'),
+          label: 'Newsletter',
+          description: 'Regelmäßige Updates über Vereinsaktivitäten',
         },
         {
           key: 'marketing',
-          label: this.$t('privacy.consent.marketing', 'Marketing'),
-          description: this.$t('privacy.consent.marketingDesc', 'Personalisierte Angebote und Kommunikation'),
+          label: 'Marketing',
+          description: 'Personalisierte Angebote und Kommunikation',
         },
         {
           key: 'analytics',
-          label: this.$t('privacy.consent.analytics', 'Analytik'),
-          description: this.$t('privacy.consent.analyticsDesc', 'Nutzungsanalyse zur Verbesserung der App'),
+          label: 'Analytik',
+          description: 'Nutzungsanalyse zur Verbesserung der App',
         },
         {
           key: 'partners',
-          label: this.$t('privacy.consent.partners', 'Partner'),
-          description: this.$t('privacy.consent.partnersDesc', 'Weitergabe an Partner und Dienstleister'),
+          label: 'Partner',
+          description: 'Weitergabe an Partner und Dienstleister',
         },
       ],
     };
   },
 
   mounted() {
+    this.currentUser = getCurrentUser();
     this.loadPrivacyPolicy();
     this.loadConsents();
   },
@@ -181,16 +183,17 @@ export default {
   methods: {
     async loadPrivacyPolicy() {
       try {
-        const response = await api.get('/privacy/policy');
-        this.privacyPolicy = marked.parse(response.data.policy || '');
+        const response = await api.get('api/v1/privacy/policy');
+        this.privacyPolicy = response.data?.policy || '<p>Keine Datenschutzerklärung vorhanden</p>';
       } catch (error) {
         console.error('Error loading privacy policy:', error);
       }
     },
 
     async loadConsents() {
+      if (!this.currentUser?.uid) return;
       try {
-        const response = await api.get('/privacy/consents/{memberId}');
+        const response = await api.getConsentStatus(this.currentUser.uid);
         this.consents = response.data || {};
       } catch (error) {
         console.error('Error loading consents:', error);
@@ -198,40 +201,42 @@ export default {
     },
 
     async exportData() {
+      if (!this.currentUser?.uid) {
+        this.showMessage('Fehler: Benutzer nicht identifiziert', 'error');
+        return;
+      }
       try {
-        this.message = { text: this.$t('common.loading', 'Lädt...'), type: 'info' };
+        this.message = { text: 'Lädt...', type: 'info' };
         
-        const response = await api.get('/privacy/export/{memberId}', {
-          responseType: 'blob',
-        });
-
-        // Erstelle Download Link
-        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const response = await api.exportMemberData(this.currentUser.uid);
+        
+        // Create download link
+        const blob = new Blob([JSON.stringify(response.data, null, 2)], { type: 'application/json' });
+        const url = window.URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
         link.setAttribute('download', `personal_data_${new Date().toISOString().split('T')[0]}.json`);
         document.body.appendChild(link);
         link.click();
         link.parentNode.removeChild(link);
+        window.URL.revokeObjectURL(url);
 
-        this.showMessage(this.$t('privacy.data.exported', 'Daten erfolgreich exportiert'), 'success');
+        this.showMessage('Daten erfolgreich exportiert', 'success');
       } catch (error) {
         console.error('Error exporting data:', error);
-        this.showMessage(this.$t('common.error.download', 'Fehler beim Download'), 'error');
+        this.showMessage('Fehler beim Download: ' + (error.response?.data?.message || error.message), 'error');
       }
     },
 
     confirmDelete() {
       const message = this.deleteMode === 'soft_delete'
-        ? this.$t('privacy.confirm.soft', 'Daten wirklich anonymisieren?')
-        : this.$t('privacy.confirm.hard', 'Daten wirklich vollständig löschen? Dies kann nicht rückgängig gemacht werden!');
+        ? 'Daten wirklich anonymisieren?'
+        : 'Daten wirklich vollständig löschen? Dies kann nicht rückgängig gemacht werden!';
 
       if (!confirm(message)) return;
 
       if (this.deleteMode === 'hard_delete') {
-        const confirmation = prompt(
-          this.$t('privacy.confirm.hardType', 'Bitte geben Sie "LÖSCHEN" ein um zu bestätigen:')
-        );
+        const confirmation = prompt('Bitte geben Sie "LÖSCHEN" ein um zu bestätigen:');
         if (confirmation !== 'LÖSCHEN') return;
       }
 
@@ -239,28 +244,30 @@ export default {
     },
 
     async deleteData() {
+      if (!this.currentUser?.uid) {
+        this.showMessage('Fehler: Benutzer nicht identifiziert', 'error');
+        return;
+      }
       try {
         this.deleteInProgress = true;
-        this.message = { text: this.$t('common.processing', 'Wird verarbeitet...'), type: 'info' };
+        this.message = { text: 'Wird verarbeitet...', type: 'info' };
 
-        await api.post('/privacy/delete/{memberId}', {
-          mode: this.deleteMode,
-        });
+        await api.deleteMemberData(this.currentUser.uid, this.deleteMode);
 
         this.showMessage(
           this.deleteMode === 'soft_delete'
-            ? this.$t('privacy.data.anonymized', 'Daten anonymisiert')
-            : this.$t('privacy.data.deleted', 'Daten gelöscht'),
+            ? 'Daten anonymisiert'
+            : 'Daten gelöscht',
           'success'
         );
 
-        // Weiterleitung nach kurzer Verzögerung
+        // Redirect after delay
         setTimeout(() => {
           window.location.href = '/';
         }, 2000);
       } catch (error) {
         console.error('Error deleting data:', error);
-        this.showMessage(this.$t('common.error.delete', 'Fehler beim Löschen'), 'error');
+        this.showMessage('Fehler beim Löschen: ' + (error.response?.data?.message || error.message), 'error');
       } finally {
         this.deleteInProgress = false;
       }
@@ -275,23 +282,24 @@ export default {
     },
 
     async toggleConsent(key, event) {
+      if (!this.currentUser?.uid) {
+        this.showMessage('Fehler: Benutzer nicht identifiziert', 'error');
+        return;
+      }
       try {
         const given = event.target.checked;
-        await api.post('/privacy/consent/{memberId}', {
-          type: key,
-          given,
-        });
+        await api.saveConsent(this.currentUser.uid, key, given);
 
         this.loadConsents();
         this.showMessage(
           given
-            ? this.$t('privacy.consent.given', 'Einwilligung gegeben')
-            : this.$t('privacy.consent.withdrawn', 'Einwilligung widerrufen'),
+            ? 'Einwilligung gegeben'
+            : 'Einwilligung widerrufen',
           'success'
         );
       } catch (error) {
         console.error('Error saving consent:', error);
-        this.showMessage(this.$t('common.error.save', 'Fehler beim Speichern'), 'error');
+        this.showMessage('Fehler beim Speichern: ' + (error.response?.data?.message || error.message), 'error');
         event.target.checked = !event.target.checked;
       }
     },

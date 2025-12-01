@@ -137,7 +137,7 @@ export default {
     async loadConfig() {
       try {
         this.loading = true;
-        const response = await api.get('/reminders/config');
+        const response = await api.getReminderConfig();
         this.config = response.data;
         this.initialConfig = JSON.parse(JSON.stringify(this.config));
       } catch (error) {
@@ -151,7 +151,7 @@ export default {
     async saveConfig() {
       try {
         this.saveError = null;
-        const response = await api.post('/reminders/config', this.config);
+        const response = await api.saveReminderConfig(this.config);
         this.config = response.data;
         this.initialConfig = JSON.parse(JSON.stringify(this.config));
         this.saveSuccess = true;

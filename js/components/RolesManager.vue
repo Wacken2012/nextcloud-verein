@@ -280,9 +280,9 @@ export default {
       try {
         this.loading = true;
         const [rolesRes, membersRes, permsRes] = await Promise.all([
-          api.get('/roles'),
-          api.get('/members'),
-          api.get('/permissions'),
+          api.getRoles(),
+          api.getMembers(),
+          api.getPermissions(),
         ]);
         this.roles = rolesRes.data || [];
         this.members = membersRes.data || [];
@@ -297,7 +297,11 @@ export default {
 
     async saveRole() {
       try {
-        await api.post('/roles', this.newRole);
+        if (this.newRole.id) {
+          await api.updateRole(this.newRole.id, this.newRole);
+        } else {
+          await api.createRole(this.newRole);
+        }
         this.newRole = { name: '', description: '' };
         this.showNewRoleDialog = false;
         this.showMessage(this.$t('roles.saved', 'Rolle gespeichert'), 'success');
@@ -311,7 +315,7 @@ export default {
     async deleteRole(roleId) {
       if (!confirm(this.$t('roles.confirmDelete', 'Wirklich löschen?'))) return;
       try {
-        await api.delete(`/roles/${roleId}`);
+        await api.deleteRole(roleId);
         this.showMessage(this.$t('roles.deleted', 'Rolle gelöscht'), 'success');
         await this.loadData();
       } catch (error) {
@@ -327,14 +331,23 @@ export default {
 
     hasPermission(roleId, permId) {
       const role = this.roles.find(r => r.id === roleId);
-      return role && role.permissions.includes(permId);
+      return role && role.permissions && role.permissions.includes(permId);
     },
 
     async togglePermission(roleId, permId, event) {
-      const hasIt = event.target.checked;
       try {
-        const action = hasIt ? 'grant' : 'revoke';
-        await api.post(`/roles/${roleId}/permissions/${permId}/${action}`);
+        const role = this.roles.find(r => r.id === roleId);
+        if (!role) return;
+        
+        const permissions = [...(role.permissions || [])];
+        if (event.target.checked) {
+          if (!permissions.includes(permId)) permissions.push(permId);
+        } else {
+          const idx = permissions.indexOf(permId);
+          if (idx > -1) permissions.splice(idx, 1);
+        }
+        
+        await api.updatePermissions(roleId, permissions);
         await this.loadData();
       } catch (error) {
         console.error('Error toggling permission:', error);
@@ -354,7 +367,11 @@ export default {
 
     async removeMemberRole(memberId, roleId) {
       try {
-        await api.delete(`/members/${memberId}/roles/${roleId}`);
+        const member = this.members.find(m => m.id === memberId);
+        if (member && member.roles) {
+          member.roles = member.roles.filter(r => r !== roleId);
+          await api.updateMember(memberId, member);
+        }
         this.showMessage(this.$t('roles.removed', 'Rolle entfernt'), 'success');
         await this.loadData();
       } catch (error) {
