@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace OCA\NextcloudVerein\Controller;
+namespace OCA\Verein\Controller;
 
-use OCA\NextcloudVerein\Service\PrivacyService;
+use OCA\Verein\Service\PrivacyService;
 use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http;
 use OCP\AppFramework\Http\DataDownloadResponse;

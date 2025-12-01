@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace OCA\NextcloudVerein\Migration;
+namespace OCA\Verein\Migration;
 
 use Closure;
 use OCP\DB\ISchemaTools;
@@ -16,11 +16,6 @@ use OCP\Migration\SimpleMigrationStep;
  * Please review the migration and add missing tables/columns as needed.
  */
 class Version0020000Date20260101000000 extends SimpleMigrationStep {
-	public function __construct(
-		private ISchemaTools $schemaTools,
-	) {
-	}
-
 	public function changeSchema(IOutput $output, Closure $schemaClosure, array $options): ?string {
 		/** @var ISchemaTools $schemaTools */
 		$schema = $schemaClosure();

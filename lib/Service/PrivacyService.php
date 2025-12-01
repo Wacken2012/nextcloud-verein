@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace OCA\NextcloudVerein\Service;
+namespace OCA\Verein\Service;
 
-use OCA\NextcloudVerein\Db\MemberMapper;
+use OCA\Verein\Db\MemberMapper;
 use OCP\ILogger;
 use DateTime;
 use DateInterval;

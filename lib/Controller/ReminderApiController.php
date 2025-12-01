@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace OCA\NextcloudVerein\Controller;
+namespace OCA\Verein\Controller;
 
-use OCA\NextcloudVerein\Service\ReminderService;
+use OCA\Verein\Service\ReminderService;
 use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http;
 use OCP\AppFramework\Http\JSONResponse;

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace OCA\NextcloudVerein\Service;
+namespace OCA\Verein\Service;
 
-use OCA\NextcloudVerein\Db\ReminderMapper;
+use OCA\Verein\Db\ReminderMapper;
 use OCP\ILogger;
 use OCP\Mail\IMailer;
 use OCP\Mail\IEMailTemplate;

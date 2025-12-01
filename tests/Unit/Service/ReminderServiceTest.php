@@ -1,10 +1,10 @@
 <?php
 
-namespace OCA\NextcloudVerein\Tests\Unit\Service;
+namespace OCA\Verein\Tests\Unit\Service;
 
 use PHPUnit\Framework\TestCase;
-use OCA\NextcloudVerein\Service\ReminderService;
-use OCA\NextcloudVerein\Db\ReminderMapper;
+use OCA\Verein\Service\ReminderService;
+use OCA\Verein\Db\ReminderMapper;
 use OCP\ILogger;
 use OCP\Mail\IMailer;
 use DateTime;
