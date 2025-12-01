@@ -1,91 +1,24 @@
 # Installation & Setup Guide
 
-Detaillierte Anleitung zur Installation der Nextcloud Vereins-App.
+> 🇩🇪 [Deutsch](#deutsch) | 🇬🇧 [English](#english)
+
+---
+
+# 🇩🇪 Deutsch
+
+## Setup-Anleitung
+
+Detaillierte Anleitung zur Installation der Nextcloud Vereins-App für Production und Development.
 
 ---
 
 ## 📋 Inhaltsverzeichnis
 
-1. [Projektphilosophie](#projektphilosophie)
-2. [Voraussetzungen](#voraussetzungen)
-3. [Production-Installation](#production-installation)
-4. [Development-Setup](#development-setup)
-5. [Konfiguration](#konfiguration)
-6. [Troubleshooting](#troubleshooting)
-
----
-
-## 🎯 Projektphilosophie
-
-Die Nextcloud Vereins-App ist von Beginn an **kein Proof of Concept**, sondern ein geplantes Open-Source-Produkt.  
-Bevor die erste Codezeile geschrieben wurde, wurde die **Roadmap**, **Architektur** und **Community-Strategie** skizziert.  
-KI (**GitHub Copilot + Microsoft Copilot**) wurde bewusst als Werkzeug eingesetzt, um die Umsetzung zu beschleunigen – nicht als Experiment.
-
-### 🔑 Leitgedanken
-
-| Prinzip | Bedeutung |
-|---------|-----------|
-| **Strategie vor Code** | Idee, Roadmap und Governance wurden vor der ersten Implementierung festgelegt |
-| **KI als Produktionshilfe** | Copilot generiert Code, der durch klare Prompts und Tests gesteuert wird |
-| **Qualität statt Prototyp** | Von Anfang an mit Tests, Validierung, Dokumentation und Deployment |
-| **Community-Orientierung** | Issues, Discussions, Wiki und Branch-Strategie sind integraler Bestandteil |
-| **Nachhaltigkeit** | Lizenz (AGPL), klare Rollen, Roadmap und Contributor-Guides sichern langfristige Entwicklung |
-
-### 📊 Ergebnisse nach ~14 Stunden
-
-✅ **Backend & Frontend**
-- Vollständige CRUD-Operationen (Mitglieder, Gebühren)
-- Vue.js 3 Frontend mit Responsive Layout & Dark Mode
-- Nextcloud AppFramework Integration
-
-✅ **Qualitätssicherung**
-- 35+ Unit Tests (RBAC, Validierung, Controller)
-- ValidationService mit IBAN Mod-97, Email, Phone, Date
-- Unified Error Handling & Alert-System
-- Build: 0 Fehler, 1.42s
-
-✅ **Deployment & Release**
-- Production-Ready Build (Vite)
-- Nextcloud App-Format (.tar.gz)
-- GitHub Integration (main + develop branches)
-- v0.1.0 stable, v0.2.0-beta roadmap
-
-✅ **Dokumentation & Community**
-- 2.000+ Zeilen Dokumentation (README, CONTRIBUTING, DEVELOPMENT, BRANCH_STRATEGY, Installation)
-- Klare Contributor-Guidelines und Git-Workflow
-- Issues, Discussions und Community-Template
-- Wiki mit Troubleshooting & FAQs
-
-### 💡 Warum diese Herangehensweise?
-
-**Problem:** Viele Open-Source-Projekte starten als Prototypen und kämpfen später mit technischer Schuld.
-
-**Lösung:**
-1. **Klar definierte Anforderungen** → Roadmap mit Versionen (v0.1.0, v0.2.0, v0.3.0)
-2. **Architektur-First** → Services, Controllers, Tests von Tag 1
-3. **KI-gestützte Entwicklung** → Schneller Code mit hoher Qualität
-4. **Kontinuierliche Tests** → 80%+ Coverage, PHPUnit, Jest
-5. **Professionelle Dokumentation** → Nicht nur Readme, sondern Wiki, Guides, API-Docs
-6. **Community-Ready** → Contributor-Guides, Diskussions-Templates, Issue-Labels
-
-### 🚀 Das Ergebnis
-
-Die Vereins-App zeigt, wie **KI-gestützte Entwicklung nicht nur beschleunigt, sondern von Beginn an produktiv und nachhaltig** sein kann.
-
-Das Projekt ist ein praktisches Beispiel dafür, wie man mit:
-- Klarer Planung
-- KI-Unterstützung (Copilot)
-- Professionellen Practices (Tests, Docs, Review)
-- Community-Mindset
-
-in **kürzester Zeit ein vollwertiges Open-Source-Produkt** schafft, das von Anfang an wartbar, skalierbar und erweiterbar ist.
-
-### 📖 Weitere Ressourcen
-
-- [README.md](https://github.com/Wacken2012/nextcloud-verein) – Projekt-Übersicht
-- [CONTRIBUTING.md](../CONTRIBUTING.md) – Contributor-Guidelines
-- [BRANCH_STRATEGY.md](../BRANCH_STRATEGY.md) – Git-Workflow & Release-Prozess
-- [DEVELOPMENT.md](../DEVELOPMENT.md) – Architektur & Coding-Patterns
+1. [Voraussetzungen](#voraussetzungen)
+2. [Production-Installation](#production-installation)
+3. [Development-Setup](#development-setup)
+4. [Konfiguration](#konfiguration)
+5. [Troubleshooting](#troubleshooting)
 
 ---
 
@@ -94,11 +27,12 @@ in **kürzester Zeit ein vollwertiges Open-Source-Produkt** schafft, das von Anf
 ### System-Anforderungen
 
 ```
-Nextcloud:         24.0 oder neuer
+Nextcloud:         28.0 oder neuer
 PHP:               8.0 oder neuer
+SQLite/MySQL/PostgreSQL
+Git:               2.25+
 Node.js:           16.0+ (nur für Development)
 npm:               7.0+ (nur für Development)
-Git:               2.25+
 ```
 
 ### Notwendige Rechte
@@ -107,14 +41,6 @@ Git:               2.25+
 ✅ Nextcloud Admin-Zugang
 ✅ SSH/Terminal-Zugang zum Server
 ✅ Schreibrechte in /var/www/nextcloud/apps/
-```
-
-### Speicherplatz
-
-```
-App-Größe:         ca. 50 MB
-Node-Modules:      ca. 500 MB (nur bei Development)
-Datenbank:         ca. 10 MB pro 1000 Mitglieder
 ```
 
 ---
@@ -140,11 +66,6 @@ cd verein
 npm install
 ```
 
-**Output sollte so aussehen:**
-```
-added 500 packages in 2m
-```
-
 ### Schritt 3: Production Build erstellen
 
 ```bash
@@ -154,8 +75,8 @@ npm run build
 **Output sollte so aussehen:**
 ```
 ✓ 106 modules transformed.
-js/dist/style.css              24.72 kB │ gzip:   4.33 kB
-js/dist/nextcloud-verein.mjs  822.75 kB │ gzip: 191.29 kB
+js/dist/nextcloud-verein.mjs       508 kB │ gzip: 148 kB
+js/dist/style.css                   24 kB │ gzip:   4 kB
 ✓ built in 1.34s
 ```
 
@@ -172,10 +93,6 @@ sudo -u www-data php /var/www/nextcloud/occ app:enable verein
 ### Schritt 5: Nextcloud Cache leeren
 
 ```bash
-# Cache leeren
-sudo -u www-data php /var/www/nextcloud/occ maintenance:mode --off
-
-# Optional: Caches resetten
 sudo -u www-data php /var/www/nextcloud/occ cache:clear-all
 ```
 
@@ -184,10 +101,7 @@ sudo -u www-data php /var/www/nextcloud/occ cache:clear-all
 ```bash
 # Richtige Berechtigungen für die App
 sudo chown -R www-data:www-data /var/www/nextcloud/apps/verein/
-
-# Dateirechte
 sudo chmod -R 755 /var/www/nextcloud/apps/verein/
-sudo chmod -R 750 /var/www/nextcloud/apps/verein/appinfo/
 ```
 
 ### ✅ Verifikation
@@ -232,30 +146,18 @@ sudo -u www-data php /var/www/nextcloud/occ app:enable verein-dev
 
 ### Schritt 4: Development Server starten
 
-#### Option A: Mit Watch-Modus (Vite)
-
 ```bash
+# Mit Watch-Modus (Vite)
 npm run dev
 
 # Output:
-# > nextcloud-verein@0.1.0 dev
-# > vite build --watch
-#
 # ✓ 106 modules transformed
 # VITE v4.5.14 watching for file changes...
 ```
 
 Jetzt werden alle Änderungen automatisch rebuildert! 🔄
 
-#### Option B: Einmalig bauen
-
-```bash
-npm run build
-
-# Output: wie unter Schritt 3 (Production)
-```
-
-### Schritt 5: Nextcloud im Browser öffnen
+### Schritt 5: Im Browser öffnen
 
 ```
 http://localhost/nextcloud/index.php/apps/verein-dev/
@@ -265,55 +167,29 @@ http://localhost/nextcloud/index.php/apps/verein-dev/
 
 ## ⚙️ Konfiguration
 
-### Nextcloud App-Info
+### App-Info Datei
 
-Die App wird durch diese Dateien konfiguriert:
-
-#### `appinfo/info.xml`
+Die App wird durch `appinfo/info.xml` konfiguriert:
 
 ```xml
 <?xml version="1.0"?>
 <info>
     <id>verein</id>
     <name>Vereins-App</name>
-    <summary>Verwaltung für Vereine</summary>
-    <description>Mitglieder, Gebühren, Statistiken</description>
-    <version>0.1.0</version>
+    <summary>Verwaltung für Vereine, Clubs und Organisationen</summary>
+    <version>0.2.1</version>
     <licence>AGPL</licence>
-    <author>Stefan</author>
+    <author>Stefan Schulz</author>
     <namespace>OCA\Verein</namespace>
+    <documentation>https://github.com/Wacken2012/nextcloud-verein</documentation>
 </info>
-```
-
-#### `appinfo/routes.php`
-
-```php
-return [
-    'routes' => [
-        ['name' => 'page#index', 'url' => '/', 'verb' => 'GET'],
-        // API Routes
-        ['name' => 'api#getMembers', 'url' => '/api/v1/members', 'verb' => 'GET'],
-        ['name' => 'api#createMember', 'url' => '/api/v1/members', 'verb' => 'POST'],
-        // ...
-    ]
-];
-```
-
-### Umgebungsvariablen
-
-Erstelle eine `.env` Datei für Development:
-
-```bash
-# .env.development
-VITE_API_BASE=http://localhost/nextcloud/index.php/apps/verein/api/v1
-VITE_DEBUG=true
 ```
 
 ---
 
 ## 🐛 Troubleshooting
 
-### Problem: "App not found" beim Öffnen
+### Problem: "App not found"
 
 **Ursache:** App nicht aktiviert oder Build fehlgeschlagen
 
@@ -332,8 +208,6 @@ sudo -u www-data php /var/www/nextcloud/occ cache:clear-all
 
 ### Problem: "Permission denied" bei npm install
 
-**Ursache:** Node-Module Berechtigungen falsch
-
 **Lösung:**
 ```bash
 # Berechtigungen korrigieren
@@ -345,8 +219,6 @@ npm install
 ```
 
 ### Problem: Build schlägt fehl
-
-**Ursache:** Abhängigkeiten nicht installiert oder Node-Version zu alt
 
 **Lösung:**
 ```bash
@@ -362,64 +234,239 @@ npm install
 npm run build
 ```
 
-### Problem: Charts werden nicht angezeigt
+---
 
-**Ursache:** Chart.js nicht geladen
+# 🇬🇧 English
 
-**Lösung:**
+## Setup Guide
+
+Detailed instructions for installing the Nextcloud Association App for production and development.
+
+---
+
+## 📋 Table of Contents
+
+1. [Requirements](#requirements)
+2. [Production Installation](#production-installation)
+3. [Development Setup](#development-setup)
+4. [Configuration](#configuration)
+5. [Troubleshooting](#troubleshooting-1)
+
+---
+
+## ✅ Requirements
+
+### System Requirements
+
+```
+Nextcloud:         28.0 or newer
+PHP:               8.0 or newer
+SQLite/MySQL/PostgreSQL
+Git:               2.25+
+Node.js:           16.0+ (development only)
+npm:               7.0+ (development only)
+```
+
+### Required Access
+
+```
+✅ Nextcloud admin access
+✅ SSH/terminal access to server
+✅ Write permissions in /var/www/nextcloud/apps/
+```
+
+---
+
+## 🚀 Production Installation
+
+### Step 1: Clone Repository
+
 ```bash
-# Chart.js installieren
-npm install chart.js
+# Change to apps directory
+cd /var/www/nextcloud/apps/
 
-# Build erneut laufen lassen
+# Clone repository
+git clone https://github.com/Wacken2012/nextcloud-verein.git verein
+
+# Change to app directory
+cd verein
+```
+
+### Step 2: Install Dependencies
+
+```bash
+npm install
+```
+
+### Step 3: Create Production Build
+
+```bash
 npm run build
 ```
 
-### Problem: Dark-Mode funktioniert nicht
+**Output should look like:**
+```
+✓ 106 modules transformed.
+js/dist/nextcloud-verein.mjs       508 kB │ gzip: 148 kB
+js/dist/style.css                   24 kB │ gzip:   4 kB
+✓ built in 1.34s
+```
 
-**Ursache:** CSS-Variablen nicht definiert
+### Step 4: Enable App
 
-**Lösung:**
 ```bash
-# theme.scss prüfen
-cat js/theme.scss | grep "color-"
+# With www-data user
+sudo -u www-data php /var/www/nextcloud/occ app:enable verein
 
-# Theme neuladen
-# Browser-Cache leeren (Ctrl+Shift+Delete)
-# Nextcloud neu laden (F5)
+# Output:
+# verein enabled
+```
+
+### Step 5: Clear Nextcloud Cache
+
+```bash
+sudo -u www-data php /var/www/nextcloud/occ cache:clear-all
+```
+
+### Step 6: Set Permissions
+
+```bash
+# Set correct permissions for app
+sudo chown -R www-data:www-data /var/www/nextcloud/apps/verein/
+sudo chmod -R 755 /var/www/nextcloud/apps/verein/
+```
+
+### ✅ Verification
+
+```bash
+# App should now be installed
+curl -I -u admin:PASSWORD http://localhost/nextcloud/index.php/apps/verein/
+
+# Should return HTTP 200
 ```
 
 ---
 
-## 📝 Nächste Schritte nach Installation
+## 🛠️ Development Setup
 
-1. **Erste Schritte:**
-   - Admin-Login in Nextcloud
-   - Zum App "Vereins-App" navigieren
-   - Erste Mitglieder hinzufügen
+### Step 1: Clone Repository
 
-2. **Konfiguration:**
-   - Gebührensätze definieren
-   - Rollen anpassen
-   - Berechtigungen setzen (ab v0.2.0)
+```bash
+# Change to development directory
+cd ~/projects/
 
-3. **Testing:**
-   - App auf verschiedenen Geräten testen
-   - Responsive Layout prüfen
-   - Dark-Mode testen
+# Clone repository
+git clone https://github.com/Wacken2012/nextcloud-verein.git
+cd nextcloud-verein
+```
 
-4. **Backup:**
-   - Nextcloud regelmäßig sichern
-   - Datenbank-Backups erstellen
+### Step 2: Install Dependencies
+
+```bash
+npm install
+```
+
+### Step 3: Create Symlink (optional)
+
+```bash
+# Create symlink to Nextcloud installation
+ln -s ~/projects/nextcloud-verein /var/www/nextcloud/apps/verein-dev
+
+# Enable app
+sudo -u www-data php /var/www/nextcloud/occ app:enable verein-dev
+```
+
+### Step 4: Start Development Server
+
+```bash
+# With watch mode (Vite)
+npm run dev
+
+# Output:
+# ✓ 106 modules transformed
+# VITE v4.5.14 watching for file changes...
+```
+
+All changes will now be automatically rebuilt! 🔄
+
+### Step 5: Open in Browser
+
+```
+http://localhost/nextcloud/index.php/apps/verein-dev/
+```
 
 ---
 
-## 🔗 Weitere Ressourcen
+## ⚙️ Configuration
 
-- [Offizielle Nextcloud Docs](https://docs.nextcloud.com/)
-- [PHP API Reference](https://docs.nextcloud.com/server/latest/developer_manual/)
-- [Vue.js Dokumentation](https://vuejs.org/)
+### App Info File
+
+The app is configured through `appinfo/info.xml`:
+
+```xml
+<?xml version="1.0"?>
+<info>
+    <id>verein</id>
+    <name>Association App</name>
+    <summary>Management for clubs and organizations</summary>
+    <version>0.2.1</version>
+    <licence>AGPL</licence>
+    <author>Stefan Schulz</author>
+    <namespace>OCA\Verein</namespace>
+    <documentation>https://github.com/Wacken2012/nextcloud-verein</documentation>
+</info>
+```
 
 ---
 
-**Bei Problemen:** Siehe [Troubleshooting.md](Troubleshooting.md) oder erstelle ein [GitHub Issue](https://github.com/Wacken2012/nextcloud-verein/issues)
+## 🐛 Troubleshooting
+
+### Problem: "App not found"
+
+**Cause:** App not enabled or build failed
+
+**Solution:**
+```bash
+# Check app status
+sudo -u www-data php /var/www/nextcloud/occ app:list | grep verein
+
+# Re-enable app
+sudo -u www-data php /var/www/nextcloud/occ app:disable verein
+sudo -u www-data php /var/www/nextcloud/occ app:enable verein
+
+# Clear cache
+sudo -u www-data php /var/www/nextcloud/occ cache:clear-all
+```
+
+### Problem: "Permission denied" during npm install
+
+**Solution:**
+```bash
+# Fix permissions
+chmod -R 755 node_modules/
+
+# Or: Reinstall completely
+rm -rf node_modules package-lock.json
+npm install
+```
+
+### Problem: Build fails
+
+**Solution:**
+```bash
+# Check Node version
+node --version    # should be ≥16.0.0
+npm --version     # should be ≥7.0.0
+
+# Reinstall dependencies
+rm -rf node_modules
+npm install
+
+# Build again
+npm run build
+```
+
+---
+
+**Last Updated:** December 2025  
+**App Version:** v0.2.1

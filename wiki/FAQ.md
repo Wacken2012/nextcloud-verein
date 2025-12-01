@@ -1,65 +1,24 @@
 # Frequently Asked Questions (FAQ)
 
-Häufig gestellte Fragen zur Nextcloud Vereins-App.
+> 🇩🇪 [Deutsch](#deutsch) | 🇬🇧 [English](#english)
 
 ---
 
-## � Community & Roadmap
+# 🇩🇪 Deutsch
 
-### 💬 Wie kann ich Feedback geben oder mitdiskutieren?
-
-**GitHub Discussions sind der beste Ort dafür!**
-
-👉 **[Roadmap-Discussion (gepinnt)](https://github.com/Wacken2012/nextcloud-verein/discussions)**
-
-Dort kannst du:
-- ❓ **Fragen stellen** – Hilfe bei Installation, Nutzung oder Entwicklung
-- 💡 **Feature-Wünsche äußern** – Welche Funktionen brauchst du für deinen Verein?
-- 📸 **Screenshots teilen** – Zeige, wie du die App nutzt
-- 🎯 **Diskutieren** – Tausche dich mit anderen Vereinen aus
-
-### Wann kommen die nächsten Features?
-
-Siehe [ROADMAP.md](../ROADMAP.md):
-
-- **v0.2.0** (25. Dezember 2025): SEPA-Export, PDF-Export, Multi-Role RBAC
-- **v0.3.0** (31. März 2026): Import-Tools (Softnote, OpenJverein), Score Management
-- **v0.4.0** (30. Juni 2026): Setup-Wizard, Document Templates
-
-**Detailliert**: [Komplette Roadmap mit Spezifikationen](../ROADMAP.md)
-
-### Kann ich die App mitentwickeln?
-
-**Ja!** Die App ist Open Source auf GitHub:
-
-1. **Fork** das Repository
-2. **Feature-Branch** erstellen
-3. **Pull Request** öffnen
-4. Community & ich geben Feedback
-
-Siehe [CONTRIBUTING.md](../CONTRIBUTING.md) für Guidelines.
+## Häufig gestellte Fragen
 
 ---
 
-## �🎯 Allgemein
+## 🎯 Allgemein
 
 ### Was ist die Nextcloud Vereins-App?
 
-Die **Nextcloud Vereins-App** ist eine spezialisierte Anwendung zur Verwaltung von Vereinen, Clubs und Organisationen direkt in Nextcloud. Sie bietet Funktionen für:
-
-- Mitgliederverwaltung
-- Gebührenverwaltung
-- Statistiken und Dashboard
-- Responsive Design
-- Dark-Mode Support
+Die **Nextcloud Vereins-App** ist eine spezialisierte Anwendung zur Verwaltung von Vereinen, Clubs und Organisationen direkt in Nextcloud. Sie bietet Funktionen für Mitgliederverwaltung, Gebührenverwaltung und Statistiken.
 
 ### Kostet die App etwas?
 
 **Nein!** Die App ist vollständig kostenlos und Open Source unter der AGPL-3.0 Lizenz.
-
-### Wer entwickelt die App?
-
-Die App wird von **Stefan Schulz** entwickelt und unterstützt durch die Nextcloud Community und GitHub Copilot.
 
 ### Welche Lizenz hat die App?
 
@@ -70,8 +29,6 @@ AGPL-3.0 License
 → Kommerzielle Nutzung erlaubt
 ```
 
-Siehe: [LICENSE](https://github.com/Wacken2012/nextcloud-verein/blob/main/LICENSE)
-
 ---
 
 ## 📦 Installation & Setup
@@ -79,11 +36,12 @@ Siehe: [LICENSE](https://github.com/Wacken2012/nextcloud-verein/blob/main/LICENS
 ### Welche Voraussetzungen gibt es?
 
 ```
-Nextcloud:    24.0+
+Nextcloud:    28.0+
 PHP:          8.0+
+SQLite/MySQL/PostgreSQL
+Git:          2.25+
 Node.js:      16.0+ (nur für Development)
-RAM:          512 MB Minimum
-Speicher:     50 MB für die App
+npm:          7.0+
 ```
 
 ### Wie installiere ich die App?
@@ -99,64 +57,45 @@ npm install && npm run build
 sudo -u www-data php occ app:enable verein
 ```
 
-### Gibt es Docker-Support?
-
-**Noch nicht!** Geplant für v1.0.0.
-
-Für jetzt: Manuelle Installation im Nextcloud Container.
-
 ### Kann ich die App selbst hosten?
 
 **Ja!** Die App ist für selbst-gehostete Nextcloud-Installationen ausgelegt.
 
-### Kann ich die App in der Cloud hosten (z.B. Hetzner)?
+### Kann ich die App in der Cloud hosten?
 
 **Ja!** Solange Nextcloud läuft, funktioniert die App.
 
 ---
 
-## 🎨 Features & Funktionalität
+## ✨ Features & Funktionalität
 
-### Welche Features gibt es aktuell (v0.1.0)?
+### Welche Features gibt es aktuell (v0.2.1)?
 
 ```
 ✅ Mitgliederverwaltung (CRUD)
 ✅ Gebührenverwaltung (CRUD)
 ✅ Dashboard mit Statistiken
+✅ Rollenbasierte Zugriffskontrolle (RBAC)
+✅ CSV/PDF Export
+✅ SEPA-XML Export
 ✅ Responsive Layout (Desktop/Tablet/Mobile)
 ✅ Dark-Mode Support
 ✅ Nextcloud Theme-Integration
-✅ Accessibility Features
+✅ API-Dokumentation (OpenAPI 3.0)
 ```
 
 ### Wann kommt Feature XY?
 
-Siehe: [Roadmap.md](./Roadmap.md)
+Siehe: [ROADMAP.md](https://github.com/Wacken2012/nextcloud-verein/blob/main/ROADMAP.md)
 
 Geplante Features:
-- **v0.2.0:** Rollen, Validierungen, SEPA-Export
-- **v0.3.0:** Mahnungen, Kalender, Notifications
-- **v1.0.0:** App-Store Release
+- **v0.3.0 (Q2 2026):** Kalender, Talk, Files, Deck Integration
+- **v0.4.0 (Q3 2026):** Zeugwart/Materialverwaltung
+- **v1.0.0 (Q4 2026):** Production-Ready, App Store Release
 
 ### Kann ich die App anpassen?
 
 **Ja!** Der Code ist Open Source und kann angepasst werden.
-
-**Option 1:** Selber ändern (Fork)
-```bash
-git clone https://github.com/DEIN_USERNAME/nextcloud-verein.git
-# Änderungen machen
-# Pull Request erstellen
-```
-
-**Option 2:** Feature-Request erstellen
-```
-GitHub Issues: https://github.com/Wacken2012/nextcloud-verein/issues
-```
-
-### Gibt es eine Demo?
-
-**Nein, aber:** Kontaktiere den Entwickler auf GitHub für Test-Zugang.
 
 ---
 
@@ -167,18 +106,18 @@ GitHub Issues: https://github.com/Wacken2012/nextcloud-verein/issues
 ```
 ✅ Alle Daten bleiben in deiner Nextcloud
 ✅ HTTPS-Verschlüsselung (wenn Nextcloud HTTPS nutzt)
-✅ Berechtigungssystem geplant (v0.2.0+)
-✅ Regelmäßige Security-Reviews
+✅ Rollenbasierte Zugriffskontrolle (ab v0.2.0)
+✅ Datenvalidierung (IBAN/BIC, Email, SEPA XML)
+✅ Audit-Logging für Permission-Violations
+✅ Input-Sanitization auf allen Endpoints
 ```
 
 ### Kann jeder alle Daten sehen?
 
-**Aktuell (v0.1.0):** Berechtigungen sind noch nicht implementiert.
-
-**Ab v0.2.0:** Granulare Berechtigungen für:
-- Daten-Sicht (öffentlich/privat)
-- Bearbeitung (Admin/Member)
-- Berichtszugriff
+**Nein!** Die App hat ein Rollensystem:
+- **Admin** — Vollständiger Zugriff
+- **Kassenwart** — Finanz-Daten
+- **Mitglied** — Begrenzte Sicht (nur eigene Daten)
 
 ### Wo werden die Daten gespeichert?
 
@@ -191,12 +130,10 @@ Konfiguriert in `config/config.php`.
 
 ### Kann ich Daten exportieren?
 
-**Ja!** Geplant für v0.2.0:
-```bash
-# CSV-Export
-# PDF-Export
-# SEPA-XML (für Gebühren)
-```
+**Ja!** Aktuelle Export-Optionen:
+- CSV (Mitglieder, Gebühren)
+- PDF (Mitglieder, Gebühren)
+- SEPA-XML (Gebühren)
 
 ---
 
@@ -213,11 +150,14 @@ sudo -u www-data php /var/www/nextcloud/occ app:list | grep verein
 
 # App neu aktivieren
 sudo -u www-data php /var/www/nextcloud/occ app:enable verein
+
+# Cache leeren
+sudo -u www-data php /var/www/nextcloud/occ cache:clear-all
 ```
 
 ### Fehler beim Laden der Daten
 
-**Ursache:** API nicht erreichbar
+**Ursache:** API nicht erreichbar oder Berechtigungen
 
 **Lösung:**
 ```bash
@@ -234,33 +174,13 @@ sudo -u www-data php /var/www/nextcloud/occ cache:clear-all
 
 **Lösung:**
 ```bash
-# Browser-Cache leeren
-# Oder: Strg+Shift+Delete
-
-# Nextcloud neuladen
-# F5 drücken
+# Browser-Cache leeren (Strg+Shift+Delete)
+# Nextcloud neuladen (F5)
 ```
-
-### Responsive Layout kaputt auf Mobile
-
-**Ursache:** Viewport-Meta-Tag fehlt
-
-**Lösung:**
-```bash
-# Sollte automatisch gesetzt sein
-# Sonst: Browser-Cache leeren
-
-# Developer Tools öffnen (F12)
-# Device emulieren
-```
-
-### Weitere Hilfe?
-
-→ Siehe: [Troubleshooting.md](./Troubleshooting.md)
 
 ---
 
-## 👥 Community & Support
+## 💬 Community & Support
 
 ### Wie kann ich Bugs berichten?
 
@@ -271,9 +191,8 @@ Bitte berichtet:
 - App-Version (Admin → Apps)
 - Nextcloud-Version
 - Browser & Betriebssystem
-- Was habt ihr getan?
-- Was ist schief gelaufen?
-- Screenshot/Video (wenn möglich)
+- Reproduktionsschritte
+- Screenshots (wenn möglich)
 ```
 
 ### Wie kann ich Features vorschlagen?
@@ -281,8 +200,7 @@ Bitte berichtet:
 ```
 GitHub Discussions: https://github.com/Wacken2012/nextcloud-verein/discussions
 
-Oder:
-GitHub Issues: Mit Label "enhancement"
+Oder: GitHub Issues mit Label "enhancement"
 ```
 
 ### Wie kann ich beitragen?
@@ -294,7 +212,7 @@ GitHub Issues: Mit Label "enhancement"
 4. Push und Pull Request erstellen
 5. Code-Review abwarten
 
-Richtlinien: siehe DEVELOPMENT.md
+Richtlinien: siehe CONTRIBUTING.md
 ```
 
 ### Wo kann ich mit anderen Nutzern reden?
@@ -305,85 +223,6 @@ https://github.com/Wacken2012/nextcloud-verein/discussions
 
 Nextcloud Forum:
 https://help.nextcloud.com/
-```
-
----
-
-## 📱 Mobile & Responsiveness
-
-### Funktioniert die App auf dem Handy?
-
-**Ja!** Die App ist vollständig responsive:
-
-```
-📱 Mobile (<768px):     1-Spalten Layout, Icon-only Nav
-📱 Tablet (768-1023px): 2-Spalten Layout
-🖥️  Desktop (≥1024px):   4-Spalten Layout
-```
-
-### Kann ich die App auf iOS verwenden?
-
-**Ja!** Im Safari-Browser (iPhone/iPad).
-
-**Desktop-App:** Geplant für zukünftige Versionen.
-
-### Wie sieht das Layout auf dem Handy aus?
-
-```
-Responsive Darstellung:
-✅ Touch-freundliche Buttons (48px+)
-✅ Lesbare Schriftgrößen
-✅ Volles Funktionsumfang
-✅ Keine horizontalen Scrolls
-✅ Sticky Navigation (oben)
-```
-
----
-
-## 🌙 Dark-Mode
-
-### Wie aktiviere ich Dark-Mode?
-
-```
-Nextcloud → Einstellungen (Avatar oben rechts)
-           → Darstellung
-           → Design: "Helligkeit"
-           → Auswahl ändern
-```
-
-Die App passt sich automatisch an! 🌙
-
-### Funktioniert Dark-Mode auf allen Geräten?
-
-**Ja!** Unterstützt von:
-- Chrome 76+
-- Firefox 67+
-- Safari 12.1+
-- Edge 79+
-
----
-
-## 📊 Statistiken & Reports
-
-### Wie generiere ich einen Report?
-
-**Aktuell:** Dashboard mit Live-Statistiken
-
-**Geplant (v0.2.0+):**
-```
-PDF-Export
-CSV-Export
-Benutzerdefinierte Reports
-```
-
-### Welche Statistiken gibt es?
-
-```
-✅ Mitgliederzahl
-✅ Offene Gebühren
-✅ Monatliche Einnahmen
-✅ Zahlungshistorie
-✅ Charts (Balken, Kuchen, Linien)
 ```
 
 ---
@@ -408,40 +247,260 @@ npm run build
 sudo -u www-data php /var/www/nextcloud/occ cache:clear-all
 ```
 
-### Gibt es Breaking Changes zwischen Versionen?
+### Gibt es Breaking Changes?
 
 **Nein!** Alle Versionen sind abwärtskompatibel.
 
-Datenbank-Migration erfolgt automatisch.
+---
 
-### Wie lange werden alte Versionen unterstützt?
+# 🇬🇧 English
+
+## Frequently Asked Questions
+
+---
+
+## 🎯 General
+
+### What is the Nextcloud Association App?
+
+The **Nextcloud Association App** is a specialized application for managing clubs, associations, and organizations directly in Nextcloud. It provides functionality for member management, fee management, and statistics.
+
+### Is the app free?
+
+**Yes!** The app is completely free and open source under the AGPL-3.0 license.
+
+### What license does the app have?
 
 ```
-v0.1.x:  Aktuelle Entwicklungsversion
-v0.2.x:  Nach Release unterstützt bis v1.0.0
-v1.0.x+: Mindestens 2 Jahre Unterstützung
+AGPL-3.0 License
+→ Source code must be open
+→ Changes must be shared
+→ Commercial use allowed
 ```
 
 ---
 
-## 📞 Kontakt & Weitere Hilfe
+## 📦 Installation & Setup
 
-### Wo finde ich weitere Hilfe?
+### What are the requirements?
 
-| Ressource | Zweck |
-|-----------|-------|
-| [Installation.md](./Installation.md) | Setup-Anleitung |
-| [Troubleshooting.md](./Troubleshooting.md) | Problembehebung |
-| [Roadmap.md](./Roadmap.md) | Zukünftige Features |
-| [GitHub Issues](https://github.com/Wacken2012/nextcloud-verein/issues) | Bug-Reports |
-| [GitHub Discussions](https://github.com/Wacken2012/nextcloud-verein/discussions) | Fragen & Ideen |
+```
+Nextcloud:    28.0+
+PHP:          8.0+
+SQLite/MySQL/PostgreSQL
+Git:          2.25+
+Node.js:      16.0+ (development only)
+npm:          7.0+
+```
+
+### How do I install the app?
+
+See: [Installation.md](./Installation.md)
+
+Quick version:
+```bash
+cd /var/www/nextcloud/apps/
+git clone https://github.com/Wacken2012/nextcloud-verein.git verein
+cd verein
+npm install && npm run build
+sudo -u www-data php occ app:enable verein
+```
+
+### Can I self-host the app?
+
+**Yes!** The app is designed for self-hosted Nextcloud installations.
+
+### Can I host the app in the cloud?
+
+**Yes!** As long as Nextcloud runs, the app works.
 
 ---
 
-**Hast du deine Frage nicht beantwortet bekommen?**
+## ✨ Features & Functionality
 
-→ Erstelle eine Diskussion: https://github.com/Wacken2012/nextcloud-verein/discussions
+### What features are available in v0.2.1?
 
-Ich helfe gerne! 🙏
+```
+✅ Member management (CRUD)
+✅ Fee management (CRUD)
+✅ Dashboard with statistics
+✅ Role-based access control (RBAC)
+✅ CSV/PDF export
+✅ SEPA XML export
+✅ Responsive layout (Desktop/Tablet/Mobile)
+✅ Dark mode support
+✅ Nextcloud theme integration
+✅ API documentation (OpenAPI 3.0)
+```
 
-*Entwickelt mit ❤️ von Stefan Schulz*
+### When will feature XY be available?
+
+See: [ROADMAP.md](https://github.com/Wacken2012/nextcloud-verein/blob/main/ROADMAP.md)
+
+Planned features:
+- **v0.3.0 (Q2 2026):** Calendar, Talk, Files, Deck integration
+- **v0.4.0 (Q3 2026):** Zeugwart/Material management
+- **v1.0.0 (Q4 2026):** Production-ready, App Store release
+
+### Can I customize the app?
+
+**Yes!** The code is open source and can be modified.
+
+---
+
+## 🔒 Security & Privacy
+
+### How secure is the app?
+
+```
+✅ All data stays in your Nextcloud
+✅ HTTPS encryption (if Nextcloud uses HTTPS)
+✅ Role-based access control (from v0.2.0)
+✅ Data validation (IBAN/BIC, Email, SEPA XML)
+✅ Audit logging for permission violations
+✅ Input sanitization on all endpoints
+```
+
+### Can everyone see all data?
+
+**No!** The app has a role system:
+- **Admin** — Full access
+- **Treasurer** — Financial data
+- **Member** — Limited view (own data only)
+
+### Where is data stored?
+
+Data is stored in the **Nextcloud database**:
+- SQLite (default)
+- MySQL / MariaDB
+- PostgreSQL
+
+Configured in `config/config.php`.
+
+### Can I export data?
+
+**Yes!** Current export options:
+- CSV (members, fees)
+- PDF (members, fees)
+- SEPA XML (fees)
+
+---
+
+## 🐛 Issues & Errors
+
+### App won't load
+
+**Cause:** App not enabled or build failed
+
+**Solution:**
+```bash
+# Check app status
+sudo -u www-data php /var/www/nextcloud/occ app:list | grep verein
+
+# Re-enable app
+sudo -u www-data php /var/www/nextcloud/occ app:enable verein
+
+# Clear cache
+sudo -u www-data php /var/www/nextcloud/occ cache:clear-all
+```
+
+### Data loading errors
+
+**Cause:** API unreachable or permissions issues
+
+**Solution:**
+```bash
+# Check Nextcloud logs
+sudo tail -f /var/www/nextcloud/data/nextcloud.log
+
+# Clear cache
+sudo -u www-data php /var/www/nextcloud/occ cache:clear-all
+```
+
+### Dark mode not working
+
+**Cause:** CSS variables not loaded
+
+**Solution:**
+```bash
+# Clear browser cache (Ctrl+Shift+Delete)
+# Reload Nextcloud (F5)
+```
+
+---
+
+## 💬 Community & Support
+
+### How do I report bugs?
+
+```
+GitHub Issues: https://github.com/Wacken2012/nextcloud-verein/issues
+
+Please include:
+- App version (Admin → Apps)
+- Nextcloud version
+- Browser & operating system
+- Steps to reproduce
+- Screenshots (if possible)
+```
+
+### How do I request features?
+
+```
+GitHub Discussions: https://github.com/Wacken2012/nextcloud-verein/discussions
+
+Or: GitHub Issues with label "enhancement"
+```
+
+### How can I contribute?
+
+```
+1. Fork repository
+2. Create feature branch
+3. Commits with descriptive messages
+4. Push and create pull request
+5. Wait for code review
+
+Guidelines: see CONTRIBUTING.md
+```
+
+### Where can I talk with other users?
+
+```
+GitHub Discussions (Q&A):
+https://github.com/Wacken2012/nextcloud-verein/discussions
+
+Nextcloud Forum:
+https://help.nextcloud.com/
+```
+
+---
+
+## 🔄 Updates & Versions
+
+### How do I update the app?
+
+```bash
+cd /var/www/nextcloud/apps/verein
+
+# Pull new version
+git pull origin main
+
+# Update dependencies
+npm install
+
+# Create build
+npm run build
+
+# Clear Nextcloud cache
+sudo -u www-data php /var/www/nextcloud/occ cache:clear-all
+```
+
+### Are there breaking changes?
+
+**No!** All versions are backward compatible.
+
+---
+
+**Last Updated:** December 2025  
+**App Version:** v0.2.1
