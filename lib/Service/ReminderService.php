@@ -300,4 +300,16 @@ class ReminderService {
 			$this->logger->error('Error logging reminder: ' . $e->getMessage());
 		}
 	}
+
+	/**
+	 * Hole alle Mahnung-Protokoll-Einträge
+	 */
+	public function getReminderLog(): array {
+		try {
+			return $this->reminderMapper->findAll();
+		} catch (\Exception $e) {
+			$this->logger->error('Error retrieving reminder log: ' . $e->getMessage());
+			return [];
+		}
+	}
 }

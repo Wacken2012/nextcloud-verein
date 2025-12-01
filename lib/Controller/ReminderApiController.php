@@ -43,6 +43,10 @@ class ReminderApiController extends Controller {
 	 * POST /api/v1/reminders/config
 	 * Aktualisiere Reminder-Konfiguration
 	 */
+	public function saveConfig(): JSONResponse {
+		return $this->updateConfig();
+	}
+
 	public function updateConfig(): JSONResponse {
 		try {
 			$params = json_decode($this->request->getBody(), true);
@@ -97,6 +101,37 @@ class ReminderApiController extends Controller {
 		try {
 			$success = $this->reminderService->deleteReminder($reminderId);
 			return new JSONResponse(['success' => $success]);
+		} catch (\Exception $e) {
+			return new JSONResponse(['error' => $e->getMessage()], Http::STATUS_INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	/**
+	 * @NoAdminRequired
+	 * GET /api/v1/reminders/log
+	 * Hole Mahnung-Protokoll
+	 */
+	public function getLog(): JSONResponse {
+		try {
+			$log = $this->reminderService->getReminderLog();
+			return new JSONResponse($log);
+		} catch (\Exception $e) {
+			return new JSONResponse(['error' => $e->getMessage()], Http::STATUS_INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	/**
+	 * @NoAdminRequired
+	 * POST /api/v1/reminders/process
+	 * Verarbeite fällige Mahnungen
+	 */
+	public function processDue(): JSONResponse {
+		try {
+			$this->reminderService->processDueReminders();
+			return new JSONResponse([
+				'success' => true,
+				'message' => 'Reminders processed successfully'
+			]);
 		} catch (\Exception $e) {
 			return new JSONResponse(['error' => $e->getMessage()], Http::STATUS_INTERNAL_SERVER_ERROR);
 		}

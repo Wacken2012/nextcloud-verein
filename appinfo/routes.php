@@ -40,5 +40,25 @@ return [
         ['name' => 'role#removeRoles', 'url' => '/roles/users', 'verb' => 'DELETE'],
 
         ['name' => 'permission#index', 'url' => '/permissions', 'verb' => 'GET'],
+
+        // Reminders API (v0.2.2)
+        ['name' => 'reminderApi#getConfig', 'url' => '/api/v1/reminders/config', 'verb' => 'GET'],
+        ['name' => 'reminderApi#saveConfig', 'url' => '/api/v1/reminders/config', 'verb' => 'POST'],
+        ['name' => 'reminderApi#getLog', 'url' => '/api/v1/reminders/log', 'verb' => 'GET'],
+        ['name' => 'reminderApi#processDue', 'url' => '/api/v1/reminders/process', 'verb' => 'POST'],
+
+        // Privacy/GDPR API (v0.2.2)
+        ['name' => 'privacyApi#getPolicy', 'url' => '/api/v1/privacy/policy', 'verb' => 'GET'],
+        ['name' => 'privacyApi#exportData', 'url' => '/api/v1/privacy/export/{memberId}', 'verb' => 'GET'],
+        ['name' => 'privacyApi#deleteData', 'url' => '/api/v1/privacy/member/{memberId}', 'verb' => 'DELETE'],
+        ['name' => 'privacyApi#saveConsent', 'url' => '/api/v1/privacy/consent', 'verb' => 'POST'],
+        ['name' => 'privacyApi#getConsent', 'url' => '/api/v1/privacy/consent/{memberId}', 'verb' => 'GET'],
+
+        // Roles API (v0.2.2)
+        ['name' => 'rolesApi#getRoles', 'url' => '/api/v1/roles', 'verb' => 'GET'],
+        ['name' => 'rolesApi#createRole', 'url' => '/api/v1/roles', 'verb' => 'POST'],
+        ['name' => 'rolesApi#updateRole', 'url' => '/api/v1/roles/{roleId}', 'verb' => 'PUT'],
+        ['name' => 'rolesApi#deleteRole', 'url' => '/api/v1/roles/{roleId}', 'verb' => 'DELETE'],
+        ['name' => 'rolesApi#updatePermissions', 'url' => '/api/v1/roles/{roleId}/permissions', 'verb' => 'PUT'],
     ]
 ];

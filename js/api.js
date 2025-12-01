@@ -5,18 +5,27 @@ const instance = axios.create({
   baseURL: generateUrl('/apps/verein/'),
   withCredentials: true,
   headers: {
-    'Content-Type': 'application/x-www-form-urlencoded'
+    'Content-Type': 'application/json'
   }
 })
 
-// Transform plain objects to URL-encoded payloads for Nextcloud controllers
+// Transform plain objects to URL-encoded payloads only for legacy endpoints
 instance.interceptors.request.use(config => {
+  // Nur für nicht-API-Endpoints (alt legacy-Endpunkte)
   if (config.data && typeof config.data === 'object' && !FormData.prototype.isPrototypeOf(config.data)) {
-    const params = new URLSearchParams()
-    for (const [key, value] of Object.entries(config.data)) {
-      params.append(key, value ?? '')
+    // Für /api/ Endpoints: JSON verwenden
+    if (config.url && config.url.includes('/api/')) {
+      config.headers['Content-Type'] = 'application/json'
+      config.data = JSON.stringify(config.data)
+    } else {
+      // Für alte Endpoints: URL-encoded verwenden
+      config.headers['Content-Type'] = 'application/x-www-form-urlencoded'
+      const params = new URLSearchParams()
+      for (const [key, value] of Object.entries(config.data)) {
+        params.append(key, value ?? '')
+      }
+      config.data = params
     }
-    config.data = params
   }
   return config
 })

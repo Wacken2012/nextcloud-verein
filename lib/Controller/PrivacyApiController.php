@@ -85,9 +85,13 @@ class PrivacyApiController extends Controller {
 
 	/**
 	 * @NoAdminRequired
-	 * GET /api/v1/privacy/consents/{memberId}
+	 * GET /api/v1/privacy/consent/{memberId}
 	 * Hole Einwilligungsstatus
 	 */
+	public function getConsent(int $memberId): JSONResponse {
+		return $this->getConsents($memberId);
+	}
+
 	public function getConsents(int $memberId): JSONResponse {
 		try {
 			$this->validateMemberAccess($memberId);
@@ -135,6 +139,10 @@ class PrivacyApiController extends Controller {
 	 * GET /api/v1/privacy/policy
 	 * Hole Datenschutzerklärung
 	 */
+	public function getPolicy(): JSONResponse {
+		return $this->getPrivacyPolicy();
+	}
+
 	public function getPrivacyPolicy(): JSONResponse {
 		try {
 			$policy = $this->privacyService->getPrivacyPolicy();
