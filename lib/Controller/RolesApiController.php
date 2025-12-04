@@ -29,7 +29,8 @@ class RolesApiController extends Controller {
      */
     public function getRoles(): DataResponse {
         try {
-            $roles = $this->roleService->getAllRoles();
+            // Return predefined roles for this instance
+            $roles = $this->roleService->getRolesForClubType('music');
             return new DataResponse($roles);
         } catch (\Exception $e) {
             return new DataResponse([
@@ -38,60 +39,43 @@ class RolesApiController extends Controller {
         }
     }
 
+
     /**
-     * Create a new role
+     * Create a new role - Not yet implemented
      */
     public function createRole(string $name, string $description = ''): DataResponse {
-        try {
-            $role = $this->roleService->createRole($name, $description);
-            return new DataResponse($role);
-        } catch (\Exception $e) {
-            return new DataResponse([
-                'error' => $e->getMessage()
-            ], 400);
-        }
+        return new DataResponse([
+            'error' => 'Role creation not yet implemented'
+        ], 501);
     }
 
+
     /**
-     * Update a role
+     * Update a role - Not yet implemented
      */
     public function updateRole(int $roleId, string $name, string $description = ''): DataResponse {
-        try {
-            $role = $this->roleService->updateRole($roleId, $name, $description);
-            return new DataResponse($role);
-        } catch (\Exception $e) {
-            return new DataResponse([
-                'error' => $e->getMessage()
-            ], 400);
-        }
+        return new DataResponse([
+            'error' => 'Role update not yet implemented'
+        ], 501);
     }
 
+
     /**
-     * Delete a role
+     * Delete a role - Not yet implemented
      */
     public function deleteRole(int $roleId): DataResponse {
-        try {
-            $this->roleService->deleteRole($roleId);
-            return new DataResponse(['success' => true]);
-        } catch (\Exception $e) {
-            return new DataResponse([
-                'error' => $e->getMessage()
-            ], 400);
-        }
+        return new DataResponse([
+            'error' => 'Role deletion not yet implemented'
+        ], 501);
     }
 
+
     /**
-     * Update role permissions
+     * Update role permissions - Not yet implemented
      */
     public function updatePermissions(int $roleId): DataResponse {
-        try {
-            $permissions = $this->request->getParam('permissions', []);
-            $role = $this->roleService->updatePermissions($roleId, $permissions);
-            return new DataResponse($role);
-        } catch (\Exception $e) {
-            return new DataResponse([
-                'error' => $e->getMessage()
-            ], 400);
-        }
+        return new DataResponse([
+            'error' => 'Permission update not yet implemented'
+        ], 501);
     }
 }

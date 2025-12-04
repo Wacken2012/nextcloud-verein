@@ -6,7 +6,7 @@ use OCA\Verein\Attributes\RequirePermission;
 use OCA\Verein\Service\RBAC\RoleService;
 use OCP\AppFramework\Http\JSONResponse;
 use OCP\AppFramework\Middleware;
-use OCP\ILogger;
+use Psr\Log\LoggerInterface;
 use OCP\IUserSession;
 use ReflectionClass;
 use ReflectionException;
@@ -15,12 +15,12 @@ use ReflectionMethod;
 class AuthorizationMiddleware extends Middleware {
     private RoleService $roleService;
     private IUserSession $userSession;
-    private ILogger $logger;
+    private LoggerInterface $logger;
 
     public function __construct(
         RoleService $roleService,
         IUserSession $userSession,
-        ILogger $logger
+        LoggerInterface $logger
     ) {
         $this->roleService = $roleService;
         $this->userSession = $userSession;

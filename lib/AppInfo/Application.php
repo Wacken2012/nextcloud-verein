@@ -21,8 +21,8 @@ use OCP\AppFramework\Bootstrap\IBootstrap;
 use OCP\AppFramework\Bootstrap\IRegistrationContext;
 use OCP\AppFramework\IAppContainer;
 use OCP\IGroupManager;
-use OCP\ILogger;
 use OCP\IUserSession;
+use Psr\Log\LoggerInterface;
 use OCP\IURLGenerator;
 use OCP\IL10N;
 
@@ -36,11 +36,7 @@ class Application extends App implements IBootstrap {
     public function register(IRegistrationContext $context): void {
         $context->registerService(RoleService::class, function (IAppContainer $container): RoleService {
             return new RoleService(
-                $container->query(RoleMapper::class),
-                $container->query(UserRoleMapper::class),
-                $container->query(IGroupManager::class),
-                $container->query(IUserSession::class),
-                $container->query(ILogger::class)
+                $container->query(IUserSession::class)
             );
         });
 
@@ -48,7 +44,7 @@ class Application extends App implements IBootstrap {
             return new AuthorizationMiddleware(
                 $container->query(RoleService::class),
                 $container->query(IUserSession::class),
-                $container->query(ILogger::class)
+                $container->query(LoggerInterface::class)
             );
         });
 
