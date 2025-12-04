@@ -278,9 +278,10 @@ export default {
   computed: {
     filteredPermissions() {
       if (!this.permissionFilter) return this.allPermissions;
+      const query = this.permissionFilter.toLowerCase();
       return this.allPermissions.filter(p => {
-        const permString = typeof p === 'string' ? p : (p.name || '');
-        return permString.toLowerCase().includes(this.permissionFilter.toLowerCase());
+        const haystack = `${p.name || ''} ${p.shortName || ''} ${p.description || ''}`.toLowerCase();
+        return haystack.includes(query);
       });
     },
   },
@@ -299,9 +300,15 @@ export default {
           api.getMembers(),
           api.getPermissions(),
         ]);
-        this.roles = rolesRes.data || [];
-        this.members = membersRes.data || [];
-        this.allPermissions = permsRes.data?.permissions || [];
+        const rawRoles = rolesRes.data || [];
+        const rawMembers = membersRes.data;
+        const rawPermissions = permsRes.data?.permissions || [];
+
+        this.roles = this.normalizeRoles(rawRoles);
+        this.members = Array.isArray(rawMembers)
+          ? rawMembers
+          : (rawMembers?.members || []);
+        this.allPermissions = this.normalizePermissions(rawPermissions);
       } catch (error) {
         console.error('Error loading data:', error);
         const errorMsg = error.response?.data?.message || error.message || 'Fehler beim Laden der Daten';
@@ -348,7 +355,7 @@ export default {
 
     hasPermission(roleId, permId) {
       const role = this.roles.find(r => r.id === roleId);
-      return role && role.permissions && role.permissions.includes(permId);
+      return role && Array.isArray(role.permissions) && role.permissions.includes(permId);
     },
 
     async togglePermission(roleId, permId, event) {
@@ -374,7 +381,18 @@ export default {
 
     getMemberRoles(memberId) {
       const member = this.members.find(m => m.id === memberId);
-      return member ? member.roles || [] : [];
+      if (!member || !member.roles) return [];
+      const assignedRoles = Array.isArray(member.roles)
+        ? member.roles
+        : Object.values(member.roles);
+      return assignedRoles
+        .map(roleRef => {
+          if (typeof roleRef === 'string') {
+            return this.roles.find(r => r.id === roleRef) || { id: roleRef, name: this.formatIdentifier(roleRef) };
+          }
+          return roleRef;
+        })
+        .filter(Boolean);
     },
 
     showAddRoleDialog(memberId) {
@@ -406,12 +424,78 @@ export default {
     },
 
     getPermissionLabel(permId) {
-      // permId can be either a string (from API) or an object (from internal structure)
-      if (typeof permId === 'string') {
-        return permId;
-      }
       const perm = this.allPermissions.find(p => p.id === permId);
-      return perm ? perm.shortName : permId;
+      if (!perm) {
+        return this.formatIdentifier(permId, permId);
+      }
+      return perm.shortName || perm.name || permId;
+    },
+
+    normalizeRoles(rawRoles) {
+      if (!rawRoles) return [];
+
+      const buildRole = (role = {}, idx = 0, fallbackId = null) => {
+        const roleId = role.id ?? fallbackId ?? `role-${idx}`;
+        return {
+          id: roleId,
+          name: role.name ?? role.label ?? this.formatIdentifier(roleId, `Rolle ${idx + 1}`),
+          description: role.description ?? 'Keine Beschreibung hinterlegt',
+          permissions: Array.isArray(role.permissions) ? role.permissions : [],
+          isSystem: role.isSystem ?? true,
+          memberCount: role.memberCount ?? 0,
+        };
+      };
+
+      if (Array.isArray(rawRoles)) {
+        return rawRoles.map((role, idx) => buildRole(role, idx));
+      }
+
+      if (typeof rawRoles === 'object') {
+        return Object.entries(rawRoles).map(([key, role], idx) => buildRole(role, idx, key));
+      }
+
+      return [];
+    },
+
+    normalizePermissions(rawPermissions) {
+      if (!rawPermissions) return [];
+
+      return rawPermissions.map((perm, idx) => {
+        if (typeof perm === 'string') {
+          return {
+            id: perm,
+            name: this.formatIdentifier(perm, perm),
+            shortName: this.buildPermissionShortName(perm),
+            description: `Zugriff auf ${this.formatIdentifier(perm, perm)}`,
+          };
+        }
+
+        const id = perm.id ?? perm.name ?? `perm-${idx}`;
+        return {
+          id,
+          name: perm.name ?? this.formatIdentifier(id, id),
+          shortName: perm.shortName ?? this.buildPermissionShortName(id),
+          description: perm.description ?? `Zugriff auf ${this.formatIdentifier(id, id)}`,
+        };
+      });
+    },
+
+    formatIdentifier(identifier = '', fallback = '') {
+      if (!identifier) return fallback || '';
+      return identifier
+        .split(/[._]/)
+        .filter(Boolean)
+        .map(segment => segment.charAt(0).toUpperCase() + segment.slice(1))
+        .join(' ');
+    },
+
+    buildPermissionShortName(identifier = '') {
+      if (!identifier) return '';
+      const parts = identifier.split('.');
+      if (parts.length >= 2) {
+        return `${parts[0].charAt(0).toUpperCase()}-${parts[1]}`;
+      }
+      return identifier.toUpperCase();
     },
 
     showMessage(text, type = 'info') {
