@@ -55,14 +55,14 @@
               <button 
                 class="btn-icon" 
                 @click="editRole(role)"
-                :title="$t('common.edit', 'Bearbeiten')"
+                title="Bearbeiten"
               >
                 ✎
               </button>
               <button 
                 class="btn-icon btn-danger" 
                 @click="deleteRole(role.id)"
-                :title="$t('common.delete', 'Löschen')"
+                title="Löschen"
                 v-if="!role.isSystem"
               >
                 ✕
@@ -95,7 +95,7 @@
           <input 
             v-model="permissionFilter"
             type="text"
-            :placeholder="$t('roles.filterPermissions', 'Berechtigungen filtern...')"
+            placeholder="Berechtigungen filtern..."
             class="filter-input"
           />
         </div>
@@ -188,7 +188,7 @@
                     <button 
                       class="remove-btn"
                       @click="removeMemberRole(member.id, role.id)"
-                      :title="$t('common.remove', 'Entfernen')"
+                      title="Entfernen"
                     >
                       ✕
                     </button>
@@ -205,7 +205,7 @@
                 <button 
                   class="btn-icon"
                   @click="editMember(member)"
-                  :title="$t('common.edit', 'Bearbeiten')"
+                  title="Bearbeiten"
                 >
                   ✎
                 </button>

@@ -87,7 +87,7 @@
             @click="confirmDelete"
             :disabled="deleteInProgress"
           >
-            {{ deleteInProgress ? '...' : '🗑️ ' + $t('privacy.delete.confirm', 'Daten löschen') }}
+            {{ deleteInProgress ? '...' : '🗑️ Daten löschen' }}
           </button>
         </div>
       </div>

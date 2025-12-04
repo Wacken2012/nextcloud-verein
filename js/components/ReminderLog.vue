@@ -7,7 +7,7 @@
         <input 
           v-model="filterMember"
           type="text" 
-          :placeholder="$t('reminders.log.filterMember', 'Nach Mitglied filtern...')"
+          placeholder="Nach Mitglied filtern..."
           class="filter-input"
         />
         <select v-model="filterStatus" class="filter-select">
@@ -44,7 +44,7 @@
           <td>{{ log.member_name }}</td>
           <td>
             <span class="level-badge" :class="'level-' + log.reminder_level">
-              {{ $t('reminders.level' + log.reminder_level, 'Stufe ' + log.reminder_level) }}
+              {{ 'Stufe ' + log.reminder_level }}
             </span>
           </td>
           <td>
