@@ -300,7 +300,7 @@ export default {
         ]);
         this.roles = rolesRes.data || [];
         this.members = membersRes.data || [];
-        this.allPermissions = permsRes.data || [];
+        this.allPermissions = permsRes.data?.permissions || [];
       } catch (error) {
         console.error('Error loading data:', error);
         const errorMsg = error.response?.data?.message || error.message || 'Fehler beim Laden der Daten';
