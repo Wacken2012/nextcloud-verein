@@ -21,7 +21,6 @@ class ReminderApiController extends Controller {
 
 	/**
 	 * @NoAdminRequired
-	 * @PasswordConfirmationRequired
 	 * GET /api/v1/reminders/config
 	 * Hole Reminder-Konfiguration
 	 */
@@ -46,7 +45,6 @@ class ReminderApiController extends Controller {
 
 	/**
 	 * @NoAdminRequired
-	 * @PasswordConfirmationRequired
 	 * POST /api/v1/reminders/config
 	 * Aktualisiere Reminder-Konfiguration
 	 */
