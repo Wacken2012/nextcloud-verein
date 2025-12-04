@@ -111,9 +111,12 @@ export default {
       try {
         this.loading = true;
         const response = await api.getReminderLog();
-        this.logs = response.data || [];
+        // Handle both array response and {log: []} response formats
+        const data = response.data;
+        this.logs = Array.isArray(data) ? data : (data?.log || []);
       } catch (error) {
         console.error('Error loading reminder logs:', error);
+        this.logs = [];
         this.error = 'Fehler beim Laden';
       } finally {
         this.loading = false;
