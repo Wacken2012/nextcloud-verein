@@ -27,12 +27,20 @@ class PrivacyApiController extends Controller {
 	 * GET /api/v1/privacy/export/{memberId}
 	 * Exportiere alle Daten eines Mitglieds (DSGVO Art. 15)
 	 */
-	public function exportData(int $memberId): DataDownloadResponse {
+	public function exportData(string|int $memberId): DataDownloadResponse|JSONResponse {
 		try {
-			// Verifiziere dass Mitglied nur seine eigenen Daten exportieren darf
-			$this->validateMemberAccess($memberId);
-
-			$data = $this->privacyService->exportMemberData($memberId);
+			// If memberId is a string (userId), return stub data for now
+			if (!is_numeric($memberId)) {
+				$data = [
+					'exported_at' => date('c'),
+					'user_id' => $memberId,
+					'note' => 'User data export - no member record linked to this Nextcloud user'
+				];
+			} else {
+				// Verifiziere dass Mitglied nur seine eigenen Daten exportieren darf
+				$this->validateMemberAccess((int)$memberId);
+				$data = $this->privacyService->exportMemberData((int)$memberId);
+			}
 			$json = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
 
 			$response = new DataDownloadResponse(
@@ -57,7 +65,7 @@ class PrivacyApiController extends Controller {
 		try {
 			$this->validateMemberAccess($memberId);
 
-			$params = json_decode($this->request->getBody(), true);
+			$params = json_decode(file_get_contents('php://input'), true);
 			$mode = $params['mode'] ?? 'soft_delete'; // soft_delete oder hard_delete
 
 			if (!in_array($mode, ['soft_delete', 'hard_delete'])) {
@@ -93,15 +101,13 @@ class PrivacyApiController extends Controller {
 	}
 
 	public function getConsents(int $memberId): JSONResponse {
-		return new JSONResponse([
-			'memberId' => $memberId,
-			'consents' => [
-				'newsletter' => false,
-				'marketing' => false,
-				'analytics' => false,
-				'partners' => false
-			]
-		]);
+		try {
+			$this->validateMemberAccess($memberId);
+			$consents = $this->privacyService->getMemberConsents($memberId);
+			return new JSONResponse($consents);
+		} catch (\Exception $e) {
+			return new JSONResponse(['error' => $e->getMessage()], Http::STATUS_FORBIDDEN);
+		}
 	}
 
 	/**
@@ -110,15 +116,30 @@ class PrivacyApiController extends Controller {
 	 * Speichere Einwilligung
 	 */
 	public function saveConsent(int $memberId): JSONResponse {
-		$params = json_decode($this->request->getBody(), true) ?? [];
-		$type = $params['type'] ?? null;
-		$given = (bool)($params['given'] ?? false);
+		try {
+			$this->validateMemberAccess($memberId);
 
-		return new JSONResponse([
-			'success' => true,
-			'type' => $type,
-			'given' => $given,
-		]);
+			$params = json_decode(file_get_contents('php://input'), true);
+			$type = $params['type'] ?? null;
+			$given = (bool)($params['given'] ?? false);
+
+			if (!$type) {
+				return new JSONResponse(
+					['error' => 'Consent type required'],
+					Http::STATUS_BAD_REQUEST
+				);
+			}
+
+			$success = $this->privacyService->saveConsent($memberId, $type, $given);
+
+			return new JSONResponse([
+				'success' => $success,
+				'type' => $type,
+				'given' => $given,
+			]);
+		} catch (\Exception $e) {
+			return new JSONResponse(['error' => $e->getMessage()], Http::STATUS_INTERNAL_SERVER_ERROR);
+		}
 	}
 
 	/**
@@ -131,17 +152,19 @@ class PrivacyApiController extends Controller {
 	}
 
 	public function getPrivacyPolicy(): JSONResponse {
-		return new JSONResponse([
-			'policy' => 'Datenschutzerklärung wird hier angezeigt',
-			'lastUpdated' => date('Y-m-d')
-		]);
+		try {
+			$policy = $this->privacyService->getPrivacyPolicy();
+			return new JSONResponse(['policy' => $policy]);
+		} catch (\Exception $e) {
+			return new JSONResponse(['error' => $e->getMessage()], Http::STATUS_INTERNAL_SERVER_ERROR);
+		}
 	}
 
 	/**
 	 * Verifiziere dass Mitglied nur auf seine eigenen Daten zugreift
 	 */
 	private function validateMemberAccess(int $memberId): void {
-		$userId = $this->request->getAttribute('userId');
+		// Validation stubbed for now - implement with IUserSession
 		// Vereinfachte Implementierung - würde in echter App komplexer sein
 		// (Überprüfung der Berechtigung, Ownership, Admin-Status)
 	}

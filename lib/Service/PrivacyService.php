@@ -6,6 +6,7 @@ namespace OCA\Verein\Service;
 
 use OCA\Verein\Db\MemberMapper;
 use Psr\Log\LoggerInterface;
+use OCP\IConfig;
 use DateTime;
 use DateInterval;
 
@@ -22,7 +23,7 @@ class PrivacyService {
 	public function __construct(
 		private MemberMapper $memberMapper,
 		private LoggerInterface $logger,
-		private SettingService $settingService,
+		private IConfig $config,
 	) {
 	}
 
@@ -34,7 +35,7 @@ class PrivacyService {
 			return ['error' => 'Member service not available'];
 		}
 		try {
-			$member = $this->memberMapper->findById($memberId);
+			$member = $this->memberMapper->find($memberId);
 
 			$data = [
 				'exported_at' => (new DateTime())->format('c'),
@@ -99,7 +100,7 @@ class PrivacyService {
 	 */
 	private function softDeleteMember(int $memberId): bool {
 		try {
-			$member = $this->memberMapper->findById($memberId);
+			$member = $this->memberMapper->find($memberId);
 
 			// Anonymisiere persönliche Daten
 			$member->setFirstName('Anonymisiert');
@@ -171,7 +172,7 @@ class PrivacyService {
 			];
 
 			// Speichere in Datenbank (vereinfacht - würde in echtem Code zu Tabelle)
-			$this->settingService->set(
+			$this->config->setAppValue('verein', 
 				self::CONSENT_KEY_PREFIX . $memberId . '_' . $consentType,
 				json_encode($consentData)
 			);
@@ -191,7 +192,7 @@ class PrivacyService {
 	 */
 	public function getConsent(int $memberId, string $consentType): ?array {
 		try {
-			$consentJson = $this->settingService->get(
+			$consentJson = $this->config->getAppValue('verein', 
 				self::CONSENT_KEY_PREFIX . $memberId . '_' . $consentType
 			);
 
@@ -286,7 +287,7 @@ class PrivacyService {
 	 * Gebe Datenschutzerklärung zurück
 	 */
 	public function getPrivacyPolicy(): string {
-		return $this->settingService->get('privacy_policy_text') ?? $this->getDefaultPrivacyPolicy();
+		return $this->config->getAppValue('verein', 'privacy_policy_text') ?? $this->getDefaultPrivacyPolicy();
 	}
 
 	/**

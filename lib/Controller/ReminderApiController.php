@@ -57,9 +57,7 @@ class ReminderApiController extends Controller {
 			if (!$this->reminderService) {
 				return new JSONResponse(['error' => 'Service not available'], Http::STATUS_SERVICE_UNAVAILABLE);
 			}
-			// Get JSON from request body
-			$rawBody = file_get_contents('php://input');
-			$params = json_decode($rawBody, true) ?? [];
+		$params = json_decode(file_get_contents('php://input'), true) ?? [];
 
 			if (isset($params['enabled'])) {
 				$this->reminderService->enableReminders((bool)$params['enabled']);
@@ -122,7 +120,7 @@ class ReminderApiController extends Controller {
 	 * Hole Mahnung-Protokoll
 	 */
 	public function getLog(): JSONResponse {
-		return new JSONResponse(['log' => []], Http::STATUS_OK);
+		return new JSONResponse([], Http::STATUS_OK);
 	}
 
 	/**

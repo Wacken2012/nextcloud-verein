@@ -54,8 +54,8 @@ class ReminderService {
 	 */
 	public function setReminderIntervals(int $level1, int $level2, int $level3): void {
 		$this->setConfigValue(self::REMINDER_INTERVAL_LEVEL_1, (string)$level1);
-		this->setConfigValue(self::REMINDER_INTERVAL_LEVEL_2, (string)$level2);
-		this->setConfigValue(self::REMINDER_INTERVAL_LEVEL_3, (string)$level3);
+		$this->setConfigValue(self::REMINDER_INTERVAL_LEVEL_2, (string)$level2);
+		$this->setConfigValue(self::REMINDER_INTERVAL_LEVEL_3, (string)$level3);
 	}
 
 	/**

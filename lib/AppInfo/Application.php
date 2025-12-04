@@ -16,6 +16,7 @@ use OCA\Verein\Service\FeeService;
 use OCA\Verein\Service\StatisticsService;
 use OCA\Verein\Service\ReminderService;
 use OCA\Verein\Service\PrivacyService;
+use OCA\Verein\Service\SettingService;
 use OCA\Verein\Settings\AdminSection;
 use OCA\Verein\Settings\AdminSettings;
 use OCP\AppFramework\App;
@@ -95,7 +96,11 @@ class Application extends App implements IBootstrap {
         });
 
         $context->registerService(PrivacyService::class, function (IAppContainer $container): PrivacyService {
-            return new PrivacyService();
+            return new PrivacyService(
+                $container->query(MemberMapper::class),
+                $container->query(LoggerInterface::class),
+                $container->query(IConfig::class)
+            );
         });
 
         $context->registerMiddleware(AuthorizationMiddleware::class);
