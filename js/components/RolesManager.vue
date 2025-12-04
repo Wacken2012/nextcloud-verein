@@ -277,10 +277,11 @@ export default {
 
   computed: {
     filteredPermissions() {
-      return this.allPermissions.filter(p =>
-        p.name.toLowerCase().includes(this.permissionFilter.toLowerCase()) ||
-        p.description.toLowerCase().includes(this.permissionFilter.toLowerCase())
-      );
+      if (!this.permissionFilter) return this.allPermissions;
+      return this.allPermissions.filter(p => {
+        const permString = typeof p === 'string' ? p : (p.name || '');
+        return permString.toLowerCase().includes(this.permissionFilter.toLowerCase());
+      });
     },
   },
 
@@ -405,6 +406,10 @@ export default {
     },
 
     getPermissionLabel(permId) {
+      // permId can be either a string (from API) or an object (from internal structure)
+      if (typeof permId === 'string') {
+        return permId;
+      }
       const perm = this.allPermissions.find(p => p.id === permId);
       return perm ? perm.shortName : permId;
     },
