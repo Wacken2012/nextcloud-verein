@@ -57,7 +57,9 @@ class ReminderApiController extends Controller {
 			if (!$this->reminderService) {
 				return new JSONResponse(['error' => 'Service not available'], Http::STATUS_SERVICE_UNAVAILABLE);
 			}
-			$params = json_decode($this->request->getBody(), true);
+			// Get JSON from request body
+			$rawBody = file_get_contents('php://input');
+			$params = json_decode($rawBody, true) ?? [];
 
 			if (isset($params['enabled'])) {
 				$this->reminderService->enableReminders((bool)$params['enabled']);
