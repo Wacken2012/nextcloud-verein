@@ -6,6 +6,7 @@ use OCA\Verein\Db\RoleMapper;
 use OCA\Verein\Db\UserRoleMapper;
 use OCA\Verein\Db\MemberMapper;
 use OCA\Verein\Db\FeeMapper;
+use OCA\Verein\Db\ReminderMapper;
 use OCA\Verein\Middleware\AuthorizationMiddleware;
 use OCA\Verein\Service\RBAC\RoleService;
 use OCA\Verein\Service\Export\CsvExporter;
@@ -27,6 +28,8 @@ use OCP\IUserSession;
 use Psr\Log\LoggerInterface;
 use OCP\IURLGenerator;
 use OCP\IL10N;
+use OCP\Mail\IMailer;
+use OCP\IConfig;
 
 class Application extends App implements IBootstrap {
     public const APP_ID = 'verein';
@@ -82,11 +85,12 @@ class Application extends App implements IBootstrap {
         // Register Reminder and Privacy services
         $context->registerService(ReminderService::class, function (IAppContainer $container): ReminderService {
             return new ReminderService(
-                null, // ReminderMapper
-                null, // IMailer
+                $container->query(ReminderMapper::class),
+                $container->query(IMailer::class),
                 $container->query(LoggerInterface::class),
-                null, // MemberService
-                null  // SettingService
+                $container->query(MemberService::class),
+                $container->query(IConfig::class),
+                self::APP_ID
             );
         });
 

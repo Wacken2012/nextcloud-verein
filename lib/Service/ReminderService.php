@@ -5,11 +5,14 @@ declare(strict_types=1);
 namespace OCA\Verein\Service;
 
 use OCA\Verein\Db\ReminderMapper;
-use OCP\ILogger;
 use OCP\Mail\IMailer;
 use OCP\Mail\IEMailTemplate;
 use DateTime;
 use DateInterval;
+use OCP\IConfig;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
+use OCA\Verein\Service\MemberService;
 
 class ReminderService {
 	private const REMINDER_CONFIG_KEY_PREFIX = 'reminder_';
@@ -18,29 +21,31 @@ class ReminderService {
 	private const REMINDER_INTERVAL_LEVEL_2 = 'interval_level_2'; // Tage nach Fälligkeit
 	private const REMINDER_INTERVAL_LEVEL_3 = 'interval_level_3'; // Tage nach Level 2
 	private const REMINDER_DAYS_BETWEEN = 'days_between_reminders';
+	private const DEFAULT_APP_ID = 'verein';
 
 	public function __construct(
-		private ReminderMapper $reminderMapper,
-		private IMailer $mailer,
-		private ILogger $logger,
-		private MemberService $memberService,
-		private SettingService $settingService,
+		private ?ReminderMapper $reminderMapper = null,
+		private ?IMailer $mailer = null,
+		private ?LoggerInterface $logger = null,
+		private ?MemberService $memberService = null,
+		private ?IConfig $config = null,
+		private string $appId = self::DEFAULT_APP_ID,
 	) {
+		$this->logger = $this->logger ?? new NullLogger();
 	}
 
 	/**
 	 * Aktiviere automatische Mahnungen
 	 */
 	public function enableReminders(bool $enabled = true): void {
-		$this->settingService->set(self::REMINDER_CONFIG_KEY_PREFIX . self::REMINDER_ENABLED, (string)$enabled);
+		$this->setConfigValue(self::REMINDER_ENABLED, $enabled ? '1' : '0');
 	}
 
 	/**
 	 * Prüfe, ob Mahnungen aktiviert sind
 	 */
 	public function isEnabled(): bool {
-		if (!$this->settingService) return false;
-		$setting = $this->settingService->get(self::REMINDER_CONFIG_KEY_PREFIX . self::REMINDER_ENABLED);
+		$setting = $this->getConfigValue(self::REMINDER_ENABLED, '0');
 		return $setting === 'true' || $setting === '1';
 	}
 
@@ -48,23 +53,19 @@ class ReminderService {
 	 * Setze Mahnstufen-Intervalle (in Tagen)
 	 */
 	public function setReminderIntervals(int $level1, int $level2, int $level3): void {
-		if (!$this->settingService) return;
-		$this->settingService->set(self::REMINDER_CONFIG_KEY_PREFIX . self::REMINDER_INTERVAL_LEVEL_1, (string)$level1);
-		$this->settingService->set(self::REMINDER_CONFIG_KEY_PREFIX . self::REMINDER_INTERVAL_LEVEL_2, (string)$level2);
-		$this->settingService->set(self::REMINDER_CONFIG_KEY_PREFIX . self::REMINDER_INTERVAL_LEVEL_3, (string)$level3);
+		$this->setConfigValue(self::REMINDER_INTERVAL_LEVEL_1, (string)$level1);
+		this->setConfigValue(self::REMINDER_INTERVAL_LEVEL_2, (string)$level2);
+		this->setConfigValue(self::REMINDER_INTERVAL_LEVEL_3, (string)$level3);
 	}
 
 	/**
 	 * Hole Mahnstufen-Intervalle
 	 */
 	public function getReminderIntervals(): array {
-		if (!$this->settingService) {
-			return ['level_1' => 7, 'level_2' => 3, 'level_3' => 7];
-		}
 		return [
-			'level_1' => (int)($this->settingService->get(self::REMINDER_CONFIG_KEY_PREFIX . self::REMINDER_INTERVAL_LEVEL_1) ?? '7'),
-			'level_2' => (int)($this->settingService->get(self::REMINDER_CONFIG_KEY_PREFIX . self::REMINDER_INTERVAL_LEVEL_2) ?? '3'),
-			'level_3' => (int)($this->settingService->get(self::REMINDER_CONFIG_KEY_PREFIX . self::REMINDER_INTERVAL_LEVEL_3) ?? '7'),
+			'level_1' => (int)$this->getConfigValue(self::REMINDER_INTERVAL_LEVEL_1, '7'),
+			'level_2' => (int)$this->getConfigValue(self::REMINDER_INTERVAL_LEVEL_2, '3'),
+			'level_3' => (int)$this->getConfigValue(self::REMINDER_INTERVAL_LEVEL_3, '7'),
 		];
 	}
 
@@ -72,16 +73,14 @@ class ReminderService {
 	 * Setze Tage zwischen wiederholten Mahnungen
 	 */
 	public function setDaysBetweenReminders(int $days): void {
-		if (!$this->settingService) return;
-		$this->settingService->set(self::REMINDER_CONFIG_KEY_PREFIX . self::REMINDER_DAYS_BETWEEN, (string)$days);
+		$this->setConfigValue(self::REMINDER_DAYS_BETWEEN, (string)$days);
 	}
 
 	/**
 	 * Hole Tage zwischen wiederholten Mahnungen
 	 */
 	public function getDaysBetweenReminders(): int {
-		if (!$this->settingService) return 3;
-		return (int)($this->settingService->get(self::REMINDER_CONFIG_KEY_PREFIX . self::REMINDER_DAYS_BETWEEN) ?? '3');
+		return (int)$this->getConfigValue(self::REMINDER_DAYS_BETWEEN, '3');
 	}
 
 	/**
@@ -90,6 +89,11 @@ class ReminderService {
 	public function processDueReminders(): void {
 		if (!$this->isEnabled()) {
 			$this->logger->info('Reminders are disabled, skipping processing');
+			return;
+		}
+
+		if (!$this->reminderMapper) {
+			$this->logger->warning('ReminderMapper not available, skipping processing');
 			return;
 		}
 
@@ -123,6 +127,11 @@ class ReminderService {
 	 * Versende eine Mahnung an ein Mitglied
 	 */
 	public function sendReminder(object $reminder): bool {
+		if (!$this->memberService || !$this->mailer) {
+			$this->logger->warning('Mailer or MemberService missing, skipping reminder send');
+			return false;
+		}
+
 		try {
 			$memberId = $reminder->getMemberId();
 			$member = $this->memberService->getById($memberId);
@@ -155,6 +164,11 @@ class ReminderService {
 	 * Erstelle eine neue Mahnung für ein Mitglied
 	 */
 	public function createReminder(int $memberId, int $feeId, DateTime $dueDate): ?object {
+		if (!$this->reminderMapper) {
+			$this->logger->warning('ReminderMapper not available, cannot create reminder');
+			return null;
+		}
+
 		try {
 			$reminder = new class {
 				public $memberId;
@@ -198,6 +212,10 @@ class ReminderService {
 	 * Lösche Mahnung
 	 */
 	public function deleteReminder(int $reminderId): bool {
+		if (!$this->reminderMapper) {
+			$this->logger->warning('ReminderMapper not available, cannot delete reminder');
+			return false;
+		}
 		try {
 			$this->reminderMapper->delete($reminderId);
 			return true;
@@ -211,6 +229,9 @@ class ReminderService {
 	 * Hole Mahnung
 	 */
 	public function getReminder(int $reminderId): ?object {
+		if (!$this->reminderMapper) {
+			return null;
+		}
 		try {
 			return $this->reminderMapper->findById($reminderId);
 		} catch (\Exception $e) {
@@ -222,6 +243,9 @@ class ReminderService {
 	 * Hole alle Mahnungen für ein Mitglied
 	 */
 	public function getRemindersForMember(int $memberId): array {
+		if (!$this->reminderMapper) {
+			return [];
+		}
 		return $this->reminderMapper->findByMemberId($memberId);
 	}
 
@@ -229,6 +253,9 @@ class ReminderService {
 	 * Baue Email-Template
 	 */
 	private function buildReminderTemplate(object $member, object $reminder): IEMailTemplate {
+		if (!$this->mailer) {
+			throw new \RuntimeException('Mailer not configured');
+		}
 		$template = $this->mailer->createEMailTemplate('reminder_notification');
 		
 		$reminderLevel = $reminder->getReminderLevel();
@@ -312,11 +339,28 @@ class ReminderService {
 	 * Hole alle Mahnung-Protokoll-Einträge
 	 */
 	public function getReminderLog(): array {
+		if (!$this->reminderMapper) {
+			return [];
+		}
 		try {
 			return $this->reminderMapper->findAll();
 		} catch (\Exception $e) {
 			$this->logger->error('Error retrieving reminder log: ' . $e->getMessage());
 			return [];
 		}
+	}
+
+	private function getConfigValue(string $key, string $default): string {
+		if (!$this->config) {
+			return $default;
+		}
+		return $this->config->getAppValue($this->appId, self::REMINDER_CONFIG_KEY_PREFIX . $key, $default);
+	}
+
+	private function setConfigValue(string $key, string $value): void {
+		if (!$this->config) {
+			return;
+		}
+		$this->config->setAppValue($this->appId, self::REMINDER_CONFIG_KEY_PREFIX . $key, $value);
 	}
 }
