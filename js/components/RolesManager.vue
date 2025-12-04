@@ -305,7 +305,7 @@ export default {
         console.error('Error loading data:', error);
         const errorMsg = error.response?.data?.message || error.message || 'Fehler beim Laden der Daten';
         this.error = errorMsg;
-        this.showMessage(this.$t('common.error.load', 'Fehler beim Laden'), 'error');
+        this.showMessage('Fehler beim Laden', 'error');
       } finally {
         this.loading = false;
       }
@@ -320,23 +320,23 @@ export default {
         }
         this.newRole = { name: '', description: '' };
         this.showNewRoleDialog = false;
-        this.showMessage(this.$t('roles.saved', 'Rolle gespeichert'), 'success');
+        this.showMessage('Rolle gespeichert', 'success');
         await this.loadData();
       } catch (error) {
         console.error('Error saving role:', error);
-        this.showMessage(this.$t('common.error.save', 'Fehler beim Speichern'), 'error');
+        this.showMessage('Fehler beim Speichern', 'error');
       }
     },
 
     async deleteRole(roleId) {
-      if (!confirm(this.$t('roles.confirmDelete', 'Wirklich löschen?'))) return;
+      if (!confirm('Wirklich löschen?')) return;
       try {
         await api.deleteRole(roleId);
-        this.showMessage(this.$t('roles.deleted', 'Rolle gelöscht'), 'success');
+        this.showMessage('Rolle gelöscht', 'success');
         await this.loadData();
       } catch (error) {
         console.error('Error deleting role:', error);
-        this.showMessage(this.$t('common.error.delete', 'Fehler beim Löschen'), 'error');
+        this.showMessage('Fehler beim Löschen', 'error');
       }
     },
 
@@ -367,7 +367,7 @@ export default {
         await this.loadData();
       } catch (error) {
         console.error('Error toggling permission:', error);
-        this.showMessage(this.$t('common.error.update', 'Fehler beim Aktualisieren'), 'error');
+        this.showMessage('Fehler beim Aktualisieren', 'error');
       }
     },
 
@@ -388,11 +388,11 @@ export default {
           member.roles = member.roles.filter(r => r !== roleId);
           await api.updateMember(memberId, member);
         }
-        this.showMessage(this.$t('roles.removed', 'Rolle entfernt'), 'success');
+        this.showMessage('Rolle entfernt', 'success');
         await this.loadData();
       } catch (error) {
         console.error('Error removing role:', error);
-        this.showMessage(this.$t('common.error.update', 'Fehler beim Aktualisieren'), 'error');
+        this.showMessage('Fehler beim Aktualisieren', 'error');
       }
     },
 

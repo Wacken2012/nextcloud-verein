@@ -142,8 +142,8 @@ export default {
         this.config = response.data;
         this.initialConfig = JSON.parse(JSON.stringify(this.config));
       } catch (error) {
-        console.error('Error loading reminder config:', error);
-        this.saveError = this.$t('common.error.load', 'Fehler beim Laden der Einstellungen');
+        console.error('Error loading config:', error);
+        this.saveError = 'Fehler beim Laden der Einstellungen';
       } finally {
         this.loading = false;
       }
@@ -160,8 +160,8 @@ export default {
           this.saveSuccess = false;
         }, 3000);
       } catch (error) {
-        console.error('Error saving reminder config:', error);
-        this.saveError = this.$t('common.error.save', 'Fehler beim Speichern der Einstellungen');
+        console.error('Error saving config:', error);
+        this.saveError = 'Fehler beim Speichern der Einstellungen';
       }
     },
 
