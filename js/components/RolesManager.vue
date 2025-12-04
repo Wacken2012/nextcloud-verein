@@ -5,8 +5,19 @@
       <p class="description">{{ $t('roles.description', 'Verwalten Sie Rollen und deren Berechtigungen') }}</p>
     </div>
 
+    <!-- Loading Indicator -->
+    <div v-if="loading" class="loading-container">
+      <p>{{ $t('common.loading', 'Lädt...') }}</p>
+    </div>
+
+    <!-- Error Message -->
+    <div v-if="error" class="error-banner">
+      <strong>Fehler:</strong> {{ error }}
+      <button @click="loadData" class="retry-btn">Erneut versuchen</button>
+    </div>
+
     <!-- Tabs: Roles & Permissions -->
-    <div class="roles-tabs">
+    <div v-if="!loading" class="roles-tabs">
       <button 
         :class="['tab', { active: activeTab === 'roles' }]"
         @click="activeTab = 'roles'"
@@ -258,6 +269,7 @@ export default {
         description: '',
       },
       message: null,
+      error: null,
       loading: true,
     };
   },
@@ -279,6 +291,7 @@ export default {
     async loadData() {
       try {
         this.loading = true;
+        this.error = null;
         const [rolesRes, membersRes, permsRes] = await Promise.all([
           api.getRoles(),
           api.getMembers(),
@@ -289,6 +302,8 @@ export default {
         this.allPermissions = permsRes.data || [];
       } catch (error) {
         console.error('Error loading data:', error);
+        const errorMsg = error.response?.data?.message || error.message || 'Fehler beim Laden der Daten';
+        this.error = errorMsg;
         this.showMessage(this.$t('common.error.load', 'Fehler beim Laden'), 'error');
       } finally {
         this.loading = false;
@@ -983,6 +998,47 @@ export default {
   }
 }
 
+.loading-container {
+  text-align: center;
+  padding: 40px 20px;
+  color: #666;
+  font-size: 1.1em;
+
+  p {
+    margin: 0;
+  }
+}
+
+.error-banner {
+  background-color: #fee;
+  border: 1px solid #fcc;
+  border-radius: 4px;
+  padding: 15px 20px;
+  margin-bottom: 20px;
+  color: #c33;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  strong {
+    margin-right: 10px;
+  }
+
+  .retry-btn {
+    background-color: #c33;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.95em;
+
+    &:hover {
+      background-color: #a22;
+    }
+  }
+}
+
 @media (max-width: 768px) {
   .roles-manager {
     padding: 15px;
@@ -1001,6 +1057,16 @@ export default {
 
     .members-table th, .members-table td {
       padding: 12px;
+    }
+  }
+
+  .error-banner {
+    flex-direction: column;
+    align-items: flex-start;
+
+    .retry-btn {
+      margin-top: 10px;
+      width: 100%;
     }
   }
 }
