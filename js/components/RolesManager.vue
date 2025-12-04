@@ -1,6 +1,7 @@
 <template>
   <div class="roles-manager">
     <div class="roles-header">
+      <button @click="goBack" class="back-btn" title="Zurück zu Einstellungen">← Zurück</button>
       <h3>{{ $t('roles.title', 'Rollenverwaltung') }}</h3>
       <p class="description">{{ $t('roles.description', 'Verwalten Sie Rollen und deren Berechtigungen') }}</p>
     </div>
@@ -399,6 +400,10 @@ export default {
       this.$emit('edit-member', member);
     },
 
+    goBack() {
+      this.$emit('show-component', 'Settings');
+    },
+
     getPermissionLabel(permId) {
       const perm = this.allPermissions.find(p => p.id === permId);
       return perm ? perm.shortName : permId;
@@ -423,6 +428,24 @@ export default {
 
   .roles-header {
     margin-bottom: 30px;
+    position: relative;
+
+    .back-btn {
+      position: absolute;
+      top: 0;
+      left: 0;
+      background: none;
+      border: none;
+      color: #0082c9;
+      font-size: 1em;
+      cursor: pointer;
+      padding: 0;
+      margin: 0;
+
+      &:hover {
+        color: #006aa3;
+      }
+    }
 
     h3 {
       font-size: 1.3em;

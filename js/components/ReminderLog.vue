@@ -1,6 +1,7 @@
 <template>
   <div class="reminder-log">
     <div class="log-header">
+      <button @click="goBack" class="back-btn" title="Zurück zu Einstellungen">← Zurück</button>
       <h3>{{ $t('reminders.log.title', 'Mahnung-Protokoll') }}</h3>
       <div class="log-controls">
         <input 
@@ -139,6 +140,10 @@ export default {
       return labels[status] || status;
     },
 
+    goBack() {
+      this.$emit('show-component', 'Settings');
+    },
+
     getActionLabel(action) {
       const labels = {
         'reminder_sent': 'Mahnung versandt',
@@ -168,6 +173,24 @@ export default {
 
   .log-header {
     margin-bottom: 20px;
+    position: relative;
+
+    .back-btn {
+      position: absolute;
+      top: 0;
+      left: 0;
+      background: none;
+      border: none;
+      color: #0082c9;
+      font-size: 1em;
+      cursor: pointer;
+      padding: 0;
+      margin: 0;
+
+      &:hover {
+        color: #006aa3;
+      }
+    }
 
     h3 {
       font-size: 1.3em;

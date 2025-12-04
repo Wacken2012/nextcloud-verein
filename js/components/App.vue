@@ -28,8 +28,9 @@
       <div class="verein-container">
         <component
           :is="currentComponent"
-          :key="activeTab"
-          @navigate="(tab) => { activeTab = tab }"
+          :key="activeTab + (activeComponent || '')"
+          @navigate="(tab) => { activeTab = tab; activeComponent = null }"
+          @show-component="handleShowComponent"
         />
       </div>
       </div>
@@ -52,6 +53,10 @@ import Calendar from './Calendar.vue'
 import Deck from './Deck.vue'
 import Documents from './Documents.vue'
 import Settings from './Settings.vue'
+import RolesManager from './RolesManager.vue'
+import ReminderSettings from './ReminderSettings.vue'
+import ReminderLog from './ReminderLog.vue'
+import PrivacySettings from './PrivacySettings.vue'
 
 export default {
   name: 'App',
@@ -62,10 +67,15 @@ export default {
     Calendar,
     Deck,
     Documents,
-    Settings
+    Settings,
+    RolesManager,
+    ReminderSettings,
+    ReminderLog,
+    PrivacySettings
   },
   setup() {
     const activeTab = ref('dashboard')
+    const activeComponent = ref(null)
     const notification = ref(null)
 
     const tabs = [
@@ -96,14 +106,27 @@ export default {
     }
 
     const currentComponent = computed(() => {
+      if (activeComponent.value) {
+        return activeComponent.value
+      }
       return componentMap[activeTab.value]
     })
+
+    const handleShowComponent = (componentName) => {
+      activeComponent.value = componentName
+    }
+
+    const handleNavigate = (tab) => {
+      activeComponent.value = null
+      activeTab.value = tab
+    }
 
     const onKeyDown = (event, tab) => {
       const index = tabs.findIndex(t => t.id === tab.id)
       if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
         const next = (index + 1) % tabs.length
         activeTab.value = tabs[next].id
+        activeComponent.value = null
         setTimeout(() => {
           const nodes = document.querySelectorAll('.verein-tab')
           if (nodes[next]) nodes[next].focus()
@@ -112,6 +135,7 @@ export default {
       } else if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
         const prev = (index - 1 + tabs.length) % tabs.length
         activeTab.value = tabs[prev].id
+        activeComponent.value = null
         setTimeout(() => {
           const nodes = document.querySelectorAll('.verein-tab')
           if (nodes[prev]) nodes[prev].focus()
@@ -119,6 +143,7 @@ export default {
         event.preventDefault()
       } else if (event.key === 'Enter' || event.key === ' ') {
         activeTab.value = tab.id
+        activeComponent.value = null
         event.preventDefault()
       }
     }
@@ -128,8 +153,10 @@ export default {
       tabs,
       notification,
       showNotification,
-      currentComponent
-      ,onKeyDown
+      currentComponent,
+      onKeyDown,
+      handleShowComponent,
+      handleNavigate
     }
   }
 }

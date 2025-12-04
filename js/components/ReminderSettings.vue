@@ -1,6 +1,7 @@
 <template>
   <div class="reminder-settings">
     <div class="reminder-header">
+      <button @click="goBack" class="back-btn" title="Zurück zu Einstellungen">← Zurück</button>
       <h3>{{ $t('reminders.title', 'Automatische Mahnungen') }}</h3>
       <p class="description">{{ $t('reminders.description', 'Konfigurieren Sie die automatischen Mahnungen für ausstehende Zahlungen') }}</p>
     </div>
@@ -167,6 +168,10 @@ export default {
     async toggleReminders() {
       await this.saveConfig();
     },
+
+    goBack() {
+      this.$emit('show-component', 'Settings');
+    },
   },
 };
 </script>
@@ -180,6 +185,24 @@ export default {
 
   .reminder-header {
     margin-bottom: 30px;
+    position: relative;
+
+    .back-btn {
+      position: absolute;
+      top: 0;
+      left: 0;
+      background: none;
+      border: none;
+      color: #0082c9;
+      font-size: 1em;
+      cursor: pointer;
+      padding: 0;
+      margin: 0;
+
+      &:hover {
+        color: #006aa3;
+      }
+    }
 
     h3 {
       font-size: 1.3em;
