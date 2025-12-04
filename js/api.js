@@ -38,19 +38,19 @@ instance.interceptors.response.use(
 export const api = {
   // Members
   getMembers() {
-    return instance.get('members')
+    return instance.get('api/members')
   },
   getMember(id) {
-    return instance.get(`members/${id}`)
+    return instance.get(`api/members/${id}`)
   },
   createMember(data) {
-    return instance.post('members', data)
+    return instance.post('api/members', data)
   },
   updateMember(id, data) {
-    return instance.put(`members/${id}`, data)
+    return instance.put(`api/members/${id}`, data)
   },
   deleteMember(id) {
-    return instance.delete(`members/${id}`)
+    return instance.delete(`api/members/${id}`)
   },
 
   // Statistics
@@ -63,19 +63,19 @@ export const api = {
 
   // Fees
   getFees() {
-    return instance.get('finance')
+    return instance.get('api/finance')
   },
   getFee(id) {
-    return instance.get(`finance/${id}`)
+    return instance.get(`api/finance/${id}`)
   },
   createFee(data) {
-    return instance.post('finance', data)
+    return instance.post('api/finance', data)
   },
   updateFee(id, data) {
-    return instance.put(`finance/${id}`, data)
+    return instance.put(`api/finance/${id}`, data)
   },
   deleteFee(id) {
-    return instance.delete(`finance/${id}`)
+    return instance.delete(`api/finance/${id}`)
   },
 
   // Reminders

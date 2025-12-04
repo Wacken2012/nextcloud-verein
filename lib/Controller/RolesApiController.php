@@ -25,12 +25,31 @@ class RolesApiController extends Controller {
     }
 
     /**
-     * Get all permissions - Not yet implemented
+     * Get all permissions
      */
     public function getPermissions(): DataResponse {
-        return new DataResponse([
-            'error' => 'Permission retrieval not yet implemented'
-        ], 501);
+        try {
+            $roles = $this->roleService->getRolesForClubType('music');
+            // Extract unique permissions from all roles
+            $allPermissions = [];
+            foreach ($roles as $roleKey => $roleData) {
+                if (isset($roleData['permissions']) && is_array($roleData['permissions'])) {
+                    foreach ($roleData['permissions'] as $perm) {
+                        if (!in_array($perm, $allPermissions)) {
+                            $allPermissions[] = $perm;
+                        }
+                    }
+                }
+            }
+            sort($allPermissions);
+            return new DataResponse([
+                'permissions' => $allPermissions
+            ]);
+        } catch (\Exception $e) {
+            return new DataResponse([
+                'error' => $e->getMessage()
+            ], 400);
+        }
     }
 
     /**
@@ -50,11 +69,13 @@ class RolesApiController extends Controller {
 
 
     /**
-     * Create a new role - Not yet implemented
+     * Create a new role
+     * Note: In v0.2.2, predefined roles are provided. Custom role creation is not yet implemented.
      */
     public function createRole(string $name, string $description = ''): DataResponse {
         return new DataResponse([
-            'error' => 'Role creation not yet implemented'
+            'message' => 'Custom role creation is not yet implemented in v0.2.2. Please use the predefined roles from getRoles().',
+            'predefinedRoles' => ['admin', 'treasurer', 'musician', 'conductor', 'secretary']
         ], 501);
     }
 
