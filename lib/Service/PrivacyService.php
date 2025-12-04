@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace OCA\Verein\Service;
 
 use OCA\Verein\Db\MemberMapper;
-use OCP\ILogger;
+use Psr\Log\LoggerInterface;
 use DateTime;
 use DateInterval;
 
@@ -21,7 +21,7 @@ class PrivacyService {
 
 	public function __construct(
 		private MemberMapper $memberMapper,
-		private ILogger $logger,
+		private LoggerInterface $logger,
 		private SettingService $settingService,
 	) {
 	}

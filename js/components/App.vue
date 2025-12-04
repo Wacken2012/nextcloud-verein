@@ -113,7 +113,13 @@ export default {
     })
 
     const handleShowComponent = (componentName) => {
-      activeComponent.value = componentName
+      // Special case: If component wants to go back to Settings tab
+      if (componentName === 'Settings') {
+        activeComponent.value = null
+        activeTab.value = 'settings'
+      } else {
+        activeComponent.value = componentName
+      }
     }
 
     const handleNavigate = (tab) => {
@@ -150,6 +156,7 @@ export default {
 
     return {
       activeTab,
+      activeComponent,
       tabs,
       notification,
       showNotification,
