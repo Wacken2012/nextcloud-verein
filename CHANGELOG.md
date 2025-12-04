@@ -6,6 +6,32 @@ Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/) und fo
 
 ---
 
+## [0.2.2-pre-release] - 2025-12-04
+
+### 🐛 Bug Fixes
+
+#### API 500 Error Fixes
+- **ILogger Deprecation**: Ersetzt veralteten `ILogger` durch `Psr\Log\LoggerInterface` (Nextcloud 32 Kompatibilität)
+- **Request Body Parsing**: Verwendet `file_get_contents('php://input')` statt nicht existierendem `getBody()`
+- **PrivacyService DI**: Ersetzt nicht existierenden `SettingService` durch `IConfig`
+- **Syntax Error**: Korrigiert `this->` zu `$this->` in ReminderService
+- **Export Endpoint**: Akzeptiert jetzt `string|int` für memberId (unterstützt Nextcloud User-IDs)
+- **ReminderLog.vue**: Behandelt sowohl Array- als auch Objekt-API-Antworten
+
+#### Betroffene Endpoints (jetzt funktional)
+- `POST /api/v1/reminders/config` - Mahnung Konfiguration speichern
+- `GET /api/v1/reminders/log` - Mahnung Protokoll abrufen
+- `GET /api/v1/privacy/export/{id}` - DSGVO Datenexport
+- `GET /api/v1/privacy/consent/{id}` - Einwilligungsstatus abrufen
+- `GET /api/v1/privacy/policy` - Datenschutzerklärung abrufen
+
+### 🔧 Technical Changes
+- PrivacyService Registration mit korrekten Dependencies in Application.php
+- Union Types für flexible Parameter-Handling
+- Verbesserte Error-Response-Typen
+
+---
+
 ## [0.2.0-beta] - 2025-12-01
 
 ### ✨ Features
