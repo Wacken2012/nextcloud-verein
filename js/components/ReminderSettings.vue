@@ -2,8 +2,8 @@
   <div class="reminder-settings">
     <div class="reminder-header">
       <button @click="goBack" class="back-btn" title="Zurück zu Einstellungen">← Zurück</button>
-      <h3>{{ $t('reminders.title', 'Automatische Mahnungen') }}</h3>
-      <p class="description">{{ $t('reminders.description', 'Konfigurieren Sie die automatischen Mahnungen für ausstehende Zahlungen') }}</p>
+      <h3>{{ 'Automatische Mahnungen' }}</h3>
+      <p class="description">{{ 'Konfigurieren Sie die automatischen Mahnungen für ausstehende Zahlungen' }}</p>
     </div>
 
     <div class="settings-container">
@@ -15,7 +15,7 @@
             type="checkbox" 
             @change="toggleReminders"
           />
-          <span>{{ $t('reminders.enable', 'Automatische Mahnungen aktivieren') }}</span>
+          <span>{{ 'Automatische Mahnungen aktivieren' }}</span>
         </label>
       </div>
 
@@ -23,12 +23,12 @@
         <div v-if="config.enabled" class="settings-content">
           <!-- Mahnstufen-Intervalle -->
           <div class="setting-group">
-            <h4>{{ $t('reminders.intervals.title', 'Mahnstufen') }}</h4>
+            <h4>{{ 'Mahnstufen' }}</h4>
             
             <div class="interval-setting">
               <label>
-                {{ $t('reminders.intervals.level1', 'Stufe 1 (Vorerinnerung)') }}
-                <span class="info">{{ $t('reminders.intervals.level1.info', 'Tage vor Fälligkeit') }}</span>
+                {{ 'Stufe 1 (Vorerinnerung)' }}
+                <span class="info">{{ 'Tage vor Fälligkeit' }}</span>
               </label>
               <input 
                 v-model.number="config.intervals.level_1" 
@@ -37,13 +37,13 @@
                 max="30"
                 @change="saveConfig"
               />
-              <span class="unit">{{ $t('common.days', 'Tage') }}</span>
+              <span class="unit">{{ 'Tage' }}</span>
             </div>
 
             <div class="interval-setting">
               <label>
-                {{ $t('reminders.intervals.level2', 'Stufe 2 (erste Mahnung)') }}
-                <span class="info">{{ $t('reminders.intervals.level2.info', 'Tage nach Fälligkeit') }}</span>
+                {{ 'Stufe 2 (erste Mahnung)' }}
+                <span class="info">{{ 'Tage nach Fälligkeit' }}</span>
               </label>
               <input 
                 v-model.number="config.intervals.level_2" 
@@ -52,13 +52,13 @@
                 max="30"
                 @change="saveConfig"
               />
-              <span class="unit">{{ $t('common.days', 'Tage') }}</span>
+              <span class="unit">{{ 'Tage' }}</span>
             </div>
 
             <div class="interval-setting">
               <label>
-                {{ $t('reminders.intervals.level3', 'Stufe 3 (zweite Mahnung)') }}
-                <span class="info">{{ $t('reminders.intervals.level3.info', 'Tage nach Stufe 2') }}</span>
+                {{ 'Stufe 3 (zweite Mahnung)' }}
+                <span class="info">{{ 'Tage nach Stufe 2' }}</span>
               </label>
               <input 
                 v-model.number="config.intervals.level_3" 
@@ -67,15 +67,15 @@
                 max="30"
                 @change="saveConfig"
               />
-              <span class="unit">{{ $t('common.days', 'Tage') }}</span>
+              <span class="unit">{{ 'Tage' }}</span>
             </div>
           </div>
 
           <!-- Zwischenversand-Intervall -->
           <div class="setting-group">
             <label>
-              {{ $t('reminders.daysBetween.title', 'Tage zwischen wiederholten Mahnungen') }}
-              <span class="info">{{ $t('reminders.daysBetween.info', 'Minimale Tage, bevor eine weitere Mahnung an das gleiche Mitglied versandt wird') }}</span>
+              {{ 'Tage zwischen wiederholten Mahnungen' }}
+              <span class="info">{{ 'Minimale Tage, bevor eine weitere Mahnung an das gleiche Mitglied versandt wird' }}</span>
             </label>
             <input 
               v-model.number="config.daysBetween" 
@@ -84,13 +84,13 @@
               max="30"
               @change="saveConfig"
             />
-            <span class="unit">{{ $t('common.days', 'Tage') }}</span>
+            <span class="unit">{{ 'Tage' }}</span>
           </div>
 
           <!-- Status -->
           <div class="status-section">
             <p v-if="saveSuccess" class="success">
-              ✓ {{ $t('common.saved', 'Einstellungen gespeichert') }}
+              ✓ {{ 'Einstellungen gespeichert' }}
             </p>
             <p v-if="saveError" class="error">
               ✗ {{ saveError }}

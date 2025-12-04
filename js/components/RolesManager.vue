@@ -2,13 +2,13 @@
   <div class="roles-manager">
     <div class="roles-header">
       <button @click="goBack" class="back-btn" title="Zurück zu Einstellungen">← Zurück</button>
-      <h3>{{ $t('roles.title', 'Rollenverwaltung') }}</h3>
-      <p class="description">{{ $t('roles.description', 'Verwalten Sie Rollen und deren Berechtigungen') }}</p>
+      <h3>{{ 'Rollenverwaltung' }}</h3>
+      <p class="description">{{ 'Verwalten Sie Rollen und deren Berechtigungen' }}</p>
     </div>
 
     <!-- Loading Indicator -->
     <div v-if="loading" class="loading-container">
-      <p>{{ $t('common.loading', 'Lädt...') }}</p>
+      <p>{{ 'Lädt...' }}</p>
     </div>
 
     <!-- Error Message -->
@@ -23,19 +23,19 @@
         :class="['tab', { active: activeTab === 'roles' }]"
         @click="activeTab = 'roles'"
       >
-        {{ $t('roles.tabs.roles', 'Rollen') }}
+        {{ 'Rollen' }}
       </button>
       <button 
         :class="['tab', { active: activeTab === 'permissions' }]"
         @click="activeTab = 'permissions'"
       >
-        {{ $t('roles.tabs.permissions', 'Berechtigungen') }}
+        {{ 'Berechtigungen' }}
       </button>
       <button 
         :class="['tab', { active: activeTab === 'members' }]"
         @click="activeTab = 'members'"
       >
-        {{ $t('roles.tabs.members', 'Mitgliedszuordnung') }}
+        {{ 'Mitgliedszuordnung' }}
       </button>
     </div>
 
@@ -43,7 +43,7 @@
     <div v-show="activeTab === 'roles'" class="tab-content roles-tab">
       <div class="roles-actions">
         <button class="btn btn-primary" @click="showNewRoleDialog = true">
-          + {{ $t('roles.addRole', 'Neue Rolle hinzufügen') }}
+          + {{ 'Neue Rolle hinzufügen' }}
         </button>
       </div>
 
@@ -71,9 +71,9 @@
           </div>
           <p class="role-description">{{ role.description }}</p>
           <div class="role-meta">
-            <span class="badge" v-if="role.isSystem">{{ $t('roles.system', 'System') }}</span>
+            <span class="badge" v-if="role.isSystem">{{ 'System' }}</span>
             <span class="badge badge-secondary">
-              {{ role.memberCount || 0 }} {{ $t('roles.members', 'Mitglieder') }}
+              {{ role.memberCount || 0 }} {{ 'Mitglieder' }}
             </span>
           </div>
           <div class="role-permissions-preview">
@@ -105,7 +105,7 @@
         <table>
           <thead>
             <tr>
-              <th class="role-col">{{ $t('roles.role', 'Rolle') }}</th>
+              <th class="role-col">{{ 'Rolle' }}</th>
               <th v-for="perm in filteredPermissions" :key="perm.id" class="perm-col">
                 <span class="perm-name" :title="perm.description">{{ perm.shortName }}</span>
               </th>
@@ -130,7 +130,7 @@
       </div>
 
       <div class="permissions-legend">
-        <h4>{{ $t('roles.legend', 'Erklärung der Berechtigungen') }}</h4>
+        <h4>{{ 'Erklärung der Berechtigungen' }}</h4>
         <div class="legend-items">
           <div v-for="perm in allPermissions" :key="perm.id" class="legend-item">
             <strong>{{ perm.name }}</strong>
@@ -144,10 +144,10 @@
     <div v-show="activeTab === 'members'" class="tab-content members-tab">
       <div class="bulk-actions">
         <div class="action-group">
-          <label>{{ $t('roles.bulkAssign.title', 'Mehrfachzuweisung') }}</label>
+          <label>{{ 'Mehrfachzuweisung' }}</label>
           <div class="bulk-controls">
             <select v-model="bulkRole" class="select-input">
-              <option value="">{{ $t('roles.selectRole', 'Rolle wählen...') }}</option>
+              <option value="">{{ 'Rolle wählen...' }}</option>
               <option v-for="role in roles" :key="role.id" :value="role.id">
                 {{ role.name }}
               </option>
@@ -157,20 +157,20 @@
               @click="showBulkMemberSelection = true"
               :disabled="!bulkRole"
             >
-              {{ $t('roles.selectMembers', 'Mitglieder wählen...') }}
+              {{ 'Mitglieder wählen...' }}
             </button>
           </div>
         </div>
       </div>
 
       <div class="members-list">
-        <h4>{{ $t('roles.memberRoles', 'Mitgliederzuordnung') }}</h4>
+        <h4>{{ 'Mitgliederzuordnung' }}</h4>
         <table class="members-table">
           <thead>
             <tr>
-              <th>{{ $t('common.member', 'Mitglied') }}</th>
-              <th>{{ $t('roles.roles', 'Rollen') }}</th>
-              <th class="actions-col">{{ $t('common.actions', 'Aktionen') }}</th>
+              <th>{{ 'Mitglied' }}</th>
+              <th>{{ 'Rollen' }}</th>
+              <th class="actions-col">{{ 'Aktionen' }}</th>
             </tr>
           </thead>
           <tbody>
@@ -197,7 +197,7 @@
                     class="btn-add-role"
                     @click="showAddRoleDialog(member.id)"
                   >
-                    + {{ $t('roles.addRole', 'Rolle hinzufügen') }}
+                    + {{ 'Rolle hinzufügen' }}
                   </button>
                 </div>
               </td>
@@ -219,22 +219,22 @@
     <!-- Dialoge -->
     <div v-if="showNewRoleDialog" class="dialog-overlay" @click.self="showNewRoleDialog = false">
       <div class="dialog">
-        <h3>{{ $t('roles.newRole', 'Neue Rolle') }}</h3>
+        <h3>{{ 'Neue Rolle' }}</h3>
         <form @submit.prevent="saveRole">
           <div class="form-group">
-            <label>{{ $t('roles.name', 'Name') }}</label>
+            <label>{{ 'Name' }}</label>
             <input v-model="newRole.name" type="text" required class="form-input" />
           </div>
           <div class="form-group">
-            <label>{{ $t('roles.description', 'Beschreibung') }}</label>
+            <label>{{ 'Beschreibung' }}</label>
             <textarea v-model="newRole.description" class="form-textarea"></textarea>
           </div>
           <div class="dialog-actions">
             <button type="button" class="btn btn-secondary" @click="showNewRoleDialog = false">
-              {{ $t('common.cancel', 'Abbrechen') }}
+              {{ 'Abbrechen' }}
             </button>
             <button type="submit" class="btn btn-primary">
-              {{ $t('common.save', 'Speichern') }}
+              {{ 'Speichern' }}
             </button>
           </div>
         </form>

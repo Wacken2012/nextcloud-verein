@@ -2,7 +2,7 @@
   <div class="reminder-log">
     <div class="log-header">
       <button @click="goBack" class="back-btn" title="Zurück zu Einstellungen">← Zurück</button>
-      <h3>{{ $t('reminders.log.title', 'Mahnung-Protokoll') }}</h3>
+      <h3>{{ 'Mahnung-Protokoll' }}</h3>
       <div class="log-controls">
         <input 
           v-model="filterMember"
@@ -11,33 +11,33 @@
           class="filter-input"
         />
         <select v-model="filterStatus" class="filter-select">
-          <option value="">{{ $t('reminders.log.allStatus', 'Alle Status') }}</option>
-          <option value="pending">{{ $t('reminders.log.pending', 'Ausstehend') }}</option>
-          <option value="sent">{{ $t('reminders.log.sent', 'Versandt') }}</option>
-          <option value="resolved">{{ $t('reminders.log.resolved', 'Bezahlt') }}</option>
-          <option value="error">{{ $t('reminders.log.error', 'Fehler') }}</option>
+          <option value="">{{ 'Alle Status' }}</option>
+          <option value="pending">{{ 'Ausstehend' }}</option>
+          <option value="sent">{{ 'Versandt' }}</option>
+          <option value="resolved">{{ 'Bezahlt' }}</option>
+          <option value="error">{{ 'Fehler' }}</option>
         </select>
       </div>
     </div>
 
     <div v-if="loading" class="loading">
-      {{ $t('common.loading', 'Lädt...') }}
+      {{ 'Lädt...' }}
     </div>
 
     <table v-else class="log-table">
       <thead>
         <tr>
-          <th>{{ $t('common.date', 'Datum') }}</th>
-          <th>{{ $t('common.member', 'Mitglied') }}</th>
-          <th>{{ $t('reminders.log.level', 'Stufe') }}</th>
-          <th>{{ $t('reminders.log.status', 'Status') }}</th>
-          <th>{{ $t('reminders.log.action', 'Aktion') }}</th>
-          <th>{{ $t('reminders.log.result', 'Ergebnis') }}</th>
+          <th>{{ 'Datum' }}</th>
+          <th>{{ 'Mitglied' }}</th>
+          <th>{{ 'Stufe' }}</th>
+          <th>{{ 'Status' }}</th>
+          <th>{{ 'Aktion' }}</th>
+          <th>{{ 'Ergebnis' }}</th>
         </tr>
       </thead>
       <tbody>
         <tr v-if="filteredLogs.length === 0" class="no-data">
-          <td colspan="6">{{ $t('common.noData', 'Keine Daten vorhanden') }}</td>
+          <td colspan="6">{{ 'Keine Daten vorhanden' }}</td>
         </tr>
         <tr v-for="log in filteredLogs" :key="log.id" :class="getRowClass(log)">
           <td>{{ formatDate(log.created_at) }}</td>
@@ -55,12 +55,12 @@
           <td>{{ getActionLabel(log.action) }}</td>
           <td>
             <span v-if="log.email_sent" class="success">
-              ✓ {{ $t('reminders.log.emailSent', 'Email versandt') }}
+              ✓ {{ 'Email versandt' }}
             </span>
             <span v-else-if="log.email_error" class="error">
               ✗ {{ log.email_error }}
             </span>
-            <span v-else class="neutral">{{ $t('reminders.log.pending', 'Ausstehend') }}</span>
+            <span v-else class="neutral">{{ 'Ausstehend' }}</span>
           </td>
         </tr>
       </tbody>

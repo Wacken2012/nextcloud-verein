@@ -2,9 +2,9 @@
   <div class="privacy-settings">
     <div class="privacy-header">
       <button @click="goBack" class="back-btn" title="Zurück zu Einstellungen">← Zurück</button>
-      <h3>{{ $t('privacy.title', 'Datenschutzerklärung & DSGVO') }}</h3>
+      <h3>{{ 'Datenschutzerklärung & DSGVO' }}</h3>
       <p class="description">
-        {{ $t('privacy.description', 'Verwalten Sie Ihre persönlichen Daten gemäß DSGVO') }}
+        {{ 'Verwalten Sie Ihre persönlichen Daten gemäß DSGVO' }}
       </p>
     </div>
 
@@ -14,19 +14,19 @@
         :class="['tab', { active: activeTab === 'data' }]"
         @click="activeTab = 'data'"
       >
-        {{ $t('privacy.tabs.data', 'Meine Daten') }}
+        {{ 'Meine Daten' }}
       </button>
       <button 
         :class="['tab', { active: activeTab === 'consents' }]"
         @click="activeTab = 'consents'"
       >
-        {{ $t('privacy.tabs.consents', 'Einwilligungen') }}
+        {{ 'Einwilligungen' }}
       </button>
       <button 
         :class="['tab', { active: activeTab === 'policy' }]"
         @click="activeTab = 'policy'"
       >
-        {{ $t('privacy.tabs.policy', 'Datenschutzerklärung') }}
+        {{ 'Datenschutzerklärung' }}
       </button>
     </div>
 
@@ -34,22 +34,22 @@
     <div v-show="activeTab === 'data'" class="tab-content data-tab">
       <div class="data-actions">
         <div class="action-group">
-          <h4>{{ $t('privacy.data.manage', 'Meine Daten verwalten') }}</h4>
+          <h4>{{ 'Meine Daten verwalten' }}</h4>
           <p class="info">
-            {{ $t('privacy.data.gdprRight', 'Gemäß DSGVO Art. 15 haben Sie das Recht auf Auskunft über Ihre persönlichen Daten.') }}
+            {{ 'Gemäß DSGVO Art. 15 haben Sie das Recht auf Auskunft über Ihre persönlichen Daten.' }}
           </p>
 
           <div class="actions">
             <button class="btn btn-primary" @click="exportData">
-              📥 {{ $t('privacy.data.export', 'Daten exportieren (JSON)') }}
+              📥 {{ 'Daten exportieren (JSON)' }}
             </button>
           </div>
         </div>
 
         <div class="action-group danger-zone">
-          <h4>{{ $t('privacy.data.delete', 'Daten löschen') }}</h4>
+          <h4>{{ 'Daten löschen' }}</h4>
           <p class="info warning">
-            {{ $t('privacy.data.deleteWarning', 'Gemäß DSGVO Art. 17 können Sie die Löschung Ihrer Daten anfordern.') }}
+            {{ 'Gemäß DSGVO Art. 17 können Sie die Löschung Ihrer Daten anfordern.' }}
           </p>
 
           <div class="delete-options">
@@ -61,8 +61,8 @@
                   value="soft_delete"
                 />
                 <span class="label-text">
-                  <strong>{{ $t('privacy.delete.soft', 'Anonymisieren') }}</strong>
-                  <small>{{ $t('privacy.delete.softDesc', 'Persönliche Daten werden anonymisiert, Transaktionsverlauf bleibt für Buchhaltung.') }}</small>
+                  <strong>{{ 'Anonymisieren' }}</strong>
+                  <small>{{ 'Persönliche Daten werden anonymisiert, Transaktionsverlauf bleibt für Buchhaltung.' }}</small>
                 </span>
               </label>
             </div>
@@ -75,8 +75,8 @@
                   value="hard_delete"
                 />
                 <span class="label-text">
-                  <strong>{{ $t('privacy.delete.hard', 'Komplettes Löschen') }}</strong>
-                  <small>{{ $t('privacy.delete.hardDesc', 'Alle Daten werden gelöscht (nur wenn keine offenen Gebühren).') }}</small>
+                  <strong>{{ 'Komplettes Löschen' }}</strong>
+                  <small>{{ 'Alle Daten werden gelöscht (nur wenn keine offenen Gebühren).' }}</small>
                 </span>
               </label>
             </div>
@@ -96,9 +96,9 @@
     <!-- Einwilligungen Tab -->
     <div v-show="activeTab === 'consents'" class="tab-content consents-tab">
       <div class="consents-container">
-        <h4>{{ $t('privacy.consents.title', 'Ihre Einwilligungen') }}</h4>
+        <h4>{{ 'Ihre Einwilligungen' }}</h4>
         <p class="info">
-          {{ $t('privacy.consents.description', 'Sie können Ihre Einwilligungen jederzeit ändern.') }}
+          {{ 'Sie können Ihre Einwilligungen jederzeit ändern.' }}
         </p>
 
         <div class="consent-items">
@@ -115,7 +115,7 @@
             </div>
             <p class="consent-description">{{ consent.description }}</p>
             <small v-if="getConsentDate(consent.key)" class="consent-date">
-              {{ $t('privacy.consents.given', 'Gegeben am') }}: {{ formatDate(getConsentDate(consent.key)) }}
+              {{ 'Gegeben am' }}: {{ formatDate(getConsentDate(consent.key)) }}
             </small>
           </div>
         </div>
