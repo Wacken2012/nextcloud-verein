@@ -41,6 +41,18 @@ return [
 
         ['name' => 'permission#index', 'url' => '/permissions', 'verb' => 'GET'],
 
+        // Backwards compatibility: Old API paths (v0.2.0/v0.2.1 frontend compatibility)
+        ['name' => 'member#index', 'url' => '/api/members', 'verb' => 'GET'],
+        ['name' => 'member#create', 'url' => '/api/members', 'verb' => 'POST'],
+        ['name' => 'member#show', 'url' => '/api/members/{id}', 'verb' => 'GET'],
+        ['name' => 'member#update', 'url' => '/api/members/{id}', 'verb' => 'PUT'],
+        ['name' => 'member#destroy', 'url' => '/api/members/{id}', 'verb' => 'DELETE'],
+
+        ['name' => 'finance#index', 'url' => '/api/finance', 'verb' => 'GET'],
+        ['name' => 'finance#create', 'url' => '/api/finance', 'verb' => 'POST'],
+        ['name' => 'finance#update', 'url' => '/api/finance/{id}', 'verb' => 'PUT'],
+        ['name' => 'finance#destroy', 'url' => '/api/finance/{id}', 'verb' => 'DELETE'],
+
         // Reminders API (v0.2.2)
         ['name' => 'reminderApi#getConfig', 'url' => '/api/v1/reminders/config', 'verb' => 'GET'],
         ['name' => 'reminderApi#saveConfig', 'url' => '/api/v1/reminders/config', 'verb' => 'POST'],

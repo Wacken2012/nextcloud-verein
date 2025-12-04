@@ -3,18 +3,14 @@ import { generateUrl } from '@nextcloud/router'
 
 const instance = axios.create({
   baseURL: generateUrl('/apps/verein/'),
-  withCredentials: true,
-  headers: {
-    'Content-Type': 'application/json'
-  }
+  withCredentials: true
 })
 
-// Transform plain objects to URL-encoded payloads only for legacy endpoints
+// Transform plain objects to appropriate format based on endpoint
 instance.interceptors.request.use(config => {
-  // Nur für nicht-API-Endpoints (alt legacy-Endpunkte)
   if (config.data && typeof config.data === 'object' && !FormData.prototype.isPrototypeOf(config.data)) {
-    // Für /api/ Endpoints: JSON verwenden
-    if (config.url && config.url.includes('/api/')) {
+    // Für /api/v1/ Endpoints: JSON verwenden
+    if (config.url && config.url.startsWith('api/v1/')) {
       config.headers['Content-Type'] = 'application/json'
       config.data = JSON.stringify(config.data)
     } else {
