@@ -1,5 +1,8 @@
 <template>
   <div class="sepa-export">
+    <button class="back-button" @click="goBack" title="Zurück zu Finanzen">
+      ← Zurück
+    </button>
     <h2>SEPA-Export</h2>
     
     <div class="form-container">
@@ -103,6 +106,9 @@ export default {
     }
   },
   methods: {
+    goBack() {
+      this.$emit('navigate', 'Finanzen')
+    },
     async preview() {
       try {
         const response = await axios.post(
@@ -143,6 +149,30 @@ export default {
 <style scoped>
 .sepa-export {
   padding: 20px;
+  position: relative;
+}
+
+.back-button {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  padding: 8px 16px;
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  color: #333;
+  transition: all 0.2s ease;
+}
+
+.back-button:hover {
+  background-color: #e0e0e0;
+  border-color: #999;
+}
+
+.sepa-export h2 {
+  margin-top: 40px;
 }
 
 .form-container,

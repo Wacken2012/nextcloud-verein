@@ -30,7 +30,7 @@
       <div class="card">
         <h3>💾 SEPA / Exporte</h3>
         <p>Export-Optionen verwalten und SEPA-Export erstellen.</p>
-        <button @click="navigate('sepa')" class="button">Zu SEPA</button>
+        <button @click="navigate('finance')" class="button">Zu SEPA</button>
       </div>
     </div>
   </div>
