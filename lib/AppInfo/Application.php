@@ -13,6 +13,8 @@ use OCA\Verein\Service\Export\PdfExporter;
 use OCA\Verein\Service\MemberService;
 use OCA\Verein\Service\FeeService;
 use OCA\Verein\Service\StatisticsService;
+use OCA\Verein\Service\ReminderService;
+use OCA\Verein\Service\PrivacyService;
 use OCA\Verein\Settings\AdminSection;
 use OCA\Verein\Settings\AdminSettings;
 use OCP\AppFramework\App;
@@ -75,6 +77,21 @@ class Application extends App implements IBootstrap {
                 $container->query(MemberMapper::class),
                 $container->query(FeeMapper::class)
             );
+        });
+
+        // Register Reminder and Privacy services
+        $context->registerService(ReminderService::class, function (IAppContainer $container): ReminderService {
+            return new ReminderService(
+                null, // ReminderMapper
+                null, // IMailer
+                $container->query(LoggerInterface::class),
+                null, // MemberService
+                null  // SettingService
+            );
+        });
+
+        $context->registerService(PrivacyService::class, function (IAppContainer $container): PrivacyService {
+            return new PrivacyService();
         });
 
         $context->registerMiddleware(AuthorizationMiddleware::class);

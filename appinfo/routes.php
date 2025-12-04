@@ -40,6 +40,7 @@ return [
         ['name' => 'role#removeRoles', 'url' => '/roles/users', 'verb' => 'DELETE'],
 
         ['name' => 'permission#index', 'url' => '/permissions', 'verb' => 'GET'],
+        ['name' => 'rolesApi#getPermissions', 'url' => '/api/v1/permissions', 'verb' => 'GET'],
 
         // Backwards compatibility: Old API paths (v0.2.0/v0.2.1 frontend compatibility)
         ['name' => 'member#index', 'url' => '/api/members', 'verb' => 'GET'],

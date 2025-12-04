@@ -30,6 +30,9 @@ class PrivacyService {
 	 * Hole alle persönlichen Daten eines Mitglieds (DSGVO Art. 15)
 	 */
 	public function exportMemberData(int $memberId): array {
+		if (!$this->memberMapper) {
+			return ['error' => 'Member service not available'];
+		}
 		try {
 			$member = $this->memberMapper->findById($memberId);
 

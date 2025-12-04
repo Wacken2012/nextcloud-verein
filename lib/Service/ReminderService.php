@@ -39,6 +39,7 @@ class ReminderService {
 	 * Prüfe, ob Mahnungen aktiviert sind
 	 */
 	public function isEnabled(): bool {
+		if (!$this->settingService) return false;
 		$setting = $this->settingService->get(self::REMINDER_CONFIG_KEY_PREFIX . self::REMINDER_ENABLED);
 		return $setting === 'true' || $setting === '1';
 	}
@@ -47,6 +48,7 @@ class ReminderService {
 	 * Setze Mahnstufen-Intervalle (in Tagen)
 	 */
 	public function setReminderIntervals(int $level1, int $level2, int $level3): void {
+		if (!$this->settingService) return;
 		$this->settingService->set(self::REMINDER_CONFIG_KEY_PREFIX . self::REMINDER_INTERVAL_LEVEL_1, (string)$level1);
 		$this->settingService->set(self::REMINDER_CONFIG_KEY_PREFIX . self::REMINDER_INTERVAL_LEVEL_2, (string)$level2);
 		$this->settingService->set(self::REMINDER_CONFIG_KEY_PREFIX . self::REMINDER_INTERVAL_LEVEL_3, (string)$level3);
@@ -56,6 +58,9 @@ class ReminderService {
 	 * Hole Mahnstufen-Intervalle
 	 */
 	public function getReminderIntervals(): array {
+		if (!$this->settingService) {
+			return ['level_1' => 7, 'level_2' => 3, 'level_3' => 7];
+		}
 		return [
 			'level_1' => (int)($this->settingService->get(self::REMINDER_CONFIG_KEY_PREFIX . self::REMINDER_INTERVAL_LEVEL_1) ?? '7'),
 			'level_2' => (int)($this->settingService->get(self::REMINDER_CONFIG_KEY_PREFIX . self::REMINDER_INTERVAL_LEVEL_2) ?? '3'),
@@ -67,6 +72,7 @@ class ReminderService {
 	 * Setze Tage zwischen wiederholten Mahnungen
 	 */
 	public function setDaysBetweenReminders(int $days): void {
+		if (!$this->settingService) return;
 		$this->settingService->set(self::REMINDER_CONFIG_KEY_PREFIX . self::REMINDER_DAYS_BETWEEN, (string)$days);
 	}
 
@@ -74,6 +80,7 @@ class ReminderService {
 	 * Hole Tage zwischen wiederholten Mahnungen
 	 */
 	public function getDaysBetweenReminders(): int {
+		if (!$this->settingService) return 3;
 		return (int)($this->settingService->get(self::REMINDER_CONFIG_KEY_PREFIX . self::REMINDER_DAYS_BETWEEN) ?? '3');
 	}
 

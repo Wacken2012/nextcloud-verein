@@ -25,6 +25,15 @@ class RolesApiController extends Controller {
     }
 
     /**
+     * Get all permissions - Not yet implemented
+     */
+    public function getPermissions(): DataResponse {
+        return new DataResponse([
+            'error' => 'Permission retrieval not yet implemented'
+        ], 501);
+    }
+
+    /**
      * Get all roles
      */
     public function getRoles(): DataResponse {
