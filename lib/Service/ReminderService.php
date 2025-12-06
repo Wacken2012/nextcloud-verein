@@ -101,26 +101,89 @@ class ReminderService {
 			$now = new DateTime();
 			$intervals = $this->getReminderIntervals();
 			$daysBetween = $this->getDaysBetweenReminders();
+			$maxLevel = $this->getMaxReminderLevel();
 
 			// Hole alle fälligen Mahnungen
 			$pendingReminders = $this->reminderMapper->findPending();
+			$processedCount = 0;
+			$sentCount = 0;
+			$errorCount = 0;
+
+			$this->logger->info('Processing ' . count($pendingReminders) . ' pending reminders');
 
 			foreach ($pendingReminders as $reminder) {
-				// Berechne, welche Mahnstufe versandt werden soll
+				$processedCount++;
+				
+				// Prüfe, ob bereits maximale Mahnstufe erreicht
+				$currentLevel = $reminder->getReminderLevel();
+				if ($currentLevel >= $maxLevel) {
+					$this->logger->info('Reminder #' . $reminder->getId() . ' already at max level ' . $maxLevel);
+					continue;
+				}
+				
+				// Berechne, ob Mahnung fällig ist
 				$nextReminderDate = $reminder->getNextReminderDate();
-
+				
 				if ($nextReminderDate === null || $nextReminderDate <= $now) {
-					$this->sendReminder($reminder);
+					// Mahnung versenden
+					$success = $this->sendReminder($reminder);
 					
-					// Berechne nächstes Mahndatum
-					$nextReminderDate = (clone $now)->add(new DateInterval('P' . $daysBetween . 'D'));
-					$reminder->setNextReminderDate($nextReminderDate);
-					$this->reminderMapper->update($reminder);
+					if ($success) {
+						$sentCount++;
+						
+						// Eskaliere zur nächsten Mahnstufe
+						$newLevel = $currentLevel + 1;
+						$reminder->setReminderLevel($newLevel);
+						
+						// Berechne nächstes Mahndatum basierend auf Intervallen
+						$nextInterval = $this->getIntervalForLevel($newLevel, $intervals);
+						$nextReminderDate = (clone $now)->add(new DateInterval('P' . $nextInterval . 'D'));
+						$reminder->setNextReminderDate($nextReminderDate);
+						
+						// Bei maximaler Stufe: Status auf "escalated" setzen
+						if ($newLevel >= $maxLevel) {
+							$reminder->setStatus('escalated');
+							$this->logger->info('Reminder #' . $reminder->getId() . ' escalated to final level');
+						}
+						
+						$this->reminderMapper->update($reminder);
+						$this->logger->info('Reminder #' . $reminder->getId() . ' sent, now at level ' . $newLevel);
+					} else {
+						$errorCount++;
+					}
 				}
 			}
+			
+			$this->logger->info("Reminder processing complete: {$processedCount} processed, {$sentCount} sent, {$errorCount} errors");
 		} catch (\Exception $e) {
 			$this->logger->error('Error processing reminders: ' . $e->getMessage());
 		}
+	}
+
+	/**
+	 * Hole das Intervall für eine bestimmte Mahnstufe
+	 */
+	private function getIntervalForLevel(int $level, array $intervals): int {
+		return match($level) {
+			1 => $intervals['level_1'] ?? 7,
+			2 => $intervals['level_2'] ?? 14,
+			3 => $intervals['level_3'] ?? 21,
+			default => $this->getDaysBetweenReminders(),
+		};
+	}
+
+	/**
+	 * Hole maximale Mahnstufe (konfigurierbar)
+	 */
+	public function getMaxReminderLevel(): int {
+		return (int)$this->getConfigValue('max_level', '3');
+	}
+
+	/**
+	 * Setze maximale Mahnstufe
+	 */
+	public function setMaxReminderLevel(int $level): void {
+		$this->setConfigValue('max_level', (string)$level);
 	}
 
 	/**
@@ -136,15 +199,29 @@ class ReminderService {
 			$memberId = $reminder->getMemberId();
 			$member = $this->memberService->getById($memberId);
 
-			if (empty($member->getEmail())) {
+			if (!$member || empty($member->getEmail())) {
 				$this->logReminder($reminder->getId(), $memberId, 'email_missing', false, 'Email address missing');
 				return false;
 			}
 
+			// Hole Vereins-Konfiguration
+			$clubName = $this->getClubName();
+			$clubEmail = $this->getClubEmail();
+			$bankDetails = $this->getBankDetails();
+
 			// Baue Email
-			$template = $this->buildReminderTemplate($member, $reminder);
+			$template = $this->buildReminderTemplate($member, $reminder, $clubName, $bankDetails);
 			$message = $this->mailer->createMessage();
-			$message->setTo([$member->getEmail() => $member->getFirstName() . ' ' . $member->getLastName()]);
+			
+			// Empfänger
+			$recipientName = trim($member->getFirstName() . ' ' . $member->getLastName());
+			$message->setTo([$member->getEmail() => $recipientName ?: 'Mitglied']);
+			
+			// Absender (falls konfiguriert)
+			if (!empty($clubEmail)) {
+				$message->setFrom([$clubEmail => $clubName ?: 'Vereinsverwaltung']);
+			}
+			
 			$message->useTemplate($template);
 
 			// Versende
@@ -152,12 +229,55 @@ class ReminderService {
 
 			// Protokolliere erfolgreiche Mahnung
 			$this->logReminder($reminder->getId(), $memberId, 'reminder_sent', true);
+			$this->logger->info('Reminder sent to member #' . $memberId . ' (Level ' . $reminder->getReminderLevel() . ')');
 			return true;
 		} catch (\Exception $e) {
 			$this->logger->error('Error sending reminder: ' . $e->getMessage());
 			$this->logReminder($reminder->getId(), $memberId ?? 0, 'send_error', false, $e->getMessage());
 			return false;
 		}
+	}
+
+	/**
+	 * Hole Vereinsname aus Konfiguration
+	 */
+	public function getClubName(): string {
+		return $this->getConfigValue('club_name', 'Verein');
+	}
+
+	/**
+	 * Setze Vereinsname
+	 */
+	public function setClubName(string $name): void {
+		$this->setConfigValue('club_name', $name);
+	}
+
+	/**
+	 * Hole Vereins-E-Mail aus Konfiguration
+	 */
+	public function getClubEmail(): string {
+		return $this->getConfigValue('club_email', '');
+	}
+
+	/**
+	 * Setze Vereins-E-Mail
+	 */
+	public function setClubEmail(string $email): void {
+		$this->setConfigValue('club_email', $email);
+	}
+
+	/**
+	 * Hole Bankverbindung aus Konfiguration
+	 */
+	public function getBankDetails(): string {
+		return $this->getConfigValue('bank_details', '');
+	}
+
+	/**
+	 * Setze Bankverbindung
+	 */
+	public function setBankDetails(string $details): void {
+		$this->setConfigValue('bank_details', $details);
 	}
 
 	/**
@@ -252,7 +372,7 @@ class ReminderService {
 	/**
 	 * Baue Email-Template
 	 */
-	private function buildReminderTemplate(object $member, object $reminder): IEMailTemplate {
+	private function buildReminderTemplate(object $member, object $reminder, string $clubName = 'Verein', string $bankDetails = ''): IEMailTemplate {
 		if (!$this->mailer) {
 			throw new \RuntimeException('Mailer not configured');
 		}
@@ -261,42 +381,77 @@ class ReminderService {
 		$reminderLevel = $reminder->getReminderLevel();
 		$dueDate = $reminder->getDueDate();
 		$now = new DateTime();
-		$daysOverdue = $dueDate->diff($now)->days;
+		$daysOverdue = $dueDate instanceof DateTime ? $dueDate->diff($now)->days : 0;
+		$dueDateStr = $dueDate instanceof DateTime ? $dueDate->format('d.m.Y') : 'unbekannt';
 
+		// Betreff je nach Mahnstufe
 		$subject = match($reminderLevel) {
-			1 => 'Zahlungserinnerung - Mahnung fällig',
-			2 => 'ERSTE MAHNUNG - Zahlungserinnerung',
-			3 => 'ZWEITE MAHNUNG - Dringende Zahlungsaufforderung',
-			default => 'Zahlungserinnerung'
+			1 => 'Freundliche Zahlungserinnerung - ' . $clubName,
+			2 => 'Zweite Zahlungserinnerung - ' . $clubName,
+			3 => 'Letzte Zahlungsaufforderung - ' . $clubName,
+			default => 'Zahlungserinnerung - ' . $clubName
 		};
 
 		$template->setSubject($subject);
 		$template->addHeading($subject);
 
 		// Personalisierte Begrüßung
-		$template->addBodyText('Liebe*r ' . $member->getFirstName() . ',');
+		$memberName = trim($member->getFirstName() . ' ' . $member->getLastName());
+		$template->addBodyText('Sehr geehrte/r ' . ($memberName ?: 'Mitglied') . ',');
+		$template->addBodyText('');
 
 		// Mahnstufen-spezifische Texte
 		match($reminderLevel) {
 			1 => $template->addBodyText(
-				'hiermit möchten wir Sie höflich auf eine ausstehende Zahlungsverpflichtung hinweisen. '
-				. 'Der Zahlungstermin ist auf den ' . $dueDate->format('d.m.Y') . ' festgelegt.'
+				'wir möchten Sie freundlich daran erinnern, dass folgende Zahlung noch aussteht:'
 			),
 			2 => $template->addBodyText(
-				'trotz unserer vorherigen Zahlungserinnerung ist der Zahlungsbetrag noch nicht eingegangen. '
-				. 'Die Zahlung war bereits am ' . $dueDate->format('d.m.Y') . ' fällig und ist damit ' . $daysOverdue . ' Tage überfällig.'
+				'leider haben wir Ihre Zahlung trotz unserer ersten Erinnerung noch nicht erhalten. '
+				. 'Die Zahlung war bereits am ' . $dueDateStr . ' fällig und ist damit ' . $daysOverdue . ' Tage überfällig.'
 			),
 			3 => $template->addBodyText(
-				'Ihre Zahlung ist jetzt ' . $daysOverdue . ' Tage überfällig. '
-				. 'Wir müssen auf eine baldige Zahlung bestehen, um weitere Schritte zu vermeiden. '
-				. 'Bitte begleichen Sie den ausstehenden Betrag sofort.'
+				'trotz unserer vorherigen Mahnungen ist Ihre Zahlung nach wie vor offen. '
+				. 'Die Zahlung ist ' . $daysOverdue . ' Tage überfällig. '
+				. 'Wir fordern Sie hiermit letztmalig auf, den ausstehenden Betrag umgehend zu begleichen.'
+			),
+			default => $template->addBodyText('Es liegt eine ausstehende Zahlung vor.'),
+		};
+
+		$template->addBodyText('');
+		
+		// Zahlungsdetails
+		$template->addBodyText('Fälligkeitsdatum: ' . $dueDateStr);
+		
+		// Bankverbindung falls vorhanden
+		if (!empty($bankDetails)) {
+			$template->addBodyText('');
+			$template->addBodyText('Bankverbindung:');
+			$template->addBodyText($bankDetails);
+		}
+
+		$template->addBodyText('');
+		
+		// Abschlusstext je nach Mahnstufe
+		match($reminderLevel) {
+			1 => $template->addBodyText(
+				'Falls Sie die Zahlung bereits getätigt haben, betrachten Sie diese Erinnerung bitte als gegenstandslos.'
+			),
+			2 => $template->addBodyText(
+				'Bei Fragen stehen wir Ihnen gerne zur Verfügung.'
+			),
+			3 => $template->addBodyText(
+				'Bei Nichtzahlung behalten wir uns weitere Schritte vor. '
+				. 'Bei finanziellen Schwierigkeiten setzen Sie sich bitte umgehend mit uns in Verbindung.'
 			),
 			default => null,
 		};
 
 		$template->addBodyText('');
 		$template->addBodyText('Mit freundlichen Grüßen,');
-		$template->addBodyText('Der Vereinsvorstand');
+		$template->addBodyText($clubName);
+
+		// Footer
+		$template->addFooter('Diese E-Mail wurde automatisch von der Vereinsverwaltung generiert.');
 
 		return $template;
 	}

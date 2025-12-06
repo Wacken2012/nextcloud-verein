@@ -6,10 +6,10 @@
         <button
           v-for="tab in tabs"
           :key="tab.id"
-          :class="['verein-tab', { active: activeTab === tab.id }]"
+          :class="['verein-tab', { active: activeTab === tab.id && !activeComponent }]"
           :id="'verein-tab-' + tab.id"
           :aria-current="activeTab === tab.id ? 'page' : false"
-          @click="activeTab = tab.id"
+          @click="handleTabClick(tab.id)"
           role="tab"
           aria-controls="app-content"
           :aria-selected="activeTab === tab.id"
@@ -57,6 +57,7 @@ import RolesManager from './RolesManager.vue'
 import ReminderSettings from './ReminderSettings.vue'
 import ReminderLog from './ReminderLog.vue'
 import PrivacySettings from './PrivacySettings.vue'
+import EmailTemplateEditor from './EmailTemplateEditor.vue'
 
 export default {
   name: 'App',
@@ -71,7 +72,8 @@ export default {
     RolesManager,
     ReminderSettings,
     ReminderLog,
-    PrivacySettings
+    PrivacySettings,
+    EmailTemplateEditor
   },
   setup() {
     const activeTab = ref('dashboard')
@@ -154,6 +156,11 @@ export default {
       }
     }
 
+    const handleTabClick = (tabId) => {
+      activeTab.value = tabId
+      activeComponent.value = null
+    }
+
     return {
       activeTab,
       activeComponent,
@@ -163,7 +170,8 @@ export default {
       currentComponent,
       onKeyDown,
       handleShowComponent,
-      handleNavigate
+      handleNavigate,
+      handleTabClick
     }
   }
 }

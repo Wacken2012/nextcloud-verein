@@ -113,17 +113,73 @@ export const api = {
   },
 
   // Privacy/GDPR
+  getPrivacyPolicy() {
+    return instance.get('api/v1/privacy/policy')
+  },
+  savePrivacyPolicy(policyText) {
+    return instance.put('api/v1/privacy/policy', { policy: policyText })
+  },
   exportMemberData(memberId) {
     return instance.get(`api/v1/privacy/export/${memberId}`)
   },
   deleteMemberData(memberId, mode = 'soft') {
     return instance.delete(`api/v1/privacy/member/${memberId}`, { data: { mode } })
   },
+  canDelete(memberId) {
+    return instance.get(`api/v1/privacy/can-delete/${memberId}`)
+  },
   saveConsent(memberId, consentType, agreed) {
     return instance.post('api/v1/privacy/consent', { memberId, consentType, agreed })
   },
   getConsentStatus(memberId) {
     return instance.get(`api/v1/privacy/consent/${memberId}`)
+  },
+  getConsentTypes() {
+    return instance.get('api/v1/privacy/consent-types')
+  },
+  saveConsentsBulk(memberId, consents) {
+    return instance.post(`api/v1/privacy/consent/${memberId}/bulk`, { consents })
+  },
+  getAuditLog(memberId, limit = 100) {
+    return instance.get(`api/v1/privacy/audit-log/${memberId}`, { params: { limit } })
+  },
+  getAuditStatistics() {
+    return instance.get('api/v1/privacy/audit-statistics')
+  },
+
+  // Calendar API (v0.3.0)
+  getEvents(params = {}) {
+    return instance.get('api/v1/calendar/events', { params })
+  },
+  getEvent(id) {
+    return instance.get(`api/v1/calendar/events/${id}`)
+  },
+  createEvent(data) {
+    return instance.post('api/v1/calendar/events', data)
+  },
+  updateEvent(id, data) {
+    return instance.put(`api/v1/calendar/events/${id}`, data)
+  },
+  deleteEvent(id) {
+    return instance.delete(`api/v1/calendar/events/${id}`)
+  },
+  getEventRsvp(eventId) {
+    return instance.get(`api/v1/calendar/events/${eventId}/rsvp`)
+  },
+  getMyRsvp(eventId) {
+    return instance.get(`api/v1/calendar/events/${eventId}/my-rsvp`)
+  },
+  getPendingRsvp() {
+    return instance.get('api/v1/calendar/pending-rsvp')
+  },
+  setEventRsvp(eventId, response, comment = '') {
+    return instance.post(`api/v1/calendar/events/${eventId}/rsvp`, { response, comment })
+  },
+  getUpcomingEvents(limit = 10) {
+    return instance.get('api/v1/calendar/upcoming', { params: { limit } })
+  },
+  getEventTypes() {
+    return instance.get('api/v1/calendar/types')
   },
 
   // Generic methods for component flexibility

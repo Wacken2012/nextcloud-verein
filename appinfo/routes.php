@@ -60,12 +60,19 @@ return [
         ['name' => 'reminderApi#getLog', 'url' => '/api/v1/reminders/log', 'verb' => 'GET'],
         ['name' => 'reminderApi#processDue', 'url' => '/api/v1/reminders/process', 'verb' => 'POST'],
 
-        // Privacy/GDPR API (v0.2.2)
+        // Privacy/GDPR API (v0.2.2, erweitert v0.3.0)
         ['name' => 'privacyApi#getPolicy', 'url' => '/api/v1/privacy/policy', 'verb' => 'GET'],
+        ['name' => 'privacyApi#savePolicy', 'url' => '/api/v1/privacy/policy', 'verb' => 'PUT'],
         ['name' => 'privacyApi#exportData', 'url' => '/api/v1/privacy/export/{memberId}', 'verb' => 'GET'],
         ['name' => 'privacyApi#deleteData', 'url' => '/api/v1/privacy/member/{memberId}', 'verb' => 'DELETE'],
         ['name' => 'privacyApi#saveConsent', 'url' => '/api/v1/privacy/consent', 'verb' => 'POST'],
         ['name' => 'privacyApi#getConsent', 'url' => '/api/v1/privacy/consent/{memberId}', 'verb' => 'GET'],
+        // Neue DSGVO-Routen (v0.3.0)
+        ['name' => 'privacyApi#canDelete', 'url' => '/api/v1/privacy/can-delete/{memberId}', 'verb' => 'GET'],
+        ['name' => 'privacyApi#getConsentTypes', 'url' => '/api/v1/privacy/consent-types', 'verb' => 'GET'],
+        ['name' => 'privacyApi#getAuditLog', 'url' => '/api/v1/privacy/audit-log/{memberId}', 'verb' => 'GET'],
+        ['name' => 'privacyApi#saveConsentsBulk', 'url' => '/api/v1/privacy/consent/{memberId}/bulk', 'verb' => 'POST'],
+        ['name' => 'privacyApi#getAuditStatistics', 'url' => '/api/v1/privacy/audit-statistics', 'verb' => 'GET'],
 
         // Roles API (v0.2.2)
         ['name' => 'rolesApi#getRoles', 'url' => '/api/v1/roles', 'verb' => 'GET'],
@@ -73,5 +80,28 @@ return [
         ['name' => 'rolesApi#updateRole', 'url' => '/api/v1/roles/{roleId}', 'verb' => 'PUT'],
         ['name' => 'rolesApi#deleteRole', 'url' => '/api/v1/roles/{roleId}', 'verb' => 'DELETE'],
         ['name' => 'rolesApi#updatePermissions', 'url' => '/api/v1/roles/{roleId}/permissions', 'verb' => 'PUT'],
+
+        // Email Template API (v0.3.0)
+        ['name' => 'emailTemplateApi#getSettings', 'url' => '/api/v1/email-template/settings', 'verb' => 'GET'],
+        ['name' => 'emailTemplateApi#updateSettings', 'url' => '/api/v1/email-template/settings', 'verb' => 'POST'],
+        ['name' => 'emailTemplateApi#preview', 'url' => '/api/v1/email-template/preview', 'verb' => 'GET'],
+        ['name' => 'emailTemplateApi#sendTestEmail', 'url' => '/api/v1/email-template/test', 'verb' => 'POST'],
+
+        // Test API (debug routing)
+        ['name' => 'testApi#testGet', 'url' => '/api/v1/test/get', 'verb' => 'GET'],
+        ['name' => 'testApi#testPost', 'url' => '/api/v1/test/post', 'verb' => 'POST'],
+
+        // Calendar API (v0.3.0)
+        ['name' => 'calendarApi#getEvents', 'url' => '/api/v1/calendar/events', 'verb' => 'GET'],
+        ['name' => 'calendarApi#createEvent', 'url' => '/api/v1/calendar/events', 'verb' => 'POST'],
+        ['name' => 'calendarApi#getEvent', 'url' => '/api/v1/calendar/events/{id}', 'verb' => 'GET', 'requirements' => ['id' => '\d+']],
+        ['name' => 'calendarApi#updateEvent', 'url' => '/api/v1/calendar/events/{id}', 'verb' => 'PUT', 'requirements' => ['id' => '\d+']],
+        ['name' => 'calendarApi#deleteEvent', 'url' => '/api/v1/calendar/events/{id}', 'verb' => 'DELETE', 'requirements' => ['id' => '\d+']],
+        ['name' => 'calendarApi#getEventRsvps', 'url' => '/api/v1/calendar/events/{id}/rsvp', 'verb' => 'GET', 'requirements' => ['id' => '\d+']],
+        ['name' => 'calendarApi#submitRsvp', 'url' => '/api/v1/calendar/events/{id}/rsvp', 'verb' => 'POST', 'requirements' => ['id' => '\d+']],
+        ['name' => 'calendarApi#getMyRsvp', 'url' => '/api/v1/calendar/events/{id}/my-rsvp', 'verb' => 'GET', 'requirements' => ['id' => '\\d+']],
+        ['name' => 'calendarApi#getUpcoming', 'url' => '/api/v1/calendar/upcoming', 'verb' => 'GET'],
+        ['name' => 'calendarApi#getEventTypes', 'url' => '/api/v1/calendar/types', 'verb' => 'GET'],
+        ['name' => 'calendarApi#getPendingRsvp', 'url' => '/api/v1/calendar/pending-rsvp', 'verb' => 'GET'],
     ]
 ];

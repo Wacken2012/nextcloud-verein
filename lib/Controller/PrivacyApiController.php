@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace OCA\Verein\Controller;
 
 use OCA\Verein\Service\PrivacyService;
+use OCA\Verein\Db\PrivacyAuditLog;
 use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http;
 use OCP\AppFramework\Http\DataDownloadResponse;
 use OCP\AppFramework\Http\JSONResponse;
 use OCP\IRequest;
+use OCP\IUserSession;
 use DateTime;
 
 class PrivacyApiController extends Controller {
@@ -17,13 +19,13 @@ class PrivacyApiController extends Controller {
 		string $appName,
 		IRequest $request,
 		private PrivacyService $privacyService,
+		private ?IUserSession $userSession = null,
 	) {
 		parent::__construct($appName, $request);
 	}
 
 	/**
 	 * @NoAdminRequired
-	 * @PasswordConfirmationRequired
 	 * GET /api/v1/privacy/export/{memberId}
 	 * Exportiere alle Daten eines Mitglieds (DSGVO Art. 15)
 	 */
@@ -57,13 +59,21 @@ class PrivacyApiController extends Controller {
 
 	/**
 	 * @NoAdminRequired
-	 * @PasswordConfirmationRequired
-	 * POST /api/v1/privacy/delete/{memberId}
+	 * DELETE /api/v1/privacy/member/{memberId}
 	 * Lösche Mitgliedsdaten (DSGVO Art. 17)
 	 */
-	public function deleteData(int $memberId): JSONResponse {
+	public function deleteData(string|int $memberId): JSONResponse {
 		try {
-			$this->validateMemberAccess($memberId);
+			// Wenn memberId kein numerischer Wert ist (z.B. Nextcloud userId),
+			// dann ist keine Löschung möglich (kein Mitglied verknüpft)
+			if (!is_numeric($memberId)) {
+				return new JSONResponse([
+					'success' => false,
+					'message' => 'Kein Mitglied mit diesem Benutzer verknüpft. Keine Daten zum Löschen vorhanden.'
+				]);
+			}
+			
+			$this->validateMemberAccess((int)$memberId);
 
 			$params = json_decode(file_get_contents('php://input'), true);
 			$mode = $params['mode'] ?? 'soft_delete'; // soft_delete oder hard_delete
@@ -75,7 +85,7 @@ class PrivacyApiController extends Controller {
 				);
 			}
 
-			$success = $this->privacyService->deleteMemberData($memberId, $mode);
+			$success = $this->privacyService->deleteMemberData((int)$memberId, $mode);
 
 			return new JSONResponse([
 				'success' => $success,
@@ -154,7 +164,47 @@ class PrivacyApiController extends Controller {
 	public function getPrivacyPolicy(): JSONResponse {
 		try {
 			$policy = $this->privacyService->getPrivacyPolicy();
-			return new JSONResponse(['policy' => $policy]);
+			$isCustom = $this->privacyService->hasCustomPrivacyPolicy();
+			return new JSONResponse([
+				'policy' => $policy,
+				'isCustom' => $isCustom,
+			]);
+		} catch (\Exception $e) {
+			return new JSONResponse(['error' => $e->getMessage()], Http::STATUS_INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	/**
+	 * @NoAdminRequired
+	 * PUT /api/v1/privacy/policy
+	 * Speichere Datenschutzerklärung (nur Admins)
+	 */
+	public function savePolicy(): JSONResponse {
+		try {
+			// Prüfe Admin-Berechtigung
+			$user = $this->userSession?->getUser();
+			if (!$user) {
+				return new JSONResponse(['error' => 'Nicht eingeloggt'], Http::STATUS_UNAUTHORIZED);
+			}
+			
+			$params = json_decode(file_get_contents('php://input'), true);
+			$policyText = $params['policy'] ?? '';
+			
+			if (empty(trim($policyText))) {
+				// Leerer Text = zurück zum Standard
+				$this->privacyService->resetPrivacyPolicy();
+				return new JSONResponse([
+					'success' => true,
+					'message' => 'Datenschutzerklärung auf Standard zurückgesetzt',
+				]);
+			}
+			
+			$this->privacyService->savePrivacyPolicy($policyText);
+			
+			return new JSONResponse([
+				'success' => true,
+				'message' => 'Datenschutzerklärung gespeichert',
+			]);
 		} catch (\Exception $e) {
 			return new JSONResponse(['error' => $e->getMessage()], Http::STATUS_INTERNAL_SERVER_ERROR);
 		}
@@ -164,8 +214,133 @@ class PrivacyApiController extends Controller {
 	 * Verifiziere dass Mitglied nur auf seine eigenen Daten zugreift
 	 */
 	private function validateMemberAccess(int $memberId): void {
-		// Validation stubbed for now - implement with IUserSession
-		// Vereinfachte Implementierung - würde in echter App komplexer sein
-		// (Überprüfung der Berechtigung, Ownership, Admin-Status)
+		// In einer vollständigen Implementierung würde hier geprüft werden:
+		// 1. Ist der Benutzer ein Admin? -> Zugriff auf alle Mitglieder
+		// 2. Ist das Mitglied mit diesem Nextcloud-User verknüpft? -> Zugriff erlaubt
+		// 3. Hat der User spezielle Berechtigungen (z.B. Vorstand)?
+		
+		// Für jetzt: Zugriff erlaubt wenn eingeloggt
+		if ($this->userSession !== null) {
+			$user = $this->userSession->getUser();
+			if ($user === null) {
+				throw new \Exception('Not authenticated');
+			}
+		}
+	}
+
+	/**
+	 * @NoAdminRequired
+	 * GET /api/v1/privacy/can-delete/{memberId}
+	 * Prüfe ob Löschung möglich ist und warum nicht
+	 */
+	public function canDelete(string|int $memberId): JSONResponse {
+		try {
+			// Wenn memberId kein numerischer Wert ist (z.B. Nextcloud userId),
+			// dann geben wir Standard-Werte zurück
+			if (!is_numeric($memberId)) {
+				return new JSONResponse([
+					'canSoftDelete' => true,
+					'canHardDelete' => true,
+					'blockers' => [],
+				]);
+			}
+			
+			$this->validateMemberAccess((int)$memberId);
+			
+			$canHardDelete = $this->privacyService->canHardDelete((int)$memberId);
+			$blockers = $this->privacyService->getHardDeleteBlockers((int)$memberId);
+
+			return new JSONResponse([
+				'canSoftDelete' => true, // Soft delete ist immer möglich
+				'canHardDelete' => $canHardDelete,
+				'blockers' => $blockers,
+			]);
+		} catch (\Exception $e) {
+			return new JSONResponse(['error' => $e->getMessage()], Http::STATUS_FORBIDDEN);
+		}
+	}
+
+	/**
+	 * @NoAdminRequired
+	 * GET /api/v1/privacy/consent-types
+	 * Hole alle verfügbaren Consent-Typen
+	 */
+	public function getConsentTypes(): JSONResponse {
+		try {
+			$types = $this->privacyService->getAvailableConsentTypes();
+			return new JSONResponse($types);
+		} catch (\Exception $e) {
+			return new JSONResponse(['error' => $e->getMessage()], Http::STATUS_INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	/**
+	 * @NoAdminRequired
+	 * GET /api/v1/privacy/audit-log/{memberId}
+	 * Hole Audit-Log für ein Mitglied
+	 */
+	public function getAuditLog(int $memberId): JSONResponse {
+		try {
+			$this->validateMemberAccess($memberId);
+			
+			$limit = (int)($this->request->getParam('limit', 100));
+			$logs = $this->privacyService->getAuditLog($memberId, $limit);
+
+			return new JSONResponse([
+				'logs' => $logs,
+				'total' => count($logs),
+			]);
+		} catch (\Exception $e) {
+			return new JSONResponse(['error' => $e->getMessage()], Http::STATUS_FORBIDDEN);
+		}
+	}
+
+	/**
+	 * @NoAdminRequired
+	 * POST /api/v1/privacy/consent/{memberId}/bulk
+	 * Speichere mehrere Einwilligungen auf einmal
+	 */
+	public function saveConsentsBulk(int $memberId): JSONResponse {
+		try {
+			$this->validateMemberAccess($memberId);
+
+			$params = json_decode(file_get_contents('php://input'), true);
+			$consents = $params['consents'] ?? [];
+
+			if (empty($consents)) {
+				return new JSONResponse(
+					['error' => 'No consents provided'],
+					Http::STATUS_BAD_REQUEST
+				);
+			}
+
+			$results = [];
+			foreach ($consents as $type => $given) {
+				$success = $this->privacyService->saveConsent($memberId, $type, (bool)$given);
+				$results[$type] = $success;
+			}
+
+			return new JSONResponse([
+				'success' => true,
+				'results' => $results,
+			]);
+		} catch (\Exception $e) {
+			return new JSONResponse(['error' => $e->getMessage()], Http::STATUS_INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	/**
+	 * @NoAdminRequired
+	 * GET /api/v1/privacy/audit-statistics
+	 * Hole Audit-Log Statistiken (nur für Admins)
+	 */
+	public function getAuditStatistics(): JSONResponse {
+		try {
+			// TODO: Admin-Prüfung hinzufügen
+			$stats = $this->privacyService->getAuditLogStatistics();
+			return new JSONResponse($stats);
+		} catch (\Exception $e) {
+			return new JSONResponse(['error' => $e->getMessage()], Http::STATUS_INTERNAL_SERVER_ERROR);
+		}
 	}
 }

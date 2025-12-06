@@ -8,6 +8,7 @@ import RolesManager from './components/RolesManager.vue'
 import ReminderSettings from './components/ReminderSettings.vue'
 import ReminderLog from './components/ReminderLog.vue'
 import PrivacySettings from './components/PrivacySettings.vue'
+import EmailTemplateEditor from './components/EmailTemplateEditor.vue'
 
 const routes = [
   {
@@ -45,6 +46,11 @@ const routes = [
     path: '/settings/roles',
     name: 'RolesManager',
     component: RolesManager
+  },
+  {
+    path: '/settings/email-template',
+    name: 'EmailTemplateEditor',
+    component: EmailTemplateEditor
   },
   {
     path: '/settings/reminders',

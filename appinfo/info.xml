@@ -33,4 +33,8 @@ A comprehensive club/association management solution for Nextcloud with member m
         <admin>OCA\Verein\Settings\AdminSettings</admin>
         <admin-section>OCA\Verein\Settings\AdminSection</admin-section>
     </settings>
+
+    <background-jobs>
+        <job>OCA\Verein\BackgroundJob\ReminderJob</job>
+    </background-jobs>
 </info>

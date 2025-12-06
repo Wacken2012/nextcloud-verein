@@ -2,11 +2,14 @@
 
 namespace OCA\Verein\AppInfo;
 
+use OCA\Verein\BackgroundJob\ReminderJob;
 use OCA\Verein\Db\RoleMapper;
 use OCA\Verein\Db\UserRoleMapper;
 use OCA\Verein\Db\MemberMapper;
 use OCA\Verein\Db\FeeMapper;
 use OCA\Verein\Db\ReminderMapper;
+use OCA\Verein\Db\ConsentMapper;
+use OCA\Verein\Db\PrivacyAuditLogMapper;
 use OCA\Verein\Middleware\AuthorizationMiddleware;
 use OCA\Verein\Service\RBAC\RoleService;
 use OCA\Verein\Service\Export\CsvExporter;
@@ -16,6 +19,7 @@ use OCA\Verein\Service\FeeService;
 use OCA\Verein\Service\StatisticsService;
 use OCA\Verein\Service\ReminderService;
 use OCA\Verein\Service\PrivacyService;
+use OCA\Verein\Service\EmailTemplateService;
 use OCA\Verein\Service\SettingService;
 use OCA\Verein\Settings\AdminSection;
 use OCA\Verein\Settings\AdminSettings;
@@ -26,6 +30,7 @@ use OCP\AppFramework\Bootstrap\IRegistrationContext;
 use OCP\AppFramework\IAppContainer;
 use OCP\IGroupManager;
 use OCP\IUserSession;
+use OCP\IRequest;
 use Psr\Log\LoggerInterface;
 use OCP\IURLGenerator;
 use OCP\IL10N;
@@ -99,11 +104,27 @@ class Application extends App implements IBootstrap {
             return new PrivacyService(
                 $container->query(MemberMapper::class),
                 $container->query(LoggerInterface::class),
-                $container->query(IConfig::class)
+                $container->query(IConfig::class),
+                $container->query(FeeMapper::class),
+                $container->query(ConsentMapper::class),
+                $container->query(PrivacyAuditLogMapper::class),
+                $container->query(IRequest::class),
+                $container->query(IUserSession::class)
+            );
+        });
+
+        $context->registerService(EmailTemplateService::class, function (IAppContainer $container): EmailTemplateService {
+            return new EmailTemplateService(
+                $container->query(IConfig::class),
+                $container->query(LoggerInterface::class),
+                self::APP_ID
             );
         });
 
         $context->registerMiddleware(AuthorizationMiddleware::class);
+
+        // Background jobs are registered via info.xml <background-jobs> section
+        // See: https://docs.nextcloud.com/server/latest/developer_manual/basics/backgroundjobs.html
 
         // Register admin settings classes
         $context->registerService(AdminSection::class, function (IAppContainer $c): AdminSection {

@@ -118,3 +118,46 @@ if (!interface_exists('OCP\IDBConnection')) {
     }
     class_alias('IDBConnection', 'OCP\IDBConnection');
 }
+
+if (!interface_exists('OCP\AppFramework\Utility\ITimeFactory')) {
+    interface ITimeFactory {
+        public function getTime(): int;
+        public function getDateTime(string $time = 'now', \DateTimeZone $timezone = null): \DateTime;
+    }
+    class_alias('ITimeFactory', 'OCP\AppFramework\Utility\ITimeFactory');
+}
+
+if (!class_exists('OCP\BackgroundJob\TimedJob')) {
+    abstract class TimedJob {
+        protected int $interval = 0;
+        protected $time;
+        
+        public const TIME_SENSITIVE = 0;
+        public const TIME_INSENSITIVE = 1;
+        
+        public function __construct($time) {
+            $this->time = $time;
+        }
+        
+        protected function setInterval(int $seconds): void {
+            $this->interval = $seconds;
+        }
+        
+        protected function setTimeSensitivity(int $sensitivity): void {
+            // Implementation for testing
+        }
+        
+        abstract protected function run($argument): void;
+    }
+    class_alias('TimedJob', 'OCP\BackgroundJob\TimedJob');
+}
+
+if (!interface_exists('OCP\Mail\IEMailTemplate')) {
+    interface IEMailTemplate {
+        public function setSubject(string $subject): void;
+        public function addHeading(string $heading, string $plainHeading = ''): void;
+        public function addBodyText(string $text, string $plainText = ''): void;
+        public function addFooter(string $text = '', string $lang = ''): void;
+    }
+    class_alias('IEMailTemplate', 'OCP\Mail\IEMailTemplate');
+}
