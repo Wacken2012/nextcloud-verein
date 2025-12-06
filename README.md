@@ -55,6 +55,13 @@ Eine moderne, benutzerfreundliche **Nextcloud-App zur Verwaltung von Vereinen, V
 - Professionelle Layouts mit Kopf- und Fußzeilen
 - Unicode-Support für Umlaute
 
+### 🚧 Neu (develop, Ziel v0.3.0)
+
+- Kalender mit RSVP: Events erstellen/ändern/löschen, RSVP (Ja/Nein/Vielleicht), eigene/pending RSVPs, Deadline & Teilnehmerlimit, Detail-Modal mit Antworten
+- DSGVO-Verbesserungen: Consent-Typen, Audit-Log, Bulk-Consent, Löschprüfung, Policy speichern/abrufen, Export/Delete Endpunkte erweitert
+- Automatische Erinnerungen: Hintergrund-Job, konfigurierbare E-Mail-Templates (Editor, Preview, Test-Mail), Reminder-Service/API
+- Neue Admin-UI: Kalender-Frontend (Vue 3), E-Mail-Template-Editor, erweiterte Privacy-Settings
+
 ### Was kam in v0.2.0-beta?
 
 ✅ **Role-Based Access Control (RBAC)** — Vollständig implementiert
@@ -197,6 +204,13 @@ Eine moderne, benutzerfreundliche **Nextcloud-App zur Verwaltung von Vereinen, V
 - Fee lists exportable as PDF
 - Professional layouts with headers and footers
 - Unicode support for umlauts
+
+### 🚧 New (develop, target v0.3.0)
+
+- Calendar with RSVP: create/update/delete events, RSVP (yes/no/maybe), my/pending RSVPs, deadline & capacity limits, detail modal with responses
+- GDPR upgrades: consent types, audit log, bulk consent, delete-check endpoint, save/fetch policy, extended export/delete endpoints
+- Automatic reminders: background job, configurable email templates (editor, preview, test mail), reminder service/API
+- New admin UI: calendar frontend (Vue 3), email template editor, extended privacy settings
 
 ### What came in v0.2.0-beta?
 
@@ -374,11 +388,11 @@ sudo -u www-data php /var/www/nextcloud/occ app:enable verein
 - ✅ Bilingual documentation (DE/EN)
 
 ### v0.3.0 📋 (Planned Q2 2026)
-- Kalender Integration (Konzertmeister Model)
-- Talk Integration (Event Management, RSVP)
-- Files Integration (Notenverwaltung nach SoftNote)
-- Deck Integration (Kanban Board)
-- DSGVO Compliance (Art. 6-34)
+- Kalender mit RSVP, Deadlines, Teilnehmerlimit
+- Erinnerungen & E-Mail-Templates
+- Datenschutz: Consents, Audit-Log, Löschprüfung
+- Talk/Files/Deck Integrationen (Plan)
+- DSGVO-Compliance (Art. 6-34)
 
 ### v1.0.0 🎯 (Goal Q4 2026)
 - Full stability & 100% test coverage
@@ -412,10 +426,10 @@ sudo -u www-data php /var/www/nextcloud/occ app:enable verein
 - ✅ Bilingual documentation (DE/EN)
 
 ### v0.3.0 📋 (Planned Q2 2026)
-- Calendar integration (Konzertmeister model)
-- Talk integration (event management, RSVP)
-- Files integration (note management like SoftNote)
-- Deck integration (Kanban board)
+- Calendar with RSVP, deadlines, capacity
+- Reminders & email templates
+- Privacy: consents, audit log, delete checks
+- Talk/Files/Deck integrations (planned)
 - GDPR/DSGVO compliance (Art. 6-34)
 
 ### v1.0.0 🎯 (Goal Q4 2026)
@@ -446,10 +460,10 @@ sudo -u www-data php /var/www/nextcloud/occ app:enable verein
 - Enhanced error handling
 
 ### v0.3.0 📋 (Q2 2026)
-- Automated reminders (cronjob)
-- Notification system (email, talk)
-- Calendar integration
-- Advanced financial reports
+- Calendar with RSVP, deadlines, capacity
+- Automated reminders (cronjob) & email templates
+- Privacy: consents, audit log, delete checks
+- Notification system (email/talk) — planned
 
 ### v1.0.0 🎯 (Q4 2026, Production)
 - Full stability & 100% test coverage
