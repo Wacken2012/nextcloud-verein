@@ -4,59 +4,84 @@ namespace OCA\Verein\Tests\Unit\Service;
 
 use PHPUnit\Framework\TestCase;
 use OCA\Verein\Service\ReminderService;
-use OCA\Verein\Db\ReminderMapper;
-use OCP\ILogger;
-use OCP\Mail\IMailer;
-use DateTime;
+use OCP\IConfig;
+use Psr\Log\LoggerInterface;
 
+/**
+ * Unit tests for ReminderService
+ * 
+ * Note: These tests create ReminderService without dependencies
+ * to test standalone methods that use IConfig
+ */
 class ReminderServiceTest extends TestCase {
 	private ReminderService $reminderService;
-	private $reminderMapper;
-	private $mailer;
+	private $config;
 	private $logger;
-	private $memberService;
-	private $settingService;
 
 	protected function setUp(): void {
 		parent::setUp();
 
-		$this->reminderMapper = $this->createMock(ReminderMapper::class);
-		$this->mailer = $this->createMock(IMailer::class);
-		$this->logger = $this->createMock(ILogger::class);
-		$this->memberService = $this->createMock(\OCA\NextcloudVerein\Service\MemberService::class);
-		$this->settingService = $this->createMock(\OCA\NextcloudVerein\Service\SettingService::class);
+		$this->config = $this->createMock(IConfig::class);
+		$this->logger = $this->createMock(LoggerInterface::class);
 
+		// Create service with minimal dependencies (nullable params)
 		$this->reminderService = new ReminderService(
-			$this->reminderMapper,
-			$this->mailer,
+			null,  // reminderMapper
+			null,  // mailer
 			$this->logger,
-			$this->memberService,
-			$this->settingService
+			null,  // memberService
+			$this->config,
+			'verein'
 		);
 	}
 
 	public function testIsEnabledReturnsFalseByDefault(): void {
-		$this->settingService->method('get')
-			->willReturn('false');
+		$this->config->method('getAppValue')
+			->willReturn('0');
 
 		$this->assertFalse($this->reminderService->isEnabled());
 	}
 
+	public function testIsEnabledReturnsTrueWhenEnabled(): void {
+		$this->config->method('getAppValue')
+			->willReturn('1');
+
+		$this->assertTrue($this->reminderService->isEnabled());
+	}
+
+	public function testIsEnabledReturnsTrueForStringTrue(): void {
+		$this->config->method('getAppValue')
+			->willReturn('true');
+
+		$this->assertTrue($this->reminderService->isEnabled());
+	}
+
 	public function testEnableReminders(): void {
-		$this->settingService->expects($this->once())
-			->method('set')
-			->with($this->stringContains('reminder_enabled'), 'true');
+		$this->config->expects($this->once())
+			->method('setAppValue')
+			->with('verein', $this->stringContains('reminder_'), '1');
 
 		$this->reminderService->enableReminders(true);
 	}
 
+	public function testDisableReminders(): void {
+		$this->config->expects($this->once())
+			->method('setAppValue')
+			->with('verein', $this->stringContains('reminder_'), '0');
+
+		$this->reminderService->enableReminders(false);
+	}
+
 	public function testGetReminderIntervals(): void {
-		$this->settingService->method('get')
-			->will($this->returnValueMap([
-				['reminder_interval_level_1', '7'],
-				['reminder_interval_level_2', '3'],
-				['reminder_interval_level_3', '7'],
-			]));
+		$this->config->method('getAppValue')
+			->will($this->returnCallback(function($app, $key, $default) {
+				$values = [
+					'reminder_interval_level_1' => '7',
+					'reminder_interval_level_2' => '3',
+					'reminder_interval_level_3' => '7',
+				];
+				return $values[$key] ?? $default;
+			}));
 
 		$intervals = $this->reminderService->getReminderIntervals();
 
@@ -66,14 +91,14 @@ class ReminderServiceTest extends TestCase {
 	}
 
 	public function testSetReminderIntervals(): void {
-		$this->settingService->expects($this->exactly(3))
-			->method('set');
+		$this->config->expects($this->exactly(3))
+			->method('setAppValue');
 
 		$this->reminderService->setReminderIntervals(10, 5, 14);
 	}
 
 	public function testGetDaysBetweenReminders(): void {
-		$this->settingService->method('get')
+		$this->config->method('getAppValue')
 			->willReturn('3');
 
 		$days = $this->reminderService->getDaysBetweenReminders();
@@ -81,9 +106,9 @@ class ReminderServiceTest extends TestCase {
 	}
 
 	public function testSetDaysBetweenReminders(): void {
-		$this->settingService->expects($this->once())
-			->method('set')
-			->with($this->stringContains('reminder_days_between'), '5');
+		$this->config->expects($this->once())
+			->method('setAppValue')
+			->with('verein', $this->stringContains('reminder_'), '5');
 
 		$this->reminderService->setDaysBetweenReminders(5);
 	}
