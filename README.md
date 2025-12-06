@@ -2,7 +2,7 @@
 
 Eine moderne, benutzerfreundliche **Nextcloud-App zur Verwaltung von Vereinen, Verbänden und Organisationen**. Mit vollständiger Mitglieder- und Finanzverwaltung.
 
-**Status**: v0.2.1 ✅ **Released** | **Lizenz**: AGPL-3.0 | **Nextcloud**: 28+ | **Release**: 1. Dezember 2025
+**Status**: v0.2.2-pre ✅ **Released** | **Lizenz**: AGPL-3.0 | **Nextcloud**: 28+ | **Release**: 4. Dezember 2025
 
 ---
 
@@ -14,46 +14,17 @@ Eine moderne, benutzerfreundliche **Nextcloud-App zur Verwaltung von Vereinen, V
 |---------|--------|---------|-------|
 | **v0.1.0-alpha** | ✅ Stabil | Nov 2025 | Basis CRUD, MVP |
 | **v0.2.0-beta** | ✅ Released | 30. Nov 2025 | RBAC, Admin-Panel, CSV/PDF Export, Statistics |
-| **v0.2.1** | ✅ **Aktuell** | 1. Dez 2025 | API Docs, Developer Guide, Bundle-Optimierung |
+| **v0.2.1** | ✅ Released | 1. Dez 2025 | API Docs, Developer Guide, Bundle-Optimierung |
+| **v0.2.2-pre** | ✅ **Aktuell** | 4. Dez 2025 | Bugfixes, NC32-Kompatibilität, Privacy/Reminder Fixes |
 | **v0.3.0** | 📋 Geplant | Q2 2026 | Kalender, Talk, Files, Deck Integration |
 | **v1.0.0** | 🎯 Ziel | Q4 2026 | Production-Ready, App Store Release |
 
-### 🆕 Was ist neu in v0.2.1?
+### 🆕 Was ist neu in v0.2.2-pre?
 
-✅ **API-Dokumentation (OpenAPI 3.0)** — Vollständig implementiert
-- Vollständige OpenAPI 3.0 Spezifikation
-- Interaktive Swagger-UI
-- Alle 31 API-Endpoints dokumentiert
-- Request/Response Beispiele für jeden Endpoint
-- docs/api/README.md mit detaillierten Specs
-
-✅ **Entwicklerhandbuch** — Vollständig implementiert
-- DEVELOPER_GUIDE.md mit Architektur-Übersicht
-- Service-Layer Patterns
-- Repository Pattern für Datenbank
-- Dependency Injection Best Practices
-- Migration Guides für zukünftige Versionen
-
-✅ **Bundle-Optimierung (40% Reduktion)** — Vollständig implementiert
-- @rollup/plugin-terser für aggressive Minifizierung
-- Bundle: 854KB → 508KB
-- Gzip: 197KB → 148KB (-25%)
-- Aggressive Minification: drop_console, mangle, compress
-- Optimale Performance für Endbenutzer
-
-✅ **Zweisprachige Dokumentation** — Vollständig implementiert
-- Alle wichtigen Docs jetzt DE/EN
-- DEVELOPER_GUIDE.md bilingual
-- API README.md bilingual
-- CONTRIBUTING.md bilingual
-- Konsistente Struktur in beiden Sprachen
-
-✅ **PDF-Export vollständig funktionsfähig** — Vollständig implementiert
-- TCPDF Integration funktioniert
-- Mitgliederlisten als PDF exportierbar
-- Gebührenlisten als PDF exportierbar
-- Professionelle Layouts mit Kopf- und Fußzeilen
-- Unicode-Support für Umlaute
+- **Bugfix-Release (NC32-kompatibel)**: ersetzt `ILogger` durch `Psr\Log\LoggerInterface`, liest Request-Bodies über `php://input`, fixt DI im `PrivacyService`, Syntax-Fix im `ReminderService`.
+- **Stabile Export/Privacy/Reminder-APIs**: Endpunkte für Export/Consent/Policy/Reminder liefern keine 500er mehr; akzeptieren string|int IDs; ReminderLog verarbeitet Array- oder Objekt-Antworten.
+- **Technische Verbesserungen**: Union Types für flexiblere Parameter, klarere Error-Responses, korrekte Service-Registrierung in `Application.php`.
+- Details siehe `CHANGELOG.md` Abschnitt 0.2.2-pre.
 
 ### 🚧 Neu (develop, Ziel v0.3.0)
 
@@ -164,46 +135,17 @@ Eine moderne, benutzerfreundliche **Nextcloud-App zur Verwaltung von Vereinen, V
 |---------|--------|---------|-------|
 | **v0.1.0-alpha** | ✅ Stable | Nov 2025 | Basic CRUD, MVP |
 | **v0.2.0-beta** | ✅ Released | Nov 30, 2025 | RBAC, Admin Panel, CSV/PDF Export, Statistics |
-| **v0.2.1** | ✅ **Current** | Dec 1, 2025 | API Docs, Developer Guide, Bundle Optimization |
+| **v0.2.1** | ✅ Released | Dec 1, 2025 | API Docs, Developer Guide, Bundle Optimization |
+| **v0.2.2-pre** | ✅ **Current** | Dec 4, 2025 | Bug fixes, NC32 compatibility, privacy/reminder fixes |
 | **v0.3.0** | 📋 Planned | Q2 2026 | Calendar, Talk, Files, Deck Integration |
 | **v1.0.0** | 🎯 Goal | Q4 2026 | Production-Ready, App Store Release |
 
-### 🆕 What's New in v0.2.1?
+### 🆕 What's New in v0.2.2-pre?
 
-✅ **API Documentation (OpenAPI 3.0)** — Fully Implemented
-- Complete OpenAPI 3.0 specification
-- Interactive Swagger UI
-- All 31 API endpoints documented
-- Request/response examples for every endpoint
-- docs/api/README.md with detailed specs
-
-✅ **Developer Guide** — Fully Implemented
-- DEVELOPER_GUIDE.md with architecture overview
-- Service-layer patterns
-- Repository pattern for database
-- Dependency injection best practices
-- Migration guides for future versions
-
-✅ **Bundle Optimization (40% Reduction)** — Fully Implemented
-- @rollup/plugin-terser for aggressive minification
-- Bundle: 854KB → 508KB
-- Gzip: 197KB → 148KB (-25%)
-- Aggressive minification: drop_console, mangle, compress
-- Optimal performance for end users
-
-✅ **Bilingual Documentation** — Fully Implemented
-- All major docs now DE/EN
-- DEVELOPER_GUIDE.md bilingual
-- API README.md bilingual
-- CONTRIBUTING.md bilingual
-- Consistent structure in both languages
-
-✅ **PDF Export Fully Functional** — Fully Implemented
-- TCPDF integration working properly
-- Member lists exportable as PDF
-- Fee lists exportable as PDF
-- Professional layouts with headers and footers
-- Unicode support for umlauts
+- **Bugfix release (NC32 compatible)**: replaced `ILogger` with `Psr\Log\LoggerInterface`, reads request bodies via `php://input`, DI fix in `PrivacyService`, syntax fix in `ReminderService`.
+- **Stable export/privacy/reminder APIs**: export/consent/policy/reminder endpoints no longer 500; accept string|int IDs; ReminderLog handles array or object responses.
+- **Technical improvements**: union types for flexible parameters, clearer error responses, proper service registration in `Application.php`.
+- See `CHANGELOG.md` 0.2.2-pre for full details.
 
 ### 🚧 New (develop, target v0.3.0)
 
