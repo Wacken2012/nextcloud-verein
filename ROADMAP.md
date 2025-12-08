@@ -129,7 +129,13 @@ Details: siehe `RELEASE_NOTES.md` / `CHANGELOG.md` Abschnitt `0.2.2-pre`.
 - [x] Automatische Mahnungen (Teilimplementiert)
   - [x] Cronjob für Beiträge (ReminderJob implementiert)
   - [x] E-Mail Benachrichtigungen (E-Mail-Templates + Reminder-Service)
-  - [ ] Mahnstufen (1., 2., Mahnung)
+  - [ ] Mahnstufen (1., 2., Mahnung) — Nächster Arbeitsschritt: Design & Implementierung
+    - Konfigurierbare Stufen: Anzahl, Intervalle (z. B. 14 Tage, 28 Tage)
+    - Unterstützung von Mahngebühren / Zinsen (optional)
+    - Eskalations-Aktionen: E-Mail, Status-Änderung, Sperrung (optional)
+    - Admin-UI: Einstellungen für Stufen, Intervalle und Templates
+    - DB/Migration: Tabelle für Mahnstufen-Konfiguration & Logs
+    - Tests: Unit/Integration für Reminder-Flow und Eskalation
 - [x] Kalender Integration (Teilimplementiert)
   - Gebühren-Fristen als Events
   - [x] Terminverwaltung (Versammlungen, Proben, Events, Konzerte) (CRUD implementiert)
@@ -159,6 +165,7 @@ Details: siehe `RELEASE_NOTES.md` / `CHANGELOG.md` Abschnitt `0.2.2-pre`.
   - [ ] Import aus anderen Vereinsprogrammen
     - [ ] SoftNote import (Noten/Files mapping)
     - [ ] Konzertmeister import (Events, Mitglieder, Setlists)
+    - [ ] OpenJverein import (Mitglieder, Veranstaltungen, Beiträge)
   - [ ] Mapping-Tooling (Feldzuordnung, Vorschau, Konfliktauflösung)
   - [ ] UI: Importer-Assistent (Upload, Mapping, Preview, Run)
   - [ ] CLI/Script: batch-import für große Datenmengen

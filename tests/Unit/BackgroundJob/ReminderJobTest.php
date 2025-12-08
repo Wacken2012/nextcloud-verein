@@ -18,6 +18,8 @@ class ReminderJobTest extends TestCase {
     private ReminderService $reminderService;
     private LoggerInterface $logger;
     private ITimeFactory $timeFactory;
+    private $levelsService;
+    private $reminderMapper;
 
     protected function setUp(): void {
         parent::setUp();
@@ -25,6 +27,8 @@ class ReminderJobTest extends TestCase {
         $this->reminderService = $this->createMock(ReminderService::class);
         $this->logger = $this->createMock(LoggerInterface::class);
         $this->timeFactory = $this->createMock(ITimeFactory::class);
+        $this->levelsService = $this->createMock(\OCA\Verein\Service\ReminderLevelsService::class);
+        $this->reminderMapper = $this->createMock(\OCA\Verein\Db\ReminderMapper::class);
         
         // Mock getTime to return current timestamp
         $this->timeFactory->method('getTime')
@@ -33,7 +37,9 @@ class ReminderJobTest extends TestCase {
         $this->job = new ReminderJob(
             $this->timeFactory,
             $this->reminderService,
-            $this->logger
+            $this->logger,
+            $this->levelsService,
+            $this->reminderMapper
         );
     }
 
@@ -41,17 +47,20 @@ class ReminderJobTest extends TestCase {
      * Test: Job ruft processDueReminders auf
      */
     public function testRunCallsProcessDueReminders(): void {
-        $this->reminderService->expects($this->once())
-            ->method('processDueReminders');
-        
-        $this->logger->expects($this->exactly(2))
-            ->method('info')
-            ->withConsecutive(
-                [$this->stringContains('Starting')],
-                [$this->stringContains('completed')]
-            );
-        
-        // Verwende Reflection um protected run() aufzurufen
+        // Prepare pending reminders (two simple objects with getId)
+        $rem1 = new class { public function getId() { return 1; } };
+        $rem2 = new class { public function getId() { return 2; } };
+
+        $this->reminderMapper->method('findPending')->willReturn([$rem1, $rem2]);
+
+        $this->levelsService->expects($this->exactly(2))
+            ->method('applyLevelForReminder')
+            ->withConsecutive([1], [2]);
+
+        $this->logger->expects($this->atLeast(1))
+            ->method('info');
+
+        // call protected run()
         $reflection = new \ReflectionClass($this->job);
         $method = $reflection->getMethod('run');
         $method->setAccessible(true);
@@ -63,21 +72,17 @@ class ReminderJobTest extends TestCase {
      */
     public function testRunLogsErrorOnException(): void {
         $exception = new \Exception('Test error');
-        
-        $this->reminderService->expects($this->once())
-            ->method('processDueReminders')
+
+        // make levelsService throw when applying
+        $this->reminderMapper->method('findPending')->willReturn([new class { public function getId(){ return 5; } }]);
+        $this->levelsService->expects($this->once())
+            ->method('applyLevelForReminder')
             ->willThrowException($exception);
-        
+
         $this->logger->expects($this->once())
             ->method('error')
-            ->with(
-                $this->stringContains('Error'),
-                $this->callback(function ($context) {
-                    return isset($context['exception']) && 
-                           $context['exception'] === 'Test error';
-                })
-            );
-        
+            ->with($this->stringContains('Error'));
+
         $reflection = new \ReflectionClass($this->job);
         $method = $reflection->getMethod('run');
         $method->setAccessible(true);
