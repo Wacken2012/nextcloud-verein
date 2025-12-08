@@ -18,6 +18,7 @@ use OCA\Verein\Service\MemberService;
 use OCA\Verein\Service\FeeService;
 use OCA\Verein\Service\StatisticsService;
 use OCA\Verein\Service\ReminderService;
+use OCA\Verein\Service\ReminderLevelsService;
 use OCA\Verein\Service\PrivacyService;
 use OCA\Verein\Service\EmailTemplateService;
 use OCA\Verein\Service\SettingService;
@@ -97,6 +98,14 @@ class Application extends App implements IBootstrap {
                 $container->query(MemberService::class),
                 $container->query(IConfig::class),
                 self::APP_ID
+            );
+        });
+
+        $context->registerService(ReminderLevelsService::class, function (IAppContainer $container): ReminderLevelsService {
+            return new ReminderLevelsService(
+                $container->query(ReminderMapper::class),
+                $container->query(ReminderService::class),
+                $container->query(LoggerInterface::class)
             );
         });
 
