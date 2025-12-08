@@ -12,7 +12,8 @@
 |---------|--------|---------|-------|
 | **v0.1.0-alpha** | ✅ Stabil | Nov 2025 | Basis CRUD, MVP |
 | **v0.2.0-beta** | ✅ Released | 30. Nov 2025 | RBAC, Admin-Panel, CSV/PDF Export |
-| **v0.2.1** | ✅ Fertig | 30. Nov 2025 | API Docs, Developer Guide, PDF Fix |
+| **v0.2.1** | ✅ Released | 30. Nov 2025 | API Docs, Developer Guide, PDF Fix |
+| **v0.2.2-pre** | ✅ Aktuell | 4. Dez 2025 | Bugfixes, NC32-Kompatibilität, Privacy/Reminder Fixes |
 | **v0.3.0** | 📋 Geplant | Q2 2026 | Automatisierung, Integrationen (Kalender, Talk, Files, Deck) |
 | **v0.4.0** | 📋 Geplant | Q3 2026 | Materialverwaltung (Zeugwart) |
 | **v1.0.0** | 🎯 Ziel | Q4 2026 | Production-Ready |
@@ -96,6 +97,27 @@
 - ✅ PDF Export: Vollständig funktional (Members + Fees)
 - ✅ Documentation: API Docs, Developer Guide erstellt
 - ✅ Alle Dokumentation zweisprachig (DE/EN)
+
+---
+
+## ✅ v0.2.2-pre (Released 4. Dez 2025)
+
+**Release**: 4. Dezember 2025
+
+### Fokus: Stabilität, NC32-Kompatibilität & Privacy/Reminder-Fixes
+
+Wesentliche Änderungen:
+- ✅ Nextcloud 32 Kompatibilität: ersetzt veraltete `ILogger`-Nutzung durch `Psr\Log\LoggerInterface` und korrigiert Service-Registrierung in `Application.php`.
+- ✅ Request-Body Handling: verwende `file_get_contents('php://input')` an Stellen mit fehlerhafter `getBody()` Nutzung.
+- ✅ PrivacyService DI-Fix: Korrigierte Abhängigkeiten (IConfig statt SettingService) und robuste Fehlerbehandlung.
+- ✅ ReminderService: Syntax- und Typ-Fixes, Hintergrund-Job (`ReminderJob`) implementiert und getestet.
+- ✅ Export/Privacy/Reminder API-Endpunkte stabilisiert (keine 500er mehr, akzeptieren string|int IDs, konsistente Error-Responses).
+- ✅ Frontend: Verbesserungen am Calendar-Frontend (RSVP-UI), Email-Template-Editor hinzugefügt, UI-Bugfixes.
+- ✅ Migrations: Neue Migrations für Event/RSVP-Entities hinzugefügt (pruefen vor Produktiv-Run).
+
+Details: siehe `RELEASE_NOTES.md` / `CHANGELOG.md` Abschnitt `0.2.2-pre`.
+
+---
 
 ---
 
