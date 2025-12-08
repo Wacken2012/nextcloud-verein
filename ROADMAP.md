@@ -154,6 +154,18 @@ Details: siehe `RELEASE_NOTES.md` / `CHANGELOG.md` Abschnitt `0.2.2-pre`.
   - Verknüpfung mit Mitgliedern (Stimme/Register)
   - PDF-Vorschau und Download
 
+- [ ] Import & Migration
+  - [x] CSV Import (Grundlegende Importer-Prototypen)
+  - [ ] Import aus anderen Vereinsprogrammen
+    - [ ] SoftNote import (Noten/Files mapping)
+    - [ ] Konzertmeister import (Events, Mitglieder, Setlists)
+  - [ ] Mapping-Tooling (Feldzuordnung, Vorschau, Konfliktauflösung)
+  - [ ] UI: Importer-Assistent (Upload, Mapping, Preview, Run)
+  - [ ] CLI/Script: batch-import für große Datenmengen
+  - [ ] Validation & Sanitization: Konsistenzprüfungen vor Persistierung
+  - [ ] Migrations: DB-Migrationen prüfen & Tests
+  - [ ] Tests: Unit/Integration für Import-Pfade
+
 ### 🔐 Security & Permissions
 - [ ] Erweiterte Rollen mit granularen Berechtigungen:
 
