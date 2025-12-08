@@ -126,17 +126,17 @@ Details: siehe `RELEASE_NOTES.md` / `CHANGELOG.md` Abschnitt `0.2.2-pre`.
 ### 🎯 Fokus: Automatisierung & Integrationen
 
 **Geplante Features:**
-- [ ] Automatische Mahnungen
-  - Cronjob für Beiträge
-  - E-Mail Benachrichtigungen
-  - Mahnstufen (1., 2., Mahnung)
-- [ ] Kalender Integration (nach Vorbild "Konzertmeister")
+- [x] Automatische Mahnungen (Teilimplementiert)
+  - [x] Cronjob für Beiträge (ReminderJob implementiert)
+  - [x] E-Mail Benachrichtigungen (E-Mail-Templates + Reminder-Service)
+  - [ ] Mahnstufen (1., 2., Mahnung)
+- [x] Kalender Integration (Teilimplementiert)
   - Gebühren-Fristen als Events
-  - Terminverwaltung (Versammlungen, Proben, Events, Konzerte)
-  - Teilnehmer-Abfrage (RSVP: Zu-/Absage)
-  - Anwesenheitsverwaltung & Statistik
-  - Wiederkehrende Termine (z.B. wöchentliche Proben)
-  - Programm-/Setlist-Planung pro Termin
+  - [x] Terminverwaltung (Versammlungen, Proben, Events, Konzerte) (CRUD implementiert)
+  - [x] Teilnehmer-Abfrage (RSVP: Zu-/Absage)
+  - [ ] Anwesenheitsverwaltung & Statistik
+  - [ ] Wiederkehrende Termine (z.B. wöchentliche Proben)
+  - [ ] Programm-/Setlist-Planung pro Termin
 - [ ] Deck Integration
   - Aufgaben-Management
   - Beitragsabrechnung
@@ -209,7 +209,8 @@ Details: siehe `RELEASE_NOTES.md` / `CHANGELOG.md` Abschnitt `0.2.2-pre`.
   - Auflistung aller gespeicherten Daten
 
 **Art. 15 - Auskunftsrecht:**
-- [ ] Datenexport für Mitglieder
+**Art. 15 - Auskunftsrecht:**
+- [x] Datenexport für Mitglieder (API `GET /api/v1/privacy/export/{memberId}` stabilisiert)
   - "Meine Daten exportieren" Button im Profil
   - Export als JSON/PDF (maschinenlesbar + lesbar)
   - Alle gespeicherten Daten inkl. Logs
