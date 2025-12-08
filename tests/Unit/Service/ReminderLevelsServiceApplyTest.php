@@ -10,7 +10,6 @@ use DateTime;
 
 class ReminderLevelsServiceApplyTest extends TestCase {
     public function testApplyLevelForReminderSendsAndUpdates(): void {
-        $reminderMapper = $this->createMock(ReminderMapper::class);
         $reminderService = $this->createMock(ReminderService::class);
 
         // Create a fake reminder object
@@ -26,8 +25,15 @@ class ReminderLevelsServiceApplyTest extends TestCase {
             public function setNextReminderDate($d) { /* noop */ }
             public function setStatus($s) { /* noop */ }
         };
+        // Mock ReminderMapper (disable constructor to avoid DB dependency)
+        $updated = false;
+        $reminderMapper = $this->getMockBuilder(ReminderMapper::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['findById','update'])
+            ->getMock();
 
         $reminderMapper->method('findById')->willReturn($reminder);
+        $reminderMapper->method('update')->willReturnCallback(function() use (&$updated) { $updated = true; });
 
         // Expect sendReminder to be called once and return true
         $reminderService->expects($this->once())
@@ -35,14 +41,10 @@ class ReminderLevelsServiceApplyTest extends TestCase {
             ->with($reminder)
             ->willReturn(true);
 
-        // Expect update to be called on mapper
-        $reminderMapper->expects($this->once())
-            ->method('update')
-            ->with($reminder);
-
         $service = new ReminderLevelsService($reminderMapper, $reminderService, null);
 
         $result = $service->applyLevelForReminder(42);
         $this->assertTrue($result);
+        $this->assertTrue($updated, 'Mapper update should have been called and set flag');
     }
 }

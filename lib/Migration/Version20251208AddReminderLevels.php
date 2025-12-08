@@ -1,31 +1,92 @@
 <?php
+
+declare(strict_types=1);
+
 namespace OCA\Verein\Migration;
 
-use OCA\Verein\Db\MigrationStep;
+use Closure;
+use OCP\DB\ISchemaWrapper;
+use OCP\DB\Types;
+use OCP\Migration\IOutput;
+use OCP\Migration\SimpleMigrationStep;
 
-class Version20251208AddReminderLevels extends MigrationStep {
-    public function change() {
-        $this->addTable('nextcloud_verein_reminder_levels')
-            ->addColumn('id','integer')
-            ->addColumn('level','integer')
-            ->addColumn('delay_days','integer')
-            ->addColumn('fee_cents','integer', ['null' => true])
-            ->addColumn('template_id','string', ['length' => 255, 'null' => true])
-            ->addColumn('active','boolean', ['default' => true])
-            ->addColumn('created_at','datetime')
-            ->addColumn('updated_at','datetime')
-            ->addPrimaryKey(['id'])
-            ->execute();
+class Version20251208AddReminderLevels extends SimpleMigrationStep {
 
-        $this->addTable('nextcloud_verein_reminder_logs')
-            ->addColumn('id','integer')
-            ->addColumn('member_id','integer')
-            ->addColumn('fee_id','integer', ['null' => true])
-            ->addColumn('reminder_level_id','integer')
-            ->addColumn('sent_at','datetime')
-            ->addColumn('action','string', ['length' => 255])
-            ->addColumn('payload','text', ['null' => true])
-            ->addPrimaryKey(['id'])
-            ->execute();
+    public function changeSchema(IOutput $output, Closure $schemaClosure, array $options): ?ISchemaWrapper {
+        /** @var ISchemaWrapper $schema */
+        $schema = $schemaClosure();
+
+        if (!$schema->hasTable('verein_reminder_levels')) {
+            $table = $schema->createTable('verein_reminder_levels');
+            $table->addColumn('id', Types::BIGINT, [
+                'autoincrement' => true,
+                'notnull' => true,
+                'unsigned' => true,
+            ]);
+            $table->addColumn('level', Types::INTEGER, [
+                'notnull' => true,
+                'unsigned' => true,
+            ]);
+            $table->addColumn('delay_days', Types::INTEGER, [
+                'notnull' => true,
+                'unsigned' => true,
+            ]);
+            $table->addColumn('fee_cents', Types::INTEGER, [
+                'notnull' => false,
+                'unsigned' => true,
+            ]);
+            $table->addColumn('template_id', Types::STRING, [
+                'notnull' => false,
+                'length' => 255,
+            ]);
+            $table->addColumn('active', Types::SMALLINT, [
+                'notnull' => true,
+                'default' => 1,
+            ]);
+            $table->addColumn('created_at', Types::DATETIME, [
+                'notnull' => true,
+            ]);
+            $table->addColumn('updated_at', Types::DATETIME, [
+                'notnull' => false,
+            ]);
+            $table->setPrimaryKey(['id']);
+            $table->addUniqueIndex(['level'], 'vn_rem_level_unique');
+        }
+
+        if (!$schema->hasTable('verein_reminder_logs')) {
+            $table = $schema->createTable('verein_reminder_logs');
+            $table->addColumn('id', Types::BIGINT, [
+                'autoincrement' => true,
+                'notnull' => true,
+                'unsigned' => true,
+            ]);
+            $table->addColumn('member_id', Types::BIGINT, [
+                'notnull' => false,
+                'unsigned' => true,
+            ]);
+            $table->addColumn('fee_id', Types::BIGINT, [
+                'notnull' => false,
+                'unsigned' => true,
+            ]);
+            $table->addColumn('reminder_level_id', Types::BIGINT, [
+                'notnull' => true,
+                'unsigned' => true,
+            ]);
+            $table->addColumn('sent_at', Types::DATETIME, [
+                'notnull' => true,
+            ]);
+            $table->addColumn('action', Types::STRING, [
+                'notnull' => true,
+                'length' => 255,
+            ]);
+            $table->addColumn('payload', Types::TEXT, [
+                'notnull' => false,
+            ]);
+            $table->setPrimaryKey(['id']);
+            $table->addIndex(['member_id'], 'vn_rem_log_member_idx');
+            $table->addIndex(['reminder_level_id'], 'vn_rem_log_level_idx');
+        }
+
+        return $schema;
     }
 }

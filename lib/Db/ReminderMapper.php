@@ -14,6 +14,13 @@ class ReminderMapper extends QBMapper {
 	}
 
 	/**
+	 * Implement QBMapper::find to satisfy abstract contract
+	 */
+	public function find($id) {
+		return $this->findById((int)$id);
+	}
+
+	/**
 	 * Finde alle ausstehenden Mahnungen
 	 */
 	public function findPending(): array {
